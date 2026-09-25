@@ -18,8 +18,57 @@ Both test commands should pass initially. During the failure demo, the agent wil
 ## Layout
 
 - `sample_app/`: tiny profile application and its real test.
-- `agentguard/`: event contract, recorder, and guard placeholders.
-- `tests/`: tests for AgentGuard's event contract.
+- `agentguard/`: event contract, JSONL recorder, and bounded file reader.
+- `tests/`: tests for event serialization, recording, and file access boundaries.
 - `docs/`: scenario and completion criteria.
 
-The next step is to implement a bounded runner with `read_file`, `write_file`, and `run_tests` tools that can operate only inside `sample_app`.
+## Flight recorder and safe read tool
+
+This branch keeps the scope intentionally narrow: it adds a JSON Lines event recorder and a bounded `read_file("profile.py")` helper that only allows access within `sample_app`.
+
+From the repository root, run this to read `profile.py` and print its saved event:
+
+```bash
+python3 - <<'PY'
+import json
+from agentguard.events import Event
+from agentguard.recorder import JSONLRecorder
+from agentguard.tools import read_file
+
+recorder = JSONLRecorder("agentguard/events.jsonl")
+contents = read_file("profile.py")
+event = Event(
+    run_id="run-1",
+    step_id="step-1",
+    kind="tool_result",
+    status="succeeded",
+    summary="profile read succeeded",
+    tool="read_file",
+    path="profile.py",
+)
+print(json.dumps(recorder.record(event), separators=(",", ":")))
+PY
+```
+
+The example records success after reading, appending one event to
+`agentguard/events.jsonl`. The event identifies the tool and path relative to
+`sample_app`; file contents remain in `contents` and are not recorded or printed.
+Recording is explicit, not automatic.
+
+The reader resolves paths before checking containment and opening the file.
+A symlink inside `sample_app` pointing outside it is also rejected:
+
+```python
+read_file("profile.py")  # allowed
+read_file("../README.md")  # raises ValueError
+```
+
+This is intentionally the stopping point for the requested feature. The codebase does not add `write_file` or `run_tests` yet.
+
+## Work log
+
+[CODEX.md](CODEX.md) is append-only. Preserve every existing entry exactly as
+written, and append new work as the next numbered entry with the date, changes,
+tests, and result. Never replace or summarize earlier entries. Recover missing
+entries from Git history when available before appending. Update this README
+normally to reflect the current project.
