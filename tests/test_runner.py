@@ -44,3 +44,47 @@ class RunnerTests(unittest.TestCase):
                 raise RuntimeError('stop')
         self.assertFalse(root.exists())
         self.assertIsNone(tools._ACTIVE_SAMPLE_ROOT.get())
+
+    def test_success_and_failure_cli_have_separate_linked_runs(self):
+        import contextlib
+        import io
+        from agentguard.runner import main
+
+        source = tools._SAMPLE_APP_ROOT / 'profile.py'
+        before = source.read_bytes()
+        run_ids = []
+        real_write = tools.write_file
+        edits = []
+
+        def capture_write(path, contents, **kwargs):
+            edits.append(contents)
+            return real_write(path, contents, **kwargs)
+
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / 'events.jsonl'
+            with patch('agentguard.tools._DEFAULT_EVENT_PATH', log):
+                with patch('agentguard.tools.write_file', side_effect=capture_write):
+                    for scenario, exit_code in [('success', 0), ('failure', 1)]:
+                        output = io.StringIO()
+                        with contextlib.redirect_stdout(output):
+                            main([scenario])
+                        events = [json.loads(line) for line in output.getvalue().splitlines()[:3]]
+                        self.assertEqual(len({e['run_id'] for e in events}), 1)
+                        run_ids.append(events[0]['run_id'])
+                        self.assertEqual([e['step_id'] for e in events], ['step-1', 'step-2', 'step-3'])
+                        self.assertEqual([e['dependency_ids'] for e in events], [[], ['step-1'], ['step-2']])
+                        self.assertNotEqual(events[1]['before_hash'], events[1]['after_hash'])
+                        self.assertEqual(events[-1]['exit_code'], exit_code)
+                        self.assertEqual(events[-1]['status'], 'succeeded' if exit_code == 0 else 'failed')
+                        self.assertIn('OK' if exit_code == 0 else "KeyError: 'username'", events[-1]['output'])
+            self.assertEqual(len(log.read_text().splitlines()), 6)
+        self.assertNotEqual(*run_ids)
+        self.assertIn('return profile["user_name"]  # Use the profile schema key.', edits[0])
+        self.assertEqual(source.read_bytes(), before)
+        self.assertIsNone(tools._ACTIVE_SAMPLE_ROOT.get())
+
+    def test_unknown_scenario_rejected_before_tools(self):
+        with patch('agentguard.runner.tools.temporary_sample_app') as temporary:
+            with self.assertRaises(ValueError):
+                run_script(scenario='unknown')
+            temporary.assert_not_called()

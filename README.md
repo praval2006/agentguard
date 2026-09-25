@@ -154,12 +154,20 @@ The root override is demo/test scaffolding. The scripted runner below adds only 
 From the repository root:
 
 ```bash
-python3 -m agentguard.runner
+python3 -m agentguard.runner success
+python3 -m agentguard.runner failure
 ```
 
 The runner creates a fresh temporary copy of `sample_app`, reads `profile.py`,
-changes only `return profile["user_name"]` to `return profile["username"]`, and
-runs the fixed test command. It requires exactly one matching edit location.
+makes the selected edit, and runs the fixed test command:
+
+- `success` adds `# Use the profile schema key.` to the return line, preserving
+  the `user_name` lookup. This changes the file bytes and hash while tests pass.
+- `failure` keeps the original wrong `username` edit and produces failing tests.
+
+Omitting the scenario defaults to `failure`. Each invocation gets its own run ID.
+Unknown scenarios are rejected before any tool calls. Both paths require exactly
+one matching edit location.
 The checked-in app is never edited, and the temporary copy is removed even if
 an error interrupts the script. Tool roots are scoped with a context variable.
 
@@ -170,10 +178,11 @@ retries, recovery, or LLM calls. All three tools now accept optional
 `dependency_ids`, defaulting to an empty tuple.
 
 Events append to `agentguard/events.jsonl`. The command prints all three events
-and the actual bounded test output. The final tool event is expected to be
-`failed` with exit code 1 and `KeyError: 'username'`; the demonstration command
-itself finishes normally. Python callers can use
-`run_script(log_path=...)` from `agentguard.runner` to select a log and receive
+and the actual bounded test output. The success scenario records `succeeded`
+with exit code 0; failure records `failed` with exit code 1 and
+`KeyError: 'username'`. The demonstration command itself finishes normally for
+both scenarios. Python callers can use
+`run_script(scenario="success", log_path=...)` from `agentguard.runner` to select a log and receive
 this run's three saved events.
 
 ## Work log
