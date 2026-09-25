@@ -18,7 +18,11 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(events, [json.loads(line) for line in log.read_text().splitlines()])
         self.assertEqual(source.read_bytes(), before)
         self.assertIsNone(tools._ACTIVE_SAMPLE_ROOT.get())
-        self.assertEqual(len(events), 3)
+        self.assertEqual(len(events), 4)
+        self.assertEqual(events[-1]["kind"], "run_result")
+        self.assertEqual(events[-1]["status"], "failed")
+        self.assertEqual(events[-1]["dependency_ids"], ["step-3"])
+        events = events[:3]
         self.assertEqual(len({e['run_id'] for e in events}), 1)
         self.assertEqual([e['step_id'] for e in events], ['step-1', 'step-2', 'step-3'])
         self.assertEqual([e['dependency_ids'] for e in events], [[], ['step-1'], ['step-2']])
@@ -32,9 +36,10 @@ class RunnerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / 'events.jsonl'
             with patch('agentguard.runner.MAX_STEPS', 1):
-                with self.assertRaisesRegex(RuntimeError, 'step limit'):
-                    run_script(log_path=log)
-            self.assertEqual(len(log.read_text().splitlines()), 1)
+                events = run_script(log_path=log)
+            self.assertEqual(len(events), 2)
+            self.assertEqual(events[-1]["status"], "failed")
+            self.assertEqual(events[-1]["summary"], "tool call limit reached")
         self.assertIsNone(tools._ACTIVE_SAMPLE_ROOT.get())
 
     def test_temporary_copy_is_removed_and_scope_restored_on_error(self):
@@ -68,7 +73,11 @@ class RunnerTests(unittest.TestCase):
                         output = io.StringIO()
                         with contextlib.redirect_stdout(output):
                             main([scenario])
-                        events = [json.loads(line) for line in output.getvalue().splitlines()[:3]]
+                        events = [json.loads(line) for line in output.getvalue().splitlines()[:4]]
+                        final = events.pop()
+                        self.assertEqual(final["status"], "completed" if exit_code == 0 else "failed")
+                        self.assertEqual([d.split(":")[0] for d in final["decisions"]],
+                                         ["read_file", "write_file", "run_tests", final["status"]])
                         self.assertEqual(len({e['run_id'] for e in events}), 1)
                         run_ids.append(events[0]['run_id'])
                         self.assertEqual([e['step_id'] for e in events], ['step-1', 'step-2', 'step-3'])
@@ -77,7 +86,7 @@ class RunnerTests(unittest.TestCase):
                         self.assertEqual(events[-1]['exit_code'], exit_code)
                         self.assertEqual(events[-1]['status'], 'succeeded' if exit_code == 0 else 'failed')
                         self.assertIn('OK' if exit_code == 0 else "KeyError: 'username'", events[-1]['output'])
-            self.assertEqual(len(log.read_text().splitlines()), 6)
+            self.assertEqual(len(log.read_text().splitlines()), 8)
         self.assertNotEqual(*run_ids)
         self.assertIn('return profile["user_name"]  # Use the profile schema key.', edits[0])
         self.assertEqual(source.read_bytes(), before)
@@ -88,3 +97,26 @@ class RunnerTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 run_script(scenario='unknown')
             temporary.assert_not_called()
+
+    def test_failed_read_stops_without_edit_or_tests(self):
+        from agentguard.events import Event
+
+        def fail_read(path, **kwargs):
+            kwargs['recorder'].record(Event(
+                run_id=kwargs['run_id'], step_id=kwargs['step_id'],
+                kind='tool_result', status='failed', summary='read failed',
+                tool='read_file', path=path,
+            ))
+            raise OSError('read failed')
+
+        with tempfile.TemporaryDirectory() as directory:
+            with patch('agentguard.runner.tools.read_file', side_effect=fail_read):
+                with patch('agentguard.runner.tools.write_file') as write:
+                    with patch('agentguard.runner.tools.run_tests') as test:
+                        events = run_script(log_path=Path(directory) / 'events.jsonl')
+            write.assert_not_called()
+            test.assert_not_called()
+        self.assertEqual(len(events), 2)
+        self.assertEqual(events[-1]['status'], 'failed')
+        self.assertEqual(events[-1]['dependency_ids'], ['step-1'])
+        self.assertIsNone(tools._ACTIVE_SAMPLE_ROOT.get())

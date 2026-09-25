@@ -248,3 +248,33 @@ Both scenarios work in disposable copies; no LLM or recovery was added. Actual s
 {"run_id":"33fbc5a6-dc9c-49d4-8526-2985b77a42a3","step_id":"step-2","kind":"tool_result","status":"succeeded","summary":"file write succeeded","dependency_ids":["step-1"],"timestamp":"2026-09-25T21:34:02.217055+00:00","tool":"write_file","path":"profile.py","before_hash":"7c10fc5c64cdca88bb7b86587c91e4a54f07ff3918be1eb04217a52fe400babe","after_hash":"d095da91fe0aac1adedbffe2994a3cc4644b9e436fd166b202bb09b10cc5abbd","exit_code":null,"output":null,"output_truncated":false,"timed_out":false}
 {"run_id":"33fbc5a6-dc9c-49d4-8526-2985b77a42a3","step_id":"step-3","kind":"tool_result","status":"succeeded","summary":"tests passed","dependency_ids":["step-2"],"timestamp":"2026-09-25T21:34:02.346129+00:00","tool":"run_tests","path":"tests","before_hash":null,"after_hash":null,"exit_code":0,"output":"test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile) ... ok\ntest_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n","output_truncated":false,"timed_out":false}
 ```
+
+
+## 9. 2026-09-26 — Bounded state-based decision loop
+
+### Changes
+
+- Replaced the fixed sequence on `feature/agent-loop` with an explicit run state and `decide_next` policy evaluated after each tool result. Successful reads lead to the selected edit, successful writes lead to tests, and passing tests lead to `completed`; failed or blocked results stop as `failed`.
+- Preserved the success/failure CLI commands, scenario edits, unique run IDs, linked tool step IDs, and temporary-copy isolation. Kept the fixed maximum of three tool calls; reaching the cap records a failed final outcome instead of making another call.
+- Added a final `run_result` event with `step_id="run-end"`, terminal status, dependency on the last tool step, and the action/reason decision trace. The final event does not consume a tool call. Existing tool events retain their outcome statuses.
+- Updated CLI output and README to describe decisions and terminal events. Tests verify both CLI outcomes, persisted events, the cap, and stopping immediately after a failed read without writing or running tests.
+- Preserved every prior work-log byte while appending this entry. No retries, automatic repair, LLM, or recovery were added.
+
+### Tests
+
+```bash
+python3 -m unittest discover -s tests -v && python3 -m unittest discover -s sample_app/tests -v
+```
+
+- `tests`: 23/23 passed.
+- Checked-in `sample_app/tests`: 2/2 passed.
+- Executed both scenarios: success tests exited 0 and recorded `completed`; failure tests exited 1 and recorded `failed`.
+
+### Result
+
+Actual final events and decision traces from the two runs:
+
+```json
+{"run_id":"cc90f98d-a127-4a12-b13b-823f039a7c00","step_id":"run-end","kind":"run_result","status":"completed","summary":"tests passed","dependency_ids":["step-3"],"timestamp":"2026-09-25T21:40:27.405604+00:00","tool":null,"path":null,"before_hash":null,"after_hash":null,"exit_code":null,"output":null,"output_truncated":false,"timed_out":false,"decisions":["read_file: file has not been read","write_file: read succeeded; apply selected edit","run_tests: write succeeded; verify the edit","completed: tests passed"]}
+{"run_id":"5ba2866c-1371-481f-8115-e75f5ac98a8d","step_id":"run-end","kind":"run_result","status":"failed","summary":"run_tests failed or was blocked","dependency_ids":["step-3"],"timestamp":"2026-09-25T21:40:27.448861+00:00","tool":null,"path":null,"before_hash":null,"after_hash":null,"exit_code":null,"output":null,"output_truncated":false,"timed_out":false,"decisions":["read_file: file has not been read","write_file: read succeeded; apply selected edit","run_tests: write succeeded; verify the edit","failed: run_tests failed or was blocked"]}
+```

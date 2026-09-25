@@ -147,9 +147,9 @@ for label in ("passing", "failing"):
 TEST_EXAMPLE
 ```
 
-The root override is demo/test scaffolding. The scripted runner below adds only a fixed three-step demonstration.
+The root override is demo/test scaffolding. The scripted runner below uses a bounded state-based decision loop.
 
-## Scripted temporary-copy runner
+## Bounded scripted decision loop
 
 From the repository root:
 
@@ -177,13 +177,25 @@ A fixed cap of three tool calls is checked before every call. There are no
 retries, recovery, or LLM calls. All three tools now accept optional
 `dependency_ids`, defaulting to an empty tuple.
 
-Events append to `agentguard/events.jsonl`. The command prints all three events
+After each tool result, the loop chooses the next action from its current state:
+read when unread, edit after a successful read, test after a successful write,
+and stop after tests. A failed/blocked tool, invalid edit location, or exhausted
+call budget stops the run as `failed`; passing tests stop it as `completed`.
+The cap counts tool calls only, so the final outcome can always be recorded.
+
+Events append to `agentguard/events.jsonl`. The command prints the tool events
+and a final `run_result` event (`step_id="run-end"`) linked to the last tool step,
+followed by the decision trace
 and the actual bounded test output. The success scenario records `succeeded`
 with exit code 0; failure records `failed` with exit code 1 and
 `KeyError: 'username'`. The demonstration command itself finishes normally for
 both scenarios. Python callers can use
 `run_script(scenario="success", log_path=...)` from `agentguard.runner` to select a log and receive
-this run's three saved events.
+this run's saved events, including the final outcome. The final event's
+`decisions` list stores the action and reason for each decision. Normal runs
+have three tool events plus one final outcome event; early stops have fewer
+tool events. Recorder failures propagate. No retries, automatic repair, LLM,
+or recovery are added.
 
 ## Work log
 
