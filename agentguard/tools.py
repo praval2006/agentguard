@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import os
+import shutil
+from contextlib import contextmanager
+from contextvars import ContextVar
 import subprocess
 import sys
 import tempfile
@@ -16,6 +19,7 @@ from .recorder import JSONLRecorder
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _SAMPLE_APP_ROOT = (_REPO_ROOT / "sample_app").resolve()
 _DEFAULT_EVENT_PATH = _REPO_ROOT / "agentguard" / "events.jsonl"
+_ACTIVE_SAMPLE_ROOT = ContextVar("sample_app_root", default=None)
 _TEST_TIMEOUT_SECONDS = 10
 _TEST_OUTPUT_LIMIT = 4096
 
@@ -26,18 +30,20 @@ def read_file(
     recorder: JSONLRecorder | None = None,
     run_id: str | None = None,
     step_id: str | None = None,
+    dependency_ids: tuple[str, ...] = (),
 ) -> str:
     """Read within sample_app and record the outcome without file contents."""
+    sample_root = _ACTIVE_SAMPLE_ROOT.get() or _SAMPLE_APP_ROOT
     recorder = recorder if recorder is not None else JSONLRecorder(_DEFAULT_EVENT_PATH)
     run_id = run_id if run_id is not None else str(uuid4())
     step_id = step_id if step_id is not None else str(uuid4())
     # Keep the requested symlink name, not its resolved target, in the event.
-    relative_path = os.path.relpath(_SAMPLE_APP_ROOT / path, _SAMPLE_APP_ROOT)
+    relative_path = os.path.relpath(sample_root / path, sample_root)
     status = "failed"
     summary = "file read failed"
     try:
-        safe_root = _SAMPLE_APP_ROOT.resolve()
-        requested = (_SAMPLE_APP_ROOT / path).resolve()
+        safe_root = sample_root.resolve()
+        requested = (sample_root / path).resolve()
         try:
             requested.relative_to(safe_root)
         except ValueError as exc:
@@ -55,6 +61,7 @@ def read_file(
         recorder.record(Event(
             run_id=run_id,
             step_id=step_id,
+            dependency_ids=dependency_ids,
             kind="tool_result",
             status=status,
             summary=summary,
@@ -70,16 +77,18 @@ def write_file(
     recorder: JSONLRecorder | None = None,
     run_id: str | None = None,
     step_id: str | None = None,
+    dependency_ids: tuple[str, ...] = (),
 ) -> None:
     """Replace an existing sample_app file with UTF-8 text and record hashes."""
+    sample_root = _ACTIVE_SAMPLE_ROOT.get() or _SAMPLE_APP_ROOT
     recorder = recorder if recorder is not None else JSONLRecorder(_DEFAULT_EVENT_PATH)
-    relative_path = os.path.relpath(_SAMPLE_APP_ROOT / path, _SAMPLE_APP_ROOT)
+    relative_path = os.path.relpath(sample_root / path, sample_root)
     status = "failed"
     summary = "file write failed"
     before_hash = after_hash = None
     try:
-        safe_root = _SAMPLE_APP_ROOT.resolve()
-        requested = (_SAMPLE_APP_ROOT / path).resolve()
+        safe_root = sample_root.resolve()
+        requested = (sample_root / path).resolve()
         try:
             requested.relative_to(safe_root)
         except ValueError as exc:
@@ -106,6 +115,7 @@ def write_file(
         recorder.record(Event(
             run_id=run_id if run_id is not None else str(uuid4()),
             step_id=step_id if step_id is not None else str(uuid4()),
+            dependency_ids=dependency_ids,
             kind="tool_result",
             status=status,
             summary=summary,
@@ -121,8 +131,10 @@ def run_tests(
     recorder: JSONLRecorder | None = None,
     run_id: str | None = None,
     step_id: str | None = None,
+    dependency_ids: tuple[str, ...] = (),
 ) -> dict:
     """Run only sample_app unittest discovery and record a bounded result."""
+    sample_root = _ACTIVE_SAMPLE_ROOT.get() or _SAMPLE_APP_ROOT
     recorder = recorder if recorder is not None else JSONLRecorder(_DEFAULT_EVENT_PATH)
     exit_code = None
     timed_out = False
@@ -133,7 +145,7 @@ def run_tests(
             result = subprocess.run(
                 [sys.executable, "-B", "-m", "unittest", "discover",
                  "-s", "sample_app/tests", "-v"],
-                cwd=_SAMPLE_APP_ROOT.parent,
+                cwd=sample_root.parent,
                 stdin=subprocess.DEVNULL,
                 stdout=capture,
                 stderr=subprocess.STDOUT,
@@ -153,6 +165,7 @@ def run_tests(
     event = Event(
         run_id=run_id if run_id is not None else str(uuid4()),
         step_id=step_id if step_id is not None else str(uuid4()),
+        dependency_ids=dependency_ids,
         kind="tool_result",
         status="succeeded" if exit_code == 0 and not timed_out else "failed",
         summary=summary,
@@ -164,3 +177,17 @@ def run_tests(
         timed_out=timed_out,
     )
     return recorder.record(event)
+
+
+@contextmanager
+def temporary_sample_app():
+    """Scope tool calls to a fresh disposable copy of the checked-in app."""
+    with tempfile.TemporaryDirectory(prefix="agentguard-") as directory:
+        root = Path(directory) / "sample_app"
+        shutil.copytree(_SAMPLE_APP_ROOT, root,
+                        ignore=shutil.ignore_patterns("__pycache__"))
+        token = _ACTIVE_SAMPLE_ROOT.set(root)
+        try:
+            yield root
+        finally:
+            _ACTIVE_SAMPLE_ROOT.reset(token)

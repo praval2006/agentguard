@@ -182,3 +182,99 @@ Both suites passed. The temporary clean copy returned exit code 0; the deliberat
 {"run_id":"tests-demo","step_id":"passing","kind":"tool_result","status":"succeeded","summary":"tests passed","dependency_ids":[],"timestamp":"2026-09-25T20:18:14.346626+00:00","tool":"run_tests","path":"tests","before_hash":null,"after_hash":null,"exit_code":0,"output":"test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile) ... ok\ntest_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n","output_truncated":false,"timed_out":false}
 {"run_id":"tests-demo","step_id":"failing","kind":"tool_result","status":"failed","summary":"tests failed","dependency_ids":[],"timestamp":"2026-09-25T20:18:14.427803+00:00","tool":"run_tests","path":"tests","before_hash":null,"after_hash":null,"exit_code":1,"output":"test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile) ... ERROR\ntest_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema) ... ERROR\n\n======================================================================\nERROR: test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/tmp2ccjhk1e/sample_app/tests/test_profile.py\", line 11, in test_accepts_another_profile\n    self.assertEqual(display_name({\"user_name\": \"Alex\"}), \"Alex\")\n                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/tmp2ccjhk1e/sample_app/profile.py\", line 7, in display_name\n    return profile[\"username\"]\n           ~~~~~~~^^^^^^^^^^^^\nKeyError: 'username'\n\n======================================================================\nERROR: test_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/tmp2ccjhk1e/sample_app/tests/test_profile.py\", line 8, in test_displays_name_from_actual_schema\n    self.assertEqual(display_name(PROFILE), \"Pratik\")\n                     ~~~~~~~~~~~~^^^^^^^^^\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/tmp2ccjhk1e/sample_app/profile.py\", line 7, in display_name\n    return profile[\"username\"]\n           ~~~~~~~^^^^^^^^^^^^\nKeyError: 'username'\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nFAILED (errors=2)\n","output_truncated":false,"timed_out":false}
 ```
+
+
+## 7. 2026-09-26 — Three-step scripted temporary-copy runner
+
+### Changes
+
+- Implemented `agentguard.runner` on `feature/agent-loop`: read `profile.py`, make exactly one controlled wrong `username` edit, then run tests. The runner generates one run ID and ordered step IDs, and enforces a fixed three-call cap before each tool call.
+- Added optional `dependency_ids` to all three tool APIs and passed them through to recorded events. The chain is `[]`, `["step-1"]`, `["step-2"]`.
+- Added a scoped temporary-copy context using a context variable, with automatic root restoration and cleanup on success or error. The checked-in app remains unchanged.
+- Added integration coverage for three persisted linked events, the actual expected test failure, the step cap, and cleanup on error. Updated README usage for `python3 -m agentguard.runner`.
+- Preserved every earlier work-log byte and appended this entry.
+
+### Tests
+
+Executed the scripted runner and both suites:
+
+```bash
+python3 -m agentguard.runner
+python3 -m unittest discover -s tests -v && python3 -m unittest discover -s sample_app/tests -v
+```
+
+- `tests`: 20/20 passed.
+- Checked-in `sample_app/tests`: 2/2 passed.
+- The runner's temporary app returned exit code 1 with two `KeyError: 'username'` errors, as intended.
+
+### Result
+
+The scripted run stopped after three calls. No LLM, recovery, or retries were added. Actual recorded events:
+
+```json
+{"run_id":"34082bd2-8ff6-4e0f-835e-62198bf14cca","step_id":"step-1","kind":"tool_result","status":"succeeded","summary":"file read succeeded","dependency_ids":[],"timestamp":"2026-09-25T21:26:31.909658+00:00","tool":"read_file","path":"profile.py","before_hash":null,"after_hash":null,"exit_code":null,"output":null,"output_truncated":false,"timed_out":false}
+{"run_id":"34082bd2-8ff6-4e0f-835e-62198bf14cca","step_id":"step-2","kind":"tool_result","status":"succeeded","summary":"file write succeeded","dependency_ids":["step-1"],"timestamp":"2026-09-25T21:26:31.910766+00:00","tool":"write_file","path":"profile.py","before_hash":"7c10fc5c64cdca88bb7b86587c91e4a54f07ff3918be1eb04217a52fe400babe","after_hash":"9c87c16196898379cb222b047c8d06f5bb65bbcc8543b94dea7b34071635bb38","exit_code":null,"output":null,"output_truncated":false,"timed_out":false}
+{"run_id":"34082bd2-8ff6-4e0f-835e-62198bf14cca","step_id":"step-3","kind":"tool_result","status":"failed","summary":"tests failed","dependency_ids":["step-2"],"timestamp":"2026-09-25T21:26:31.985959+00:00","tool":"run_tests","path":"tests","before_hash":null,"after_hash":null,"exit_code":1,"output":"test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile) ... ERROR\ntest_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema) ... ERROR\n\n======================================================================\nERROR: test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/agentguard-z1cjxusy/sample_app/tests/test_profile.py\", line 11, in test_accepts_another_profile\n    self.assertEqual(display_name({\"user_name\": \"Alex\"}), \"Alex\")\n                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/agentguard-z1cjxusy/sample_app/profile.py\", line 7, in display_name\n    return profile[\"username\"]\n           ~~~~~~~^^^^^^^^^^^^\nKeyError: 'username'\n\n======================================================================\nERROR: test_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/agentguard-z1cjxusy/sample_app/tests/test_profile.py\", line 8, in test_displays_name_from_actual_schema\n    self.assertEqual(display_name(PROFILE), \"Pratik\")\n                     ~~~~~~~~~~~~^^^^^^^^^\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/agentguard-z1cjxusy/sample_app/profile.py\", line 7, in display_name\n    return profile[\"username\"]\n           ~~~~~~~^^^^^^^^^^^^\nKeyError: 'username'\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nFAILED (errors=2)\n","output_truncated":false,"timed_out":false}
+```
+
+
+## 8. 2026-09-26 — Selectable success and failure scenarios
+
+### Changes
+
+- Kept the existing failure scenario and default behavior on `feature/agent-loop`.
+- Added a separate success scenario that adds a schema-key comment to the return line in a temporary copy of `profile.py`, continuing to read `user_name`. The real byte change produces different before/after hashes and passing tests.
+- Added CLI selection: `python3 -m agentguard.runner success` or `failure`. Each invocation has a new run ID, three ordered linked step IDs, and the existing three-call cap. Unknown scenarios are rejected before tools run.
+- Tested both CLI paths, distinct run IDs, dependency chains, changed hashes, expected exit codes/output, and preservation of the checked-in app. Updated README commands and behavior.
+- Appended this entry while preserving all earlier work-log bytes.
+
+### Tests
+
+```bash
+python3 -m agentguard.runner success
+python3 -m unittest discover -s tests -v && python3 -m unittest discover -s sample_app/tests -v
+```
+
+- `tests`: 22/22 passed, including both scripted scenarios.
+- Checked-in `sample_app/tests`: 2/2 passed.
+- Successful demo: three succeeded events, final exit code 0, and `OK` from the copied app's two tests.
+
+### Result
+
+Both scenarios work in disposable copies; no LLM or recovery was added. Actual successful run events:
+
+```json
+{"run_id":"33fbc5a6-dc9c-49d4-8526-2985b77a42a3","step_id":"step-1","kind":"tool_result","status":"succeeded","summary":"file read succeeded","dependency_ids":[],"timestamp":"2026-09-25T21:34:02.214990+00:00","tool":"read_file","path":"profile.py","before_hash":null,"after_hash":null,"exit_code":null,"output":null,"output_truncated":false,"timed_out":false}
+{"run_id":"33fbc5a6-dc9c-49d4-8526-2985b77a42a3","step_id":"step-2","kind":"tool_result","status":"succeeded","summary":"file write succeeded","dependency_ids":["step-1"],"timestamp":"2026-09-25T21:34:02.217055+00:00","tool":"write_file","path":"profile.py","before_hash":"7c10fc5c64cdca88bb7b86587c91e4a54f07ff3918be1eb04217a52fe400babe","after_hash":"d095da91fe0aac1adedbffe2994a3cc4644b9e436fd166b202bb09b10cc5abbd","exit_code":null,"output":null,"output_truncated":false,"timed_out":false}
+{"run_id":"33fbc5a6-dc9c-49d4-8526-2985b77a42a3","step_id":"step-3","kind":"tool_result","status":"succeeded","summary":"tests passed","dependency_ids":["step-2"],"timestamp":"2026-09-25T21:34:02.346129+00:00","tool":"run_tests","path":"tests","before_hash":null,"after_hash":null,"exit_code":0,"output":"test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile) ... ok\ntest_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n","output_truncated":false,"timed_out":false}
+```
+
+
+## 9. 2026-09-26 — Bounded state-based decision loop
+
+### Changes
+
+- Replaced the fixed sequence on `feature/agent-loop` with an explicit run state and `decide_next` policy evaluated after each tool result. Successful reads lead to the selected edit, successful writes lead to tests, and passing tests lead to `completed`; failed or blocked results stop as `failed`.
+- Preserved the success/failure CLI commands, scenario edits, unique run IDs, linked tool step IDs, and temporary-copy isolation. Kept the fixed maximum of three tool calls; reaching the cap records a failed final outcome instead of making another call.
+- Added a final `run_result` event with `step_id="run-end"`, terminal status, dependency on the last tool step, and the action/reason decision trace. The final event does not consume a tool call. Existing tool events retain their outcome statuses.
+- Updated CLI output and README to describe decisions and terminal events. Tests verify both CLI outcomes, persisted events, the cap, and stopping immediately after a failed read without writing or running tests.
+- Preserved every prior work-log byte while appending this entry. No retries, automatic repair, LLM, or recovery were added.
+
+### Tests
+
+```bash
+python3 -m unittest discover -s tests -v && python3 -m unittest discover -s sample_app/tests -v
+```
+
+- `tests`: 23/23 passed.
+- Checked-in `sample_app/tests`: 2/2 passed.
+- Executed both scenarios: success tests exited 0 and recorded `completed`; failure tests exited 1 and recorded `failed`.
+
+### Result
+
+Actual final events and decision traces from the two runs:
+
+```json
+{"run_id":"cc90f98d-a127-4a12-b13b-823f039a7c00","step_id":"run-end","kind":"run_result","status":"completed","summary":"tests passed","dependency_ids":["step-3"],"timestamp":"2026-09-25T21:40:27.405604+00:00","tool":null,"path":null,"before_hash":null,"after_hash":null,"exit_code":null,"output":null,"output_truncated":false,"timed_out":false,"decisions":["read_file: file has not been read","write_file: read succeeded; apply selected edit","run_tests: write succeeded; verify the edit","completed: tests passed"]}
+{"run_id":"5ba2866c-1371-481f-8115-e75f5ac98a8d","step_id":"run-end","kind":"run_result","status":"failed","summary":"run_tests failed or was blocked","dependency_ids":["step-3"],"timestamp":"2026-09-25T21:40:27.448861+00:00","tool":null,"path":null,"before_hash":null,"after_hash":null,"exit_code":null,"output":null,"output_truncated":false,"timed_out":false,"decisions":["read_file: file has not been read","write_file: read succeeded; apply selected edit","run_tests: write succeeded; verify the edit","failed: run_tests failed or was blocked"]}
+```

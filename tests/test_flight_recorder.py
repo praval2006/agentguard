@@ -38,7 +38,7 @@ class FlightRecorderTests(unittest.TestCase):
                 "run_id", "step_id", "kind", "status", "summary",
                 "dependency_ids", "timestamp", "tool", "path",
                 "before_hash", "after_hash",
-                "exit_code", "output", "output_truncated", "timed_out",
+                "exit_code", "output", "output_truncated", "timed_out", "decisions",
             })
             self.assertNotIn(contents, event.values())
         self.assertNotIn("PROFILE", self.event_path.read_text())

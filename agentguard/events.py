@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Literal
 
-Status = Literal["started", "succeeded", "failed", "blocked"]
+Status = Literal["started", "succeeded", "failed", "blocked", "completed"]
 
 
 @dataclass(frozen=True)
@@ -24,8 +24,10 @@ class Event:
     output: str | None = None
     output_truncated: bool = False
     timed_out: bool = False
+    decisions: tuple[str, ...] = ()
 
     def to_dict(self) -> dict:
         data = asdict(self)
         data["dependency_ids"] = list(self.dependency_ids)
+        data["decisions"] = list(self.decisions)
         return data
