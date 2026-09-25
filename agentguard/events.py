@@ -1,4 +1,4 @@
-"""The initial event contract. Recorder implementation follows on Day 2."""
+"""Serializable flight recorder event contract."""
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
@@ -16,6 +16,14 @@ class Event:
     summary: str
     dependency_ids: tuple[str, ...] = ()
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    tool: str | None = None
+    path: str | None = None
+    before_hash: str | None = None
+    after_hash: str | None = None
+    exit_code: int | None = None
+    output: str | None = None
+    output_truncated: bool = False
+    timed_out: bool = False
 
     def to_dict(self) -> dict:
         data = asdict(self)
