@@ -20,6 +20,10 @@ class Event:
     path: str | None = None
     before_hash: str | None = None
     after_hash: str | None = None
+    exit_code: int | None = None
+    output: str | None = None
+    output_truncated: bool = False
+    timed_out: bool = False
 
     def to_dict(self) -> dict:
         data = asdict(self)

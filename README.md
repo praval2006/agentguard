@@ -102,7 +102,52 @@ WRITE_EXAMPLE
 ```
 
 The writer tests run the copied app's tests and confirm the wrong edit triggers
-`KeyError: 'username'`. Both normal suites should pass. No `run_tests` tool is added.
+`KeyError: 'username'`. Both normal suites should pass.
+
+## Fixed sample app test runner
+
+`run_tests()` runs only `[sys.executable, "-B", "-m", "unittest", "discover",
+"-s", "sample_app/tests", "-v"]` from the sample app's parent directory, with
+`shell=False` and a fixed 10-second timeout. It accepts only optional recorder,
+run ID, and step ID arguments; callers cannot supply commands or test paths.
+
+It returns the automatically saved event. Exit code 0 means `succeeded`; other
+exit codes, timeout, or launch failure mean `failed`. Timeout and launch failure
+have a null exit code; `timed_out` distinguishes timeout. The event records the
+first 4096 bytes of combined stdout/stderr, decoded as UTF-8 with replacement,
+and flags `output_truncated`. Output is captured to a temporary file rather than
+buffered without limit in memory. Test output may include traceback source lines.
+The event path `tests` is relative to `sample_app`. Recorder errors propagate.
+
+Run passing and failing examples in separate temporary copies (the checked-in
+app stays unchanged):
+
+```bash
+python3 - <<'TEST_EXAMPLE'
+import json
+from pathlib import Path
+import shutil
+import tempfile
+from unittest.mock import patch
+from agentguard.recorder import JSONLRecorder
+from agentguard.tools import run_tests
+
+recorder = JSONLRecorder("agentguard/events.jsonl")
+for label in ("passing", "failing"):
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory) / "sample_app"
+        shutil.copytree("sample_app", root, ignore=shutil.ignore_patterns("__pycache__"))
+        if label == "failing":
+            profile = root / "profile.py"
+            profile.write_text(profile.read_text().replace(
+                'return profile["user_name"]', 'return profile["username"]'))
+        with patch("agentguard.tools._SAMPLE_APP_ROOT", root):
+            event = run_tests(recorder=recorder, run_id="tests-demo", step_id=label)
+        print(json.dumps(event, separators=(",", ":")))
+TEST_EXAMPLE
+```
+
+The root override is demo/test scaffolding. No agent loop is implemented.
 
 ## Work log
 

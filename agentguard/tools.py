@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
+import tempfile
 from hashlib import sha256
 from pathlib import Path
 from uuid import uuid4
@@ -13,6 +16,8 @@ from .recorder import JSONLRecorder
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _SAMPLE_APP_ROOT = (_REPO_ROOT / "sample_app").resolve()
 _DEFAULT_EVENT_PATH = _REPO_ROOT / "agentguard" / "events.jsonl"
+_TEST_TIMEOUT_SECONDS = 10
+_TEST_OUTPUT_LIMIT = 4096
 
 
 def read_file(
@@ -109,3 +114,53 @@ def write_file(
             before_hash=before_hash,
             after_hash=after_hash,
         ))
+
+
+def run_tests(
+    *,
+    recorder: JSONLRecorder | None = None,
+    run_id: str | None = None,
+    step_id: str | None = None,
+) -> dict:
+    """Run only sample_app unittest discovery and record a bounded result."""
+    recorder = recorder if recorder is not None else JSONLRecorder(_DEFAULT_EVENT_PATH)
+    exit_code = None
+    timed_out = False
+    summary = "tests failed"
+    # A file avoids buffering unlimited subprocess output in memory.
+    with tempfile.TemporaryFile() as capture:
+        try:
+            result = subprocess.run(
+                [sys.executable, "-B", "-m", "unittest", "discover",
+                 "-s", "sample_app/tests", "-v"],
+                cwd=_SAMPLE_APP_ROOT.parent,
+                stdin=subprocess.DEVNULL,
+                stdout=capture,
+                stderr=subprocess.STDOUT,
+                timeout=_TEST_TIMEOUT_SECONDS,
+                shell=False,
+            )
+            exit_code = result.returncode
+            if exit_code == 0:
+                summary = "tests passed"
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            summary = "tests timed out"
+        except OSError:
+            summary = "test process could not start"
+        capture.seek(0)
+        raw_output = capture.read(_TEST_OUTPUT_LIMIT + 1)
+    event = Event(
+        run_id=run_id if run_id is not None else str(uuid4()),
+        step_id=step_id if step_id is not None else str(uuid4()),
+        kind="tool_result",
+        status="succeeded" if exit_code == 0 and not timed_out else "failed",
+        summary=summary,
+        tool="run_tests",
+        path="tests",
+        exit_code=exit_code,
+        output=raw_output[:_TEST_OUTPUT_LIMIT].decode("utf-8", errors="replace"),
+        output_truncated=len(raw_output) > _TEST_OUTPUT_LIMIT,
+        timed_out=timed_out,
+    )
+    return recorder.record(event)

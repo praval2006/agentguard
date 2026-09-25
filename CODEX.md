@@ -151,3 +151,34 @@ Implemented only the requested write tool; no `run_tests` tool was added. Actual
 ```json
 {"run_id":"write-demo","step_id":"step-1","kind":"tool_result","status":"succeeded","summary":"file write succeeded","dependency_ids":[],"timestamp":"2026-09-25T20:09:43.215097+00:00","tool":"write_file","path":"profile.py","before_hash":"7c10fc5c64cdca88bb7b86587c91e4a54f07ff3918be1eb04217a52fe400babe","after_hash":"9c87c16196898379cb222b047c8d06f5bb65bbcc8543b94dea7b34071635bb38"}
 ```
+
+
+## 6. 2026-09-26 — Fixed sample_app test runner
+
+### Changes
+
+- Implemented only `run_tests` on `feature/flight-recorder`, using the current Python executable with `-B -m unittest discover -s sample_app/tests -v`, a fixed 10-second timeout, and `shell=False`. No command or test-path arguments are accepted.
+- Automatically records and returns the event with exit code, succeeded/failed status, timeout flag, and at most the first 4096 bytes of combined output decoded as UTF-8. A truncation flag identifies clipped output. Capture uses a temporary file to avoid unlimited memory buffering. Timeout or launch failure records a null exit code. Recorder errors propagate.
+- Added tests for a clean passing temporary copy, a failing temporary copy with the wrong `username` edit, actual timeout, output truncation, launch failure, and rejection of arbitrary command arguments. Updated the existing event field contract test.
+- Updated and executed the README example to save one passing and one failing event using separate temporary copies. No checked-in sample app files were edited.
+- Appended this entry without modifying any prior work-log bytes.
+
+### Tests
+
+```bash
+python3 -m unittest discover -s tests -v && python3 -m unittest discover -s sample_app/tests -v
+```
+
+- `tests`: 17/17 passed.
+- Checked-in `sample_app/tests`: 2/2 passed.
+- `git diff --check`: passed.
+- `git diff --exit-code -- sample_app`: passed; checked-in app unchanged.
+
+### Result
+
+Both suites passed. The temporary clean copy returned exit code 0; the deliberately broken copy returned exit code 1 with `KeyError: 'username'`. No agent loop was built. Actual saved events:
+
+```json
+{"run_id":"tests-demo","step_id":"passing","kind":"tool_result","status":"succeeded","summary":"tests passed","dependency_ids":[],"timestamp":"2026-09-25T20:18:14.346626+00:00","tool":"run_tests","path":"tests","before_hash":null,"after_hash":null,"exit_code":0,"output":"test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile) ... ok\ntest_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n","output_truncated":false,"timed_out":false}
+{"run_id":"tests-demo","step_id":"failing","kind":"tool_result","status":"failed","summary":"tests failed","dependency_ids":[],"timestamp":"2026-09-25T20:18:14.427803+00:00","tool":"run_tests","path":"tests","before_hash":null,"after_hash":null,"exit_code":1,"output":"test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile) ... ERROR\ntest_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema) ... ERROR\n\n======================================================================\nERROR: test_accepts_another_profile (test_profile.ProfileTests.test_accepts_another_profile)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/tmp2ccjhk1e/sample_app/tests/test_profile.py\", line 11, in test_accepts_another_profile\n    self.assertEqual(display_name({\"user_name\": \"Alex\"}), \"Alex\")\n                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/tmp2ccjhk1e/sample_app/profile.py\", line 7, in display_name\n    return profile[\"username\"]\n           ~~~~~~~^^^^^^^^^^^^\nKeyError: 'username'\n\n======================================================================\nERROR: test_displays_name_from_actual_schema (test_profile.ProfileTests.test_displays_name_from_actual_schema)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/tmp2ccjhk1e/sample_app/tests/test_profile.py\", line 8, in test_displays_name_from_actual_schema\n    self.assertEqual(display_name(PROFILE), \"Pratik\")\n                     ~~~~~~~~~~~~^^^^^^^^^\n  File \"/private/var/folders/pm/q4lwk_sx7pgb44jjbjyztkw40000gn/T/tmp2ccjhk1e/sample_app/profile.py\", line 7, in display_name\n    return profile[\"username\"]\n           ~~~~~~~^^^^^^^^^^^^\nKeyError: 'username'\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nFAILED (errors=2)\n","output_truncated":false,"timed_out":false}
+```
