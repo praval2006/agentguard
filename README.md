@@ -147,7 +147,34 @@ for label in ("passing", "failing"):
 TEST_EXAMPLE
 ```
 
-The root override is demo/test scaffolding. No agent loop is implemented.
+The root override is demo/test scaffolding. The scripted runner below adds only a fixed three-step demonstration.
+
+## Scripted temporary-copy runner
+
+From the repository root:
+
+```bash
+python3 -m agentguard.runner
+```
+
+The runner creates a fresh temporary copy of `sample_app`, reads `profile.py`,
+changes only `return profile["user_name"]` to `return profile["username"]`, and
+runs the fixed test command. It requires exactly one matching edit location.
+The checked-in app is never edited, and the temporary copy is removed even if
+an error interrupts the script. Tool roots are scoped with a context variable.
+
+Each run generates one run ID. The three tool calls use `step-1`, `step-2`, and
+`step-3`; their `dependency_ids` are `[]`, `["step-1"]`, and `["step-2"]`.
+A fixed cap of three tool calls is checked before every call. There are no
+retries, recovery, or LLM calls. All three tools now accept optional
+`dependency_ids`, defaulting to an empty tuple.
+
+Events append to `agentguard/events.jsonl`. The command prints all three events
+and the actual bounded test output. The final tool event is expected to be
+`failed` with exit code 1 and `KeyError: 'username'`; the demonstration command
+itself finishes normally. Python callers can use
+`run_script(log_path=...)` from `agentguard.runner` to select a log and receive
+this run's three saved events.
 
 ## Work log
 
