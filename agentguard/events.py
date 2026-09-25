@@ -18,6 +18,8 @@ class Event:
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     tool: str | None = None
     path: str | None = None
+    before_hash: str | None = None
+    after_hash: str | None = None
 
     def to_dict(self) -> dict:
         data = asdict(self)

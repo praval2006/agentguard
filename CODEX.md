@@ -121,3 +121,33 @@ Both suites passed. No `write_file` or `run_tests` tool was added. The README ex
 {"run_id":"reader-demo","step_id":"step-1","kind":"tool_result","status":"succeeded","summary":"file read succeeded","dependency_ids":[],"timestamp":"2026-09-25T20:00:27.138294+00:00","tool":"read_file","path":"profile.py"}
 {"run_id":"reader-demo","step_id":"step-2","kind":"tool_result","status":"blocked","summary":"path rejected outside sample_app","dependency_ids":[],"timestamp":"2026-09-25T20:00:27.139763+00:00","tool":"read_file","path":"../README.md"}
 ```
+
+
+## 5. 2026-09-26 — Existing-file writes with content hashes
+
+### Changes
+
+- Implemented `write_file` on `feature/flight-recorder` for existing files inside `sample_app`. Resolved paths outside the root, including escaping symlinks, are rejected before access. Missing files are not created.
+- Added automatic write outcome events with the tool name, relative requested path, status, and SHA-256 `before_hash`/`after_hash` of file bytes. File contents are never included. Unavailable hashes are null; read events also serialize null hash fields.
+- Writes use UTF-8 and truncate existing files to the new length. The writer supports optional recorder/run/step arguments like the reader. Recorder errors propagate without rollback.
+- Added tests for successful writes and exact hashes, shorter UTF-8 replacement, outside paths and escaping symlinks with untouched targets, and missing-file rejection. The wrong `username` edit and its expected `KeyError` are tested only in a temporary copy with a subprocess running that copy's tests.
+- Updated and executed the README temporary-copy write example. Preserved all previous work-log bytes while appending this entry.
+
+### Tests
+
+```bash
+python3 -m unittest discover -s tests -v && python3 -m unittest discover -s sample_app/tests -v
+```
+
+- `tests`: 11/11 passed, including the expected failure of the deliberately edited temporary app.
+- Checked-in `sample_app/tests`: 2/2 passed.
+- `git diff --check`: passed.
+- `git diff --exit-code -- sample_app`: passed; the checked-in app is unchanged.
+
+### Result
+
+Implemented only the requested write tool; no `run_tests` tool was added. Actual saved event from writing the temporary copy:
+
+```json
+{"run_id":"write-demo","step_id":"step-1","kind":"tool_result","status":"succeeded","summary":"file write succeeded","dependency_ids":[],"timestamp":"2026-09-25T20:09:43.215097+00:00","tool":"write_file","path":"profile.py","before_hash":"7c10fc5c64cdca88bb7b86587c91e4a54f07ff3918be1eb04217a52fe400babe","after_hash":"9c87c16196898379cb222b047c8d06f5bb65bbcc8543b94dea7b34071635bb38"}
+```

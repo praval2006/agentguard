@@ -37,6 +37,7 @@ class FlightRecorderTests(unittest.TestCase):
             self.assertEqual(set(event), {
                 "run_id", "step_id", "kind", "status", "summary",
                 "dependency_ids", "timestamp", "tool", "path",
+                "before_hash", "after_hash",
             })
             self.assertNotIn(contents, event.values())
         self.assertNotIn("PROFILE", self.event_path.read_text())

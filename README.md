@@ -13,12 +13,12 @@ python3 -m unittest discover -s sample_app/tests -v
 python3 -m sample_app.profile
 ```
 
-Both test commands should pass initially. During the failure demo, the agent will change `sample_app/profile.py`, and the sample app test will fail until that change is corrected or restored.
+Both test commands should pass initially. The failure demo changes only a temporary copy of `sample_app/profile.py`; the checked-in app remains unchanged.
 
 ## Layout
 
 - `sample_app/`: tiny profile application and its real test.
-- `agentguard/`: event contract, JSONL recorder, and bounded file reader.
+- `agentguard/`: event contract, JSONL recorder, and bounded file reader/writer.
 - `tests/`: tests for event serialization, recording, and file access boundaries.
 - `docs/`: scenario and completion criteria.
 
@@ -64,7 +64,45 @@ read_file("profile.py")  # allowed
 read_file("../README.md")  # raises ValueError
 ```
 
-This is intentionally the stopping point for the requested feature. The codebase does not add `write_file` or `run_tests` yet.
+## Bounded write tool
+
+`write_file(path, contents)` replaces an existing file within `sample_app` using
+UTF-8 text and returns `None`. It accepts the same optional recorder/run/step
+arguments as the reader and automatically records a `write_file` event.
+Outside paths and escaping symlinks raise `ValueError` (`blocked`); missing files
+are not created and raise `FileNotFoundError` (`failed`). Successful writes use
+`succeeded`. Events contain `before_hash` and `after_hash`: SHA-256 hex digests
+of the actual file bytes, never file contents. Hashes are null when unavailable,
+including blocked paths, whose contents are never read. Read events have null
+hash fields. Recorder errors propagate; they do not roll back a completed write.
+
+Try the wrong `username` edit safely in a temporary copy from the repository root.
+The root override below is test/demo scaffolding, not a caller-supplied tool argument:
+
+```bash
+python3 - <<'WRITE_EXAMPLE'
+from pathlib import Path
+import shutil
+import tempfile
+from unittest.mock import patch
+from agentguard.recorder import JSONLRecorder
+from agentguard.tools import write_file
+
+recorder = JSONLRecorder("agentguard/events.jsonl")
+with tempfile.TemporaryDirectory() as directory:
+    root = Path(directory) / "sample_app"
+    shutil.copytree("sample_app", root, ignore=shutil.ignore_patterns("__pycache__"))
+    text = (root / "profile.py").read_text()
+    wrong = text.replace('return profile["user_name"]', 'return profile["username"]')
+    with patch("agentguard.tools._SAMPLE_APP_ROOT", root):
+        write_file("profile.py", wrong, recorder=recorder,
+                   run_id="write-demo", step_id="step-1")
+print(recorder.path.read_text().splitlines()[-1])
+WRITE_EXAMPLE
+```
+
+The writer tests run the copied app's tests and confirm the wrong edit triggers
+`KeyError: 'username'`. Both normal suites should pass. No `run_tests` tool is added.
 
 ## Work log
 
