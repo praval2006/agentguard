@@ -26,34 +26,35 @@ Both test commands should pass initially. During the failure demo, the agent wil
 
 This branch keeps the scope intentionally narrow: it adds a JSON Lines event recorder and a bounded `read_file("profile.py")` helper that only allows access within `sample_app`.
 
-From the repository root, run this to read `profile.py` and print its saved event:
+From the repository root, run this to record a successful read and a rejected path:
 
 ```bash
-python3 - <<'PY'
-import json
-from agentguard.events import Event
-from agentguard.recorder import JSONLRecorder
+python3 - <<'EXAMPLE'
 from agentguard.tools import read_file
 
-recorder = JSONLRecorder("agentguard/events.jsonl")
-contents = read_file("profile.py")
-event = Event(
-    run_id="run-1",
-    step_id="step-1",
-    kind="tool_result",
-    status="succeeded",
-    summary="profile read succeeded",
-    tool="read_file",
-    path="profile.py",
-)
-print(json.dumps(recorder.record(event), separators=(",", ":")))
-PY
+contents = read_file("profile.py", run_id="reader-demo", step_id="step-1")
+try:
+    read_file("../README.md", run_id="reader-demo", step_id="step-2")
+except ValueError:
+    pass
+
+from pathlib import Path
+for line in Path("agentguard/events.jsonl").read_text().splitlines()[-2:]:
+    print(line)
+EXAMPLE
 ```
 
-The example records success after reading, appending one event to
-`agentguard/events.jsonl`. The event identifies the tool and path relative to
-`sample_app`; file contents remain in `contents` and are not recorded or printed.
-Recording is explicit, not automatic.
+Every call automatically appends an outcome event to `agentguard/events.jsonl`
+under the repository root. Status is `succeeded` for a read, `blocked` for a path
+outside `sample_app`, and `failed` for other read errors (such as a missing file).
+The reader still returns contents or raises the original read/path exception
+when recording succeeds. Recorder errors propagate to the caller.
+
+Events contain the tool name and requested path relative to `sample_app`,
+including `../` for outside paths and the requested symlink name. Neither file
+contents nor exception details are stored. Callers do not create events manually.
+Optional `recorder=JSONLRecorder(...)` selects a different log; optional `run_id`
+and `step_id` associate calls with a run. Omitted IDs are generated per call.
 
 The reader resolves paths before checking containment and opening the file.
 A symlink inside `sample_app` pointing outside it is also rejected:

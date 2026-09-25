@@ -89,3 +89,35 @@ Both suites passed. No `write_file` or `run_tests` tool was added. Actual event 
 ```json
 {"run_id":"run-1","step_id":"step-1","kind":"tool_result","status":"succeeded","summary":"profile read succeeded","dependency_ids":[],"timestamp":"2026-09-25T19:36:07.198796+00:00","tool":"read_file","path":"profile.py"}
 ```
+
+
+## 4. 2026-09-26 — Automatic read_file outcome recording
+
+### Changes
+
+- Updated `read_file` to create and append its own outcome event on success, rejected paths, and other read errors, using `succeeded`, `blocked`, and `failed` respectively. The existing return value and path rejection remain intact when recording succeeds; recorder errors propagate.
+- Events identify `read_file` and the requested path relative to `sample_app`, preserving symlink names. File contents and exception details are not stored.
+- Added optional recorder, run ID, and step ID keyword arguments. Default calls write to the repository's `agentguard/events.jsonl` and generate IDs per call.
+- Reworked tests to call the reader without manually constructing events. Coverage checks automatic default recording, appended success/rejection events, outside-pointing symlink rejection, missing-file failure, absolute-to-relative path metadata, and absence of contents. Test logs use temporary directories.
+- Updated and executed the README example, which calls the reader twice and prints the two automatically saved events.
+- Appended this entry while preserving all earlier work-log bytes exactly.
+
+### Tests
+
+Executed:
+
+```bash
+python3 -m unittest discover -s tests -v && python3 -m unittest discover -s sample_app/tests -v
+```
+
+- `tests`: 6/6 passed.
+- `sample_app/tests`: 2/2 passed.
+
+### Result
+
+Both suites passed. No `write_file` or `run_tests` tool was added. The README example saved these two events:
+
+```json
+{"run_id":"reader-demo","step_id":"step-1","kind":"tool_result","status":"succeeded","summary":"file read succeeded","dependency_ids":[],"timestamp":"2026-09-25T20:00:27.138294+00:00","tool":"read_file","path":"profile.py"}
+{"run_id":"reader-demo","step_id":"step-2","kind":"tool_result","status":"blocked","summary":"path rejected outside sample_app","dependency_ids":[],"timestamp":"2026-09-25T20:00:27.139763+00:00","tool":"read_file","path":"../README.md"}
+```
