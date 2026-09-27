@@ -1148,3 +1148,47 @@ assertion precedence, legacy equality/status behavior, and duplicate-key policy.
 - No evaluation directory diff: Day-5, Day-6, and registered-check smoke artifacts
   remain unchanged and were not rerun. All historical log prefixes were verified
   and every pre-existing byte preserved before this append.
+
+
+## 29. 2026-09-28 — Bounded composite schema and pure aggregation
+
+### Changes
+
+- Added strict composite parent fields: name, source, reason, behavior, action.
+  Action contains exactly type=composite and children. No parent assertions or
+  variables; behavior remains unnecessary on existing standalone forms.
+- Each parent has 2–3 independent required children with unique nonblank labels
+  of at most 64 characters. Only HTTP and unsupported actions are permitted.
+  Nesting, registered-check/test-command children, optional/retry/workflow fields,
+  child identity/source/reason/behavior/variables, and extra authority are rejected.
+- HTTP children reuse unchanged standalone HTTP validation and all four assertion
+  forms. They allow at most 8 assertions. Unsupported children forbid assertions.
+  Compact serialization with ensure_ascii=False is limited to 32000 UTF-8 bytes;
+  cyclic/non-JSON/nonfinite payloads are rejected. No truncation occurs.
+- Added aggregate_composite_results(scenario, child_results) in verifier.py.
+  Exact ordered label/verdict records must match every validated required child.
+  Malformed, missing, duplicated, unexpected, reordered, or unknown-verdict
+  results raise ValueError. Any FAIL dominates; otherwise any UNVERIFIED dominates;
+  only all-PASS produces PASS. No execution, I/O, or semantic coverage claim.
+- Existing five-parent limit is unchanged, allowing at most 15 leaves once future
+  composite execution exists. No acceptance dispatch or grounding changes were
+  made: schema representation and aggregation are available, execution is not.
+
+### Tests and results
+
+Added 14 tests in tests/test_composites.py covering valid 2/3-child structures,
+unsupported children, count/label/assertion/byte bounds, forbidden actions/fields,
+non-JSON/cyclic payloads, exact parent shapes, all verdict combinations, result
+identity/cardinality validation, nonmutation, and pure aggregation without I/O.
+
+- Focused: python3 -B -m unittest discover -s tests -p test_composites.py -v
+  — 14/14 passed.
+- Full: python3 -m unittest discover -s tests -p 'test_*.py' -v
+  — 257/257 passed (243 existing unchanged and 14 new).
+- Approved escalation allowed existing HTTP regression loopback tests.
+- Existing standalone HTTP, registered, test-command, unsupported and JSON
+  assertion behavior remains unchanged. No frozen evaluation diff: Day-5, Day-6,
+  and registered-check smoke artifacts are untouched and were not rerun.
+- Historical work-log versions were checked as prefixes; all prior bytes remain
+  unchanged. No composite execution, grounder emission support, state transfer,
+  or new registered-check capability was implemented.

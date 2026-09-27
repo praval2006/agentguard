@@ -10,6 +10,32 @@ MAX_JSON_DEPTH = 32
 MAX_JSON_TEXT_CHARS = 32_000
 
 
+def aggregate_composite_results(scenario, child_results):
+    """Pure aggregation of exact ordered {label, verdict} records.
+
+    Requires the validated frozen parent to detect missing/duplicate/reordered
+    children. Malformed input raises ValueError, never a vacuous PASS. Verdicts
+    are caller-supplied evidence; this helper neither executes nor authenticates.
+    """
+    validate_scenario(scenario)
+    if scenario['action']['type'] != 'composite':
+        raise ValueError('composite scenario required')
+    children = scenario['action']['children']
+    if type(child_results) is not list or len(child_results) != len(children):
+        raise ValueError('one result per required child is required')
+    verdicts = []
+    for child, result in zip(children, child_results):
+        if type(result) is not dict or set(result) != {'label', 'verdict'}:
+            raise ValueError('child result must contain exactly label and verdict')
+        if type(result['label']) is not str or result['label'] != child['label']:
+            raise ValueError('child identity/order mismatch')
+        if type(result['verdict']) is not str or result['verdict'] not in ('PASS', 'FAIL', 'UNVERIFIED'):
+            raise ValueError('unknown child verdict')
+        verdicts.append(result['verdict'])
+    return ('FAIL' if 'FAIL' in verdicts else
+            'UNVERIFIED' if 'UNVERIFIED' in verdicts else 'PASS')
+
+
 def _json_available(value):
     # Iterative, bounded traversal rejects cycles, non-JSON objects and nonfinite numbers.
     pending = [(value, 0)]

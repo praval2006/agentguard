@@ -6,9 +6,14 @@ Unsupported actions are descriptive records, never executable actions or verdict
 """
 
 from math import isfinite
+import json
 
 MAX_CHECK_ID_CHARS = 128
 MAX_JSON_ASSERTION_PATH_CHARS = 32000
+MAX_COMPOSITE_BYTES = 32000
+MAX_COMPOSITE_CHILDREN = 3
+MAX_CHILD_ASSERTIONS = 8
+MAX_CHILD_LABEL_CHARS = 64
 
 
 def _shape(value, required, optional, location):
@@ -37,6 +42,10 @@ def validate_scenario(scenario: dict) -> None:
     Variables require only a dict with nonblank string keys; values are opaque.
     Request json requires a dict; payload content is not interpreted here.
     """
+    if (isinstance(scenario, dict) and isinstance(scenario.get("action"), dict)
+            and scenario["action"].get("type") == "composite"):
+        _validate_composite(scenario)
+        return
     _shape(scenario, {"name", "source", "reason", "action"},
            {"assertions", "variables"}, "scenario")
     for field in ("name", "reason"):
@@ -98,6 +107,46 @@ def validate_scenario(scenario: dict) -> None:
             raise ValueError("unsupported scenarios must not contain assertions")
     else:
         raise ValueError("unknown action type")
+
+
+def _validate_composite(scenario):
+    """Flat independent required checks, not a workflow or execution authority."""
+    _shape(scenario, {"name", "source", "reason", "behavior", "action"}, set(), "composite")
+    for field in ("name", "reason", "behavior"):
+        _text(scenario[field], field)
+    if scenario["source"] not in ("explicit", "inferred"):
+        raise ValueError("source must be explicit or inferred")
+    action = scenario["action"]
+    _shape(action, {"type", "children"}, set(), "composite action")
+    children = action["children"]
+    if not isinstance(children, list) or not 2 <= len(children) <= MAX_COMPOSITE_CHILDREN:
+        raise ValueError("composite requires 2 to 3 children")
+    labels = set()
+    for child in children:
+        _shape(child, {"label", "action"}, {"assertions"}, "child")
+        label = child["label"]
+        _text(label, "child label")
+        if len(label) > MAX_CHILD_LABEL_CHARS or label in labels:
+            raise ValueError("child labels must be unique and at most 64 characters")
+        labels.add(label)
+        if not isinstance(child["action"], dict) or child["action"].get("type") not in ("http_request", "unsupported"):
+            raise ValueError("child action must be HTTP or unsupported; nesting is forbidden")
+        if "assertions" in child and (not isinstance(child["assertions"], list)
+                                     or len(child["assertions"]) > MAX_CHILD_ASSERTIONS):
+            raise ValueError("child assertions must be a list of at most 8 entries")
+        # Reuse the unchanged leaf validator; no child identity/authority fields.
+        leaf = {"name": label, "source": scenario["source"], "reason": scenario["reason"],
+                "action": child["action"]}
+        if "assertions" in child:
+            leaf["assertions"] = child["assertions"]
+        validate_scenario(leaf)
+    try:
+        serialized = json.dumps(scenario, ensure_ascii=False, allow_nan=False,
+                                separators=(",", ":")).encode("utf-8")
+    except (TypeError, ValueError, RecursionError) as error:
+        raise ValueError("composite must be finite serializable JSON") from error
+    if len(serialized) > MAX_COMPOSITE_BYTES:
+        raise ValueError("serialized composite exceeds 32000 UTF-8 bytes")
 
 
 def _validate_assertion(assertion):
