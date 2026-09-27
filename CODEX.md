@@ -407,3 +407,18 @@ The controlled Day-1 fixture has green implementation-side tests while intention
 retaining the premium-access acceptance gap. The original profile demo and tests,
 FlightRecorder implementation, and bounded runner architecture remain unchanged.
 No changes were committed or pushed.
+
+
+## 11. 2026-09-27 — Independent subscription task artifact
+
+### Changes
+
+- Created `tasks/subscription_cancellation.md` with the original fictional developer request and acceptance intent, independently of the implementation and its tests.
+- This artifact is the source-of-truth input for future acceptance planning.
+- No implementation or tests were changed or added. No planner, scenario model, or verifier was created. All existing work-log content is preserved exactly.
+
+### Tests and result
+
+- `python3 -m unittest discover -s tests -p "test_*.py" -v`: 23/23 passed.
+- `python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v`: 4/4 passed.
+- The independent task artifact is ready for review. No changes were committed.
