@@ -936,3 +936,73 @@ unchanged: registered_check is not yet supported by those execution pathways.
 Legacy test_command execution and its sample-app exact allowlist remain unchanged.
 Coverage metadata does not establish acceptance coverage or cause PASS.
 No Day-6 rerun, LLM integration, or capability beyond this foundation was added.
+
+
+## 25. 2026-09-28 — Bounded registered unittest execution
+
+### Changes and trust boundary
+
+- Added agentguard/registered_execution.py with execute_registered_check(scenario,
+  repository_root=..., registry=...). Only check_id comes from the scenario;
+  registration fields are revalidated from the trusted immutable in-memory registry.
+  Unknown IDs and ordinary preflight/process failures return structured facts.
+- Added agentguard/check_runner.py. The fixed invocation uses sys.executable,
+  -I, -B, the absolute AgentGuard runner path, the registered dotted target, and
+  a parent-owned result descriptor. The runner explicitly adds only approved cwd
+  to the isolated interpreter's import path. Target module and class origins must
+  resolve within cwd; selection must contain exactly one unittest test.
+- Shell is disabled, stdin is disabled, cwd comes from registration, and no
+  scenario-controlled environment/options are accepted. No arbitrary Python
+  expressions or command strings are interpreted.
+- Revalidate root identity, registered cwd containment and symlink components,
+  and reject symlinks throughout the selected cwd tree immediately before launch.
+  Tests run in a new POSIX session; the process group is killed on cleanup,
+  including timeout. Limits are 10 seconds, 4096 retained stdout/stderr bytes,
+  and 2048 structured-result bytes. Output text is not verdict evidence and is
+  omitted from observations; truncation is reported.
+
+### Observations and scope
+
+- Parent-owned temporary descriptors separate structured JSON from stdout/stderr;
+  result keys, count types/bounds, statuses, and success/failure consistency are
+  validated. Duplicate keys, oversized/missing results, crashes, and launch
+  errors cannot become successful test observations. Temporary files are cleaned.
+- Facts include check/coverage/target identity, status, counts, returncode,
+  timed_out, and output_truncated. Status distinguishes success, assertion_failure,
+  test_error, load_error, skipped, expected_failure, unexpected_success,
+  zero_tests, multiple_tests, malformed_result, process_crash, timeout,
+  unknown_check, configuration_error, and execution_error. No acceptance verdict
+  is calculated. The runner exits normally for reported test outcomes; its process
+  returncode is distinct from assertion success.
+- No verifier, acceptance dispatch, aggregation, planner, grounder, coverage
+  approvals, or LLM integration changed. Legacy tools/execution and HTTP behavior
+  remain unchanged. A separate small process path preserves the legacy recorder
+  contract rather than generalizing its hardcoded sample-app runner in this phase.
+
+### Tests and results
+
+Added 24 tests using unfamiliar temporary repositories: real single-test success,
+assertion failure, load/setup/runtime errors, skip/expected failure/unexpected
+success, zero/multiple selection, timeout, crash, missing/malformed/oversized
+results, stdout spoofing, output bounds, launch failure, unknown registry entries,
+model-field injection, fixed process construction, cwd/root and symlink checks.
+
+- Focused: python3 -B -m unittest discover -s tests -p test_registered_execution.py -v
+  — 24/24 passed.
+- Full: python3 -m unittest discover -s tests -p 'test_*.py' -v
+  — 217/217 passed (193 existing unchanged and 24 new).
+- Approved escalation allowed existing regression HTTP loopback tests to bind.
+- No diff under evaluation; frozen Day-5/Day-6 artifacts were not changed or rerun.
+- All historical work-log versions remain byte-for-byte prefixes.
+
+### Limitations
+
+This is POSIX bounded execution of trusted repository code, not a sandbox or
+network restriction. Tests can perform side effects, spawn detached children, or
+forge their own result channel; process-group cleanup does not contain malicious
+code. Filesystem preflight assumes no concurrent mutation. Registry data is an
+in-memory approved snapshot, not a live manifest or digest approval mechanism;
+semantic code/configuration changes cannot be detected without future snapshot
+binding. Temporary capture bounds retained evidence, not total disk usage.
+Coverage metadata is descriptive only and cannot establish acceptance coverage.
+No final registered-check verifier/orchestrator integration exists yet.
