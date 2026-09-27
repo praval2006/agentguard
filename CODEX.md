@@ -278,3 +278,132 @@ Actual final events and decision traces from the two runs:
 {"run_id":"cc90f98d-a127-4a12-b13b-823f039a7c00","step_id":"run-end","kind":"run_result","status":"completed","summary":"tests passed","dependency_ids":["step-3"],"timestamp":"2026-09-25T21:40:27.405604+00:00","tool":null,"path":null,"before_hash":null,"after_hash":null,"exit_code":null,"output":null,"output_truncated":false,"timed_out":false,"decisions":["read_file: file has not been read","write_file: read succeeded; apply selected edit","run_tests: write succeeded; verify the edit","completed: tests passed"]}
 {"run_id":"5ba2866c-1371-481f-8115-e75f5ac98a8d","step_id":"run-end","kind":"run_result","status":"failed","summary":"run_tests failed or was blocked","dependency_ids":["step-3"],"timestamp":"2026-09-25T21:40:27.448861+00:00","tool":null,"path":null,"before_hash":null,"after_hash":null,"exit_code":null,"output":null,"output_truncated":false,"timed_out":false,"decisions":["read_file: file has not been read","write_file: read succeeded; apply selected edit","run_tests: write succeeded; verify the edit","failed: run_tests failed or was blocked"]}
 ```
+
+
+## 10. 2026-09-27 — Acceptance Verification MVP direction and Day-1 fixture
+
+### Acceptance Verification MVP
+
+AgentGuard is evolving from the original FlightRecorder / bounded scripted-agent
+prototype into an independent acceptance-verification layer for AI coding agents.
+A coding agent may interpret a task, implement the feature, write tests based on
+its own interpretation, run those tests, and declare completion. Incomplete
+interpretation or coverage can make green tests create false confidence.
+The new MVP introduces an independent verification path:
+
+```text
+Original Task
+    ↓
+Repository Context
+    ↓
+Independent Acceptance Planner
+    ↓
+Structured Acceptance Scenarios
+    ↓
+Independent Verifier
+    ↓
+PASS / FAIL / UNVERIFIED
+    ↓
+Execution Evidence
+```
+
+The MVP does not claim to prove arbitrary software correct. Its goal is to
+independently derive or receive acceptance behaviours, execute the behaviours it
+supports, and provide concrete evidence about whether the finished implementation
+satisfies them.
+
+### Existing infrastructure to preserve and reuse
+
+The existing work is not discarded. Preserve and reuse where appropriate:
+
+- `agentguard/events.py`: event model.
+- `agentguard/recorder.py`: JSONL evidence recorder.
+- `agentguard/tools.py`: bounded file/test execution infrastructure.
+- `agentguard/runner.py`: bounded orchestration concepts; may later be refactored.
+- `sample_app/profile.py`: original FlightRecorder demo, unchanged in this task.
+- `sample_app/tests/test_profile.py`: original profile tests, unchanged in this task.
+- `tests/`: existing AgentGuard regression tests.
+- `docs/demo_scenario.md`: retained unchanged for now; to be updated later.
+
+Future components are expected to include `agentguard/planner.py`,
+`agentguard/scenarios.py`, and `agentguard/verifier.py`. None are created now.
+
+### Verdict semantics for the future MVP
+
+- `PASS`: a supported verification check executed and observed the expected behaviour.
+- `FAIL`: a supported verification check executed and observed behaviour that contradicts the expected behaviour.
+- `UNVERIFIED`: the behaviour may be relevant, but AgentGuard cannot reliably verify it with its current capabilities.
+
+Prefer UNVERIFIED over inventing evidence or pretending certainty.
+
+### Development principles
+
+- Preserve existing working behaviour.
+- Keep changes small and reviewable.
+- Do not implement future roadmap components unless explicitly requested.
+- Do not silently fix unrelated issues.
+- Do not invent product requirements.
+- Distinguish explicit requirements from inferred behaviours.
+- Prefer actual execution evidence over LLM assertions.
+- Keep existing regression tests passing.
+- Add tests for new behaviour.
+- Prefer simple implementations over premature abstractions.
+- Do not add browser automation, production authentication, billing, broad security scanning, or universal repository support during this MVP unless explicitly requested.
+
+### Seven-day direction
+
+1. Day 1: establish a controlled acceptance-verification fixture.
+2. Day 2: build and evaluate the independent Acceptance Planner; this is a go/no-go gate.
+3. Day 3: introduce structured acceptance scenarios and grounding rules.
+4. Day 4: build the independent verification engine.
+5. Day 5: connect task → planner → scenarios → verifier → evidence.
+6. Day 6: build/polish the result presentation and test unfamiliar scenarios.
+7. Day 7: freeze features, test reliability, document limitations, and prepare the demo and submission.
+
+If the Day-2 Acceptance Planner performs poorly, retain the architecture. The
+fallback product accepts user-defined acceptance criteria and independently
+executes supported verification checks. AI-generated acceptance suggestions
+become optional.
+
+### Day-1 changes
+
+The fictional original product requirement is:
+
+> Add subscription cancellation. When a user cancels an active subscription, the subscription should become cancelled and the user should no longer have access to premium features. Repeated cancellation should not crash the application.
+
+- Created `sample_app/subscription.py` as a controlled development fixture.
+  `cancel_subscription(subscription)` changes status to `cancelled`, returns the
+  same dictionary, and deliberately leaves `premium_access` unchanged. An active
+  subscription with `premium_access=True` therefore retains premium access after
+  cancellation: the known acceptance gap is intentional.
+- Created `sample_app/tests/test_subscription.py` with exactly two implementation-side
+  tests: cancellation status and returned object identity. Premium-access revocation
+  and repeated cancellation are intentionally outside this test coverage. Green
+  implementation-side tests do not mean the original requirements are fully satisfied.
+- Updated the existing clean-copy regression assertion in `tests/test_run_tests.py`
+  from `Ran 2 tests` to `Ran 4 tests` to account for the added subscription tests.
+  This is a fixture-count adjustment; no runner or FlightRecorder implementation changed.
+- Reviewed the existing repository and work log before editing. Checked historical
+  `CODEX.md` versions: all are preserved as prefixes, with no missing entries to recover.
+  Appended this entry without changing any pre-existing work-log bytes.
+- No acceptance test, planner, scenarios module, verifier, dependencies, or repository
+  redesign were introduced. README and the original demo documentation are unchanged.
+
+### Tests
+
+Executed from the repository root:
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard regression suite: 23/23 passed.
+- Sample-app suite: 4/4 passed (two original profile tests and two subscription tests).
+
+### Result
+
+The controlled Day-1 fixture has green implementation-side tests while intentionally
+retaining the premium-access acceptance gap. The original profile demo and tests,
+FlightRecorder implementation, and bounded runner architecture remain unchanged.
+No changes were committed or pushed.

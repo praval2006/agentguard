@@ -28,7 +28,7 @@ class RunTestsTests(unittest.TestCase):
         self.check_saved(event)
         self.assertEqual(event['exit_code'], 0)
         self.assertEqual(event['status'], 'succeeded')
-        self.assertIn('Ran 2 tests', event['output'])
+        self.assertIn('Ran 4 tests', event['output'])
         self.assertIn('OK', event['output'])
         self.assertFalse(event['timed_out'])
 
