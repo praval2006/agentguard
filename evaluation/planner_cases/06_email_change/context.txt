@@ -1,0 +1,23 @@
+File: accounts/email.py
+from dataclasses import dataclass
+
+
+def normalize_email(value):
+    return value.strip().lower()
+
+
+@dataclass
+class EmailChange:
+    user_id: int
+    new_email: str
+    token: str
+    created_at: str
+
+
+def find_login_account(email, users):
+    return users.find_by_email(normalize_email(email))
+
+Database: users.email has a unique index and stores normalized addresses.
+email_changes stores pending requests separately from users.
+The mail service accepts recipient, subject, and body.
+Settings displays users.email; sign-in also uses users.email.

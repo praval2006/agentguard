@@ -1,0 +1,19 @@
+File: notifications/preferences.py
+DEFAULTS = {"email": True, "push": False}
+
+
+def get_preferences(user_id, preferences):
+    stored = preferences.get(user_id)
+    return {**DEFAULTS, **(stored or {})}
+
+File: notifications/delivery.py
+def deliver(message, user, preferences, mailer, push):
+    settings = get_preferences(user.id, preferences)
+    if message.kind == "security_alert" or settings["email"]:
+        mailer.send(user.email, message.body)
+    if settings["push"]:
+        push.send(user.id, message.body)
+
+The preferences repository has get(user_id) and replace(user_id, values).
+replace stores the supplied dictionary as the complete row value.
+The settings page loads preferences through GET /me/notifications.

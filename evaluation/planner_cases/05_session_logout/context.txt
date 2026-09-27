@@ -1,0 +1,20 @@
+File: web/sessions.py
+COOKIE_NAME = "sid"
+COOKIE_PATH = "/"
+
+
+def current_user(request, sessions, users):
+    token = request.cookies.get(COOKIE_NAME)
+    session = sessions.find(token) if token else None
+    return users.get(session.user_id) if session else None
+
+
+def login_response(token):
+    response = Redirect("/dashboard", status=303)
+    response.set_cookie(COOKIE_NAME, token, path=COOKIE_PATH,
+                        secure=True, httponly=True, samesite="Lax")
+    return response
+
+sessions.delete(token) removes one session; it returns False if absent.
+sessions.delete_for_user(user_id) removes all sessions for that user.
+POST routes pass through the application's CSRF middleware.

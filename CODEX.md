@@ -454,3 +454,28 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result and limitations
 
 Fake-provider tests establish engineering correctness of the planner pipeline and contract, not real planner intelligence. The product hypothesis—useful, independently grounded scenarios for unfamiliar tasks—remains unevaluated and requires separate real-model evaluation across multiple tasks. Previous work-log bytes are preserved exactly. No changes were committed or pushed.
+
+
+## 13. 2026-09-27 — Blind planner evaluation inputs
+
+### Changes
+
+- Created `evaluation/planner_cases/` with 10 compact task/context pairs: subscription cancellation, password reset, cart quantity, account deletion, session logout, email change, file upload, API pagination, notification preferences, and resource deletion. Requests vary in detail and repository context.
+- Case 01 copies `tasks/subscription_cancellation.md` exactly and includes the subscription function without experiment-revealing docstrings. The other contexts contain representative fictional code and repository notes.
+- Anti-leakage rule: cases are input only. No expected answers, hidden acceptance scenarios, interpretation labels, judgments, scores, or hints about what the model should discover are included. No answer keys exist yet; evaluation judgments will be created only after real-model plans are produced.
+- Created `evaluation/planner_results.md` with empty fields for each case: model output, grounded observations, useful observations, speculative/unsupported observations, ambiguities handled well or poorly, testability, and reviewer notes. No judgments are pre-filled and no numeric benchmark is introduced.
+- This dataset supports future blind evaluation of real-model reasoning separately from the unit-tested planner infrastructure. No real-model evaluation was performed in this task, and no product-quality conclusion is claimed.
+- No production code, sample-app implementation, existing tests, or dependencies changed. No API provider, verifier, or scenario module was added. All previous work-log bytes are preserved exactly.
+
+### Validation and results
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 33/33 passed.
+- Sample-app suite: 4/4 passed.
+- Verified exactly 10 case directories, each containing exactly `task.md` and `context.txt` (20 input files total), and 70 empty review fields across 10 results sections.
+- Reviewed all case inputs for answer leakage and confirmed the subscription task matches its source byte-for-byte.
+- No changes were committed or pushed. Dataset is ready for review.

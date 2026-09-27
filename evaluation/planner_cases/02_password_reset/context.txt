@@ -1,0 +1,23 @@
+File: accounts/passwords.py
+from datetime import timedelta
+from secrets import token_urlsafe
+
+
+def validate_password(password):
+    if len(password) < 12:
+        raise ValueError("Use at least 12 characters")
+
+
+def issue_reset(user, now, reset_store, mailer):
+    token = token_urlsafe(32)
+    reset_store.insert(token=token, user_id=user.id,
+                       expires_at=now + timedelta(minutes=30), used_at=None)
+    mailer.send(user.email, reset_url=f"/reset/{token}")
+
+
+def register(email, password, users, hasher):
+    validate_password(password)
+    return users.insert(email=email, password_hash=hasher.hash(password))
+
+Reset records and users are persisted in the same SQL database.
+The sign-in handler verifies password_hash and creates a session row.

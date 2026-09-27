@@ -1,0 +1,22 @@
+File: shop/cart.py
+from decimal import Decimal
+
+
+def cart_total(cart):
+    subtotal = sum((line["unit_price"] * line["quantity"]
+                    for line in cart["items"]), Decimal("0"))
+    return max(Decimal("0"), subtotal - cart["discount"])
+
+
+def get_cart(request, carts):
+    return carts.load(request.session["cart_id"])
+
+
+def add_item(cart, product, carts):
+    cart["items"].append({"sku": product.sku, "unit_price": product.price,
+                          "quantity": 1})
+    carts.save(cart)
+    return {"items": cart["items"], "total": str(cart_total(cart))}
+
+The cart page sends JSON requests. Cart storage returns detached dictionaries;
+changes are persisted through carts.save(cart).

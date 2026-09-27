@@ -1,0 +1,15 @@
+File: api/activity.py
+def list_activity(request, db):
+    workspace_id = request.workspace.id
+    rows = db.query(
+        "SELECT id, created_at, kind FROM activity "
+        "WHERE workspace_id = ? ORDER BY created_at DESC",
+        [workspace_id],
+    )
+    return {"items": [dict(row) for row in rows]}
+
+activity.id is a unique integer primary key.
+created_at is a timestamp with second precision; several entries can share it.
+Middleware resolves request.workspace from the route and authenticated membership.
+Query parameters arrive as strings in request.query.
+The current endpoint returns all rows in a single response.

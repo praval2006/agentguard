@@ -1,0 +1,24 @@
+File: accounts/models.py
+from dataclasses import dataclass
+
+
+@dataclass
+class Account:
+    id: int
+    email: str
+    password_hash: str
+    status: str = "active"
+
+File: accounts/login.py
+def sign_in(email, password, accounts, sessions, hasher):
+    account = accounts.find_by_email(email)
+    if account is None or account.status != "active":
+        raise InvalidCredentials()
+    if not hasher.verify(password, account.password_hash):
+        raise InvalidCredentials()
+    return sessions.create(account.id)
+
+Tables: accounts, sessions(account_id), invoices(account_id),
+workspace_members(account_id, workspace_id, role).
+Invoice rows include the billing name and address used at purchase time.
+Workspaces may have several members. Accounts can belong to several workspaces.

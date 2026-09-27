@@ -1,0 +1,27 @@
+File: reports/api.py
+def list_reports(request, reports):
+    return reports.for_owner(request.user.id)
+
+
+def get_report(request, report_id, reports):
+    report = reports.get(report_id)
+    if report is None or report.owner_id != request.user.id:
+        return Response(status=404)
+    return Response(json=report.to_dict())
+
+File: reports/repository.py
+class ReportRepository:
+    def __init__(self, db):
+        self.db = db
+
+    def get(self, report_id):
+        return self.db.reports.find_one(id=report_id)
+
+    def for_owner(self, user_id):
+        return self.db.reports.find_all(owner_id=user_id)
+
+    def delete(self, report_id):
+        return self.db.reports.delete(id=report_id)
+
+Report fields: id, owner_id, title, query_text, created_at.
+Authentication middleware supplies request.user for all report routes.

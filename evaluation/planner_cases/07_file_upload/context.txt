@@ -1,0 +1,17 @@
+File: discussions/attachments.py
+from pathlib import PurePath
+from uuid import uuid4
+
+
+def save_attachment(project_id, upload, objects, attachments):
+    object_key = f"{project_id}/{uuid4().hex}"
+    objects.put(object_key, upload.stream)
+    return attachments.insert(project_id=project_id, object_key=object_key,
+                              filename=PurePath(upload.filename).name,
+                              content_type=upload.content_type)
+
+upload exposes filename, content_type, and a readable byte stream.
+objects is a blob store with put(key, stream) and delete(key) operations.
+attachments is a SQL-backed repository; its insert operation returns an ID.
+project_members contains project_id and user_id pairs.
+A discussion page is addressed by /projects/{project_id}/discussion.

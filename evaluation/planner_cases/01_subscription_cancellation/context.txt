@@ -1,0 +1,4 @@
+File: sample_app/subscription.py
+def cancel_subscription(subscription: dict) -> dict:
+    subscription['status'] = 'cancelled'
+    return subscription
