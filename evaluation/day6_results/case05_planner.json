@@ -1,0 +1,49 @@
+{
+  "explicit_requirements": [
+    "An organizer can schedule an announcement for a future UTC time.",
+    "The announcement is delivered to the team when its due time arrives and never before it.",
+    "Each announcement is delivered once despite repeated scheduler checks.",
+    "An organizer can withdraw a pending announcement before its due time to prevent delivery."
+  ],
+  "inferred_behaviors": [
+    "Withdrawing one job should not suppress other pending announcements in the shared job list."
+  ],
+  "ambiguities": [
+    "The permissible delivery delay when scheduler checks do not coincide exactly with the due time is unspecified.",
+    "Delivery failure, retry, and duplicate-prevention policy when the sender outcome is uncertain are unspecified.",
+    "Withdrawal exactly at the due time or after delivery is not specified.",
+    "Whether timestamps expressed in other time zones should be converted to UTC or rejected is unspecified."
+  ],
+  "scenarios": [
+    {
+      "name": "Schedule a future UTC announcement",
+      "behavior": "An organizer can schedule an announcement for a specified future UTC time with its intended team and message retained for delivery.",
+      "reason": "The task directly requests future UTC scheduling and delivery of the announcement to the team; the context identifies team, body, and due_at inputs.",
+      "source": "explicit"
+    },
+    {
+      "name": "Deliver at the due time and never early",
+      "behavior": "A pending announcement is not delivered before its due time and is delivered to its intended team when the due time arrives. Delayed scheduler checks must not be used to assume an unstated delivery-latency policy.",
+      "reason": "The task explicitly specifies delivery timing and prohibits early delivery; the context supplies time and sender interfaces without defining a polling schedule.",
+      "source": "explicit"
+    },
+    {
+      "name": "Repeated scheduler checks do not duplicate delivery",
+      "behavior": "Once an announcement has been delivered, further scheduler checks do not deliver that same announcement again.",
+      "reason": "The task directly requires once-only delivery despite repeated checks.",
+      "source": "explicit"
+    },
+    {
+      "name": "Withdraw a pending announcement before it is due",
+      "behavior": "Withdrawing a pending announcement before its due time prevents it from being delivered when that time arrives or during later checks.",
+      "reason": "The task explicitly permits pre-due withdrawal to prevent delivery.",
+      "source": "explicit"
+    },
+    {
+      "name": "Withdrawal is limited to the selected announcement",
+      "behavior": "Withdrawing one pending announcement leaves another pending announcement eligible for delivery at its own due time.",
+      "reason": "The context uses a shared list with per-job IDs and withdrawal by job ID; isolating that operation is directly relevant to scheduling multiple announcements.",
+      "source": "inferred"
+    }
+  ]
+}

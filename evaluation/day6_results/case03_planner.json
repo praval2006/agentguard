@@ -1,0 +1,41 @@
+{
+  "explicit_requirements": [
+    "Dispatch a packed shipment with units already reserved by marking it shipped and recording its tracking reference.",
+    "Subtract the shipment quantity from both on-hand and reserved inventory units.",
+    "Reject an empty tracking reference without changing the shipment or inventory.",
+    "Reject insufficient on-hand stock without changing the shipment or inventory.",
+    "Dispatching a shipped shipment again must not deduct inventory a second time."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [
+    "Whether a whitespace-only tracking reference counts as empty and whether tracking text should be normalized are unspecified.",
+    "When a shipped shipment is submitted again with a different tracking reference, the task does not specify whether to preserve or replace the reference.",
+    "Handling inconsistent reserved counts or nonpositive shipment quantities is not specified; the request assumes units have already been reserved."
+  ],
+  "scenarios": [
+    {
+      "name": "Dispatch updates shipment and both inventory counts",
+      "behavior": "For a packed shipment with sufficient on-hand and reserved units and a nonempty tracking reference, dispatch marks it shipped, records the reference, and subtracts exactly its quantity from both inventory counts.",
+      "reason": "All four related state updates are directly required by the task; the context names the shipment and inventory fields.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject empty tracking without state changes",
+      "behavior": "Dispatch with an empty tracking string is rejected and preserves both shipment and inventory records.",
+      "reason": "The task explicitly requires rejection and preservation of both records for an empty tracking reference.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject insufficient stock without state changes",
+      "behavior": "Dispatch with on-hand stock below the shipment quantity is rejected and preserves both records.",
+      "reason": "The task directly specifies insufficient on-hand stock as a rejection condition with no changes.",
+      "source": "explicit"
+    },
+    {
+      "name": "Repeated dispatch does not deduct inventory again",
+      "behavior": "After dispatching a shipment, dispatching that same shipped shipment again leaves both inventory counts at their post-dispatch values.",
+      "reason": "The task explicitly prohibits a second inventory deduction on repeated dispatch.",
+      "source": "explicit"
+    }
+  ]
+}

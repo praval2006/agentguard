@@ -1,0 +1,38 @@
+{
+  "explicit_requirements": [
+    "When a seat is available, move one waiting attendee to the enrolled list and return the selected ID.",
+    "Promotion must not exceed class capacity.",
+    "When no seat is available or nobody is waiting, leave the class unchanged and report no promotion.",
+    "Promotion must work with regular and priority members."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [
+    "The selection policy among multiple waiting attendees is unspecified, including whether priority members take precedence over regular members and how ties are resolved."
+  ],
+  "scenarios": [
+    {
+      "name": "Fill one vacancy from the waiting list",
+      "behavior": "When space and waiting attendees exist, exactly one waiting attendee moves to enrolled and the returned ID identifies that attendee; enrollment remains within capacity. Do not assume which attendee is selected when several are waiting.",
+      "reason": "The task explicitly requires one transfer, the selected ID, and the capacity limit, but supplies no selection policy.",
+      "source": "explicit"
+    },
+    {
+      "name": "Leave a full class unchanged",
+      "behavior": "When enrollment has reached capacity, promotion leaves the class unchanged and reports no attendee promoted.",
+      "reason": "The task explicitly requires no change or promotion when no seat exists.",
+      "source": "explicit"
+    },
+    {
+      "name": "Leave a class with no waiting attendees unchanged",
+      "behavior": "When the waiting list is empty, promotion leaves the class unchanged and reports no attendee promoted.",
+      "reason": "The task explicitly specifies unchanged state and no promotion when nobody is waiting.",
+      "source": "explicit"
+    },
+    {
+      "name": "Support both membership types",
+      "behavior": "With a vacancy and a single waiting attendee, promotion works for a regular member and for a priority member.",
+      "reason": "The task directly requires support for both kinds of membership; a single candidate avoids assuming an unstated priority policy.",
+      "source": "explicit"
+    }
+  ]
+}

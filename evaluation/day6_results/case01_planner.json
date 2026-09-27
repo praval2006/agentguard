@@ -1,0 +1,30 @@
+{
+  "explicit_requirements": [
+    "Starting a queued work order moves it to in_progress.",
+    "Starting a work order retains its description.",
+    "Starting an already in-progress order is harmless.",
+    "Starting a completed order is rejected without changing it."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [],
+  "scenarios": [
+    {
+      "name": "Start a queued work order",
+      "behavior": "Starting a queued order changes its status to in_progress while preserving its description.",
+      "reason": "The task explicitly specifies the transition and description preservation; the context identifies the corresponding state fields.",
+      "source": "explicit"
+    },
+    {
+      "name": "Starting an in-progress order is harmless",
+      "behavior": "Starting an order that is already in_progress does not raise an error or alter its in-progress state or description.",
+      "reason": "The task explicitly calls repeated starting harmless and requires the description to be retained.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject starting a completed order",
+      "behavior": "Attempting to start a completed order is rejected and leaves the entire order unchanged.",
+      "reason": "The task directly prohibits restarting a completed order and requires rejection without changes.",
+      "source": "explicit"
+    }
+  ]
+}
