@@ -8,6 +8,7 @@ Unsupported actions are descriptive records, never executable actions or verdict
 from math import isfinite
 
 MAX_CHECK_ID_CHARS = 128
+MAX_JSON_ASSERTION_PATH_CHARS = 32000
 
 
 def _shape(value, required, optional, location):
@@ -108,6 +109,17 @@ def _validate_assertion(assertion):
         value = assertion["equals"]
         if type(value) is not int or not 100 <= value <= 599:
             raise ValueError("status equals must be an integer from 100 through 599")
+    elif kind in ("json_exists", "json_type"):
+        fields = {"type", "path"} if kind == "json_exists" else {"type", "path", "equals"}
+        _shape(assertion, fields, set(), kind + " assertion")
+        path = assertion["path"]
+        _text(path, kind + ".path")
+        if len(path) > MAX_JSON_ASSERTION_PATH_CHARS or any(
+                not part.strip() for part in path.split(".")):
+            raise ValueError("JSON assertion path exceeds bound or has blank segments")
+        if kind == "json_type" and (type(assertion["equals"]) is not str or
+                assertion["equals"] not in ("string", "number", "integer", "boolean", "null")):
+            raise ValueError("json_type equals must be a supported primitive type")
     elif kind == "json_field":
         _shape(assertion, {"type", "path", "equals"}, set(), "json_field assertion")
         path = assertion["path"]

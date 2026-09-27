@@ -1107,3 +1107,44 @@ success. The acceptance tests and exact scenario associations were explicitly
 trusted for this smoke exercise. No implementation tuning or repeated smoke run
 occurred. Day-5/Day-6 artifacts have no diff and were not rerun. No production code
 changed. Historical work-log prefixes and all prior bytes are preserved exactly.
+
+
+## 28. 2026-09-28 — JSON existence and primitive-type assertions
+
+### Changes and semantics
+
+- Added exact json_exists {type, path} and json_type {type, path, equals} HTTP
+  assertion schemas. New paths use existing dictionary-only dotted-path rules,
+  with a 32000-character bound for these new forms. Legacy schemas are unchanged.
+- json_exists observes presence, including explicit null. Missing paths or a
+  non-object intermediate produce FAIL only with valid available JSON. Unavailable,
+  invalid, or policy-rejected JSON and unusable HTTP observations yield UNVERIFIED.
+- json_type accepts string, number, integer, boolean, null only. Integer includes
+  integral finite floats; number includes finite integer/fractional values; boolean
+  is distinct from both. These are parsed-value semantics, not lexical token
+  validation, and retain existing parser precision limitations.
+- Present wrong types yield FAIL; missing paths/non-object intermediates yield
+  UNVERIFIED for json_type. Objects/arrays are reportable observed types but are
+  not permitted expected types. json_field missing-path behavior is unchanged.
+- New evidence records presence or semantic type without selected values. Paths
+  are bounded to 512 evidence characters with truncation flags; comparison/traversal
+  uses the full validated path. HTTP transport, duplicate-key rejection, JSON
+  bounds, status evidence, aggregation, registered checks, planner, and grounding
+  behavior are unchanged. No composite scenarios added.
+
+### Tests and results
+
+Added 12 tests in tests/test_json_shape_assertions.py with parameterized coverage
+of null/presence, missing and non-object paths, the primitive type matrix including
+booleans and integral floats, unavailable/invalid/oversized JSON, exact schema keys,
+invalid expected types, path limits, bounded non-disclosing evidence, combined
+assertion precedence, legacy equality/status behavior, and duplicate-key policy.
+
+- Focused: python3 -B -m unittest discover -s tests -p test_json_shape_assertions.py -v
+  — 12/12 passed.
+- Full: python3 -m unittest discover -s tests -p 'test_*.py' -v
+  — 243/243 passed (231 existing unchanged and 12 new).
+- Approved escalation allowed existing HTTP regression loopback tests.
+- No evaluation directory diff: Day-5, Day-6, and registered-check smoke artifacts
+  remain unchanged and were not rerun. All historical log prefixes were verified
+  and every pre-existing byte preserved before this append.

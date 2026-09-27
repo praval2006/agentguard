@@ -121,6 +121,10 @@ def verify_observation(scenario: dict, observation=None, *, registry=None,
     json_available = (valid_response and "json" in observation
                       and _json_available(observation["json"]))
     for assertion in scenario["assertions"]:
+        if assertion["type"] in ("json_exists", "json_type"):
+            result["assertions"].append(_verify_json_shape(
+                assertion, observation, valid_response, json_available))
+            continue
         item = {"type": assertion["type"], "verdict": "UNVERIFIED", "reason": None}
         _evidence(item, "expected", assertion["equals"])
         if assertion["type"] == "json_field":
@@ -154,6 +158,50 @@ def verify_observation(scenario: dict, observation=None, *, registry=None,
     else:
         result["verdict"] = "PASS"
     return result
+
+
+def _verify_json_shape(assertion, observation, valid_response, json_available):
+    """Report presence/types only, never selected values. Parsed-value semantics:
+    integral finite floats count as integers; no lexical precision claim is made.
+    Missing paths contradict existence but leave type unobservable.
+    """
+    kind = assertion['type']
+    item = dict(type=kind, verdict='UNVERIFIED', reason=None)
+    _evidence(item, 'path', assertion['path'])
+    if kind == 'json_type':
+        item['expected'] = assertion['equals']
+    if not valid_response:
+        item['reason'] = 'Missing or malformed HTTP-response observation'
+        return item
+    if not json_available:
+        item['reason'] = 'Parsed JSON unavailable, invalid, or exceeds observation bounds'
+        return item
+    value = observation['json']
+    present = True
+    for segment in assertion['path'].split('.'):
+        if type(value) is not dict or segment not in value:
+            present = False
+            break
+        value = value[segment]
+    if kind == 'json_exists':
+        item.update(observed=present, verdict='PASS' if present else 'FAIL')
+        if not present:
+            item['reason'] = 'Requested JSON field is absent'
+        return item
+    if not present:
+        item['reason'] = 'JSON field path is not observable'
+        return item
+    if value is None: observed_type = 'null'
+    elif type(value) is bool: observed_type = 'boolean'
+    elif type(value) is str: observed_type = 'string'
+    elif type(value) is dict: observed_type = 'object'
+    elif type(value) is list: observed_type = 'array'
+    elif type(value) is int or value.is_integer(): observed_type = 'integer'
+    else: observed_type = 'number'
+    matches = assertion['equals'] == observed_type or (
+        assertion['equals'] == 'number' and observed_type == 'integer')
+    item.update(observed_type=observed_type, verdict='PASS' if matches else 'FAIL')
+    return item
 
 
 def _verify_registered(scenario, observation, result, registry, authorizations):
