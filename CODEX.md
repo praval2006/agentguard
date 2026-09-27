@@ -683,3 +683,41 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 The narrow existing sample-app command is executable through the deterministic verifier. No scope deviations: the permitted equivalent existing command form was chosen to reuse the safe primitive rather than broaden command execution. No existing production file changed. No changes were committed or pushed.
+
+
+## 20. 2026-09-27 — Controlled loopback HTTP execution
+
+### Files, API, and policy
+
+- Created `agentguard/http_execution.py` and `tests/test_http_execution.py`. Public API: `execute_http_scenario(scenario, *, base_url)`. Existing test executor, planner, grounding, schema, verifier, recorder, fixtures, and evaluation inputs remain unchanged.
+- Base URL must match exactly `http://127.0.0.1:<port>`, with decimal port 1–65535 and no leading zero. HTTPS, other hosts, DNS names, userinfo, URL paths, queries, fragments, and alternate loopback spellings are rejected. Direct numeric IPv4 socket connection avoids DNS and environment proxy discovery.
+- Scenario path remains origin-form: it must begin with a single slash, be ASCII without whitespace/control characters, backslashes, fragments, or unresolved braces, and contain at most 2048 characters. No substitutions, inferred authentication, endpoint discovery, or cookie/session state.
+- Only existing GET/POST/PUT/PATCH/DELETE methods are used. http.client never follows redirects; 3xx responses are observed directly, including cross-origin Location headers, without fetching the destination.
+- Header policy rejects case-insensitive Host, Content-Length, Transfer-Encoding, Connection, Proxy-Authorization, Proxy-Connection, Keep-Alive, TE, Trailer, Upgrade, Expect, Accept-Encoding, Cookie, Cookie2, and all proxy-prefixed headers. Invalid names, case-duplicate names, control/non-ASCII values, and aggregate header text above 8192 bytes are rejected. The client calculates framing; JSON defaults to application/json unless a safe explicit Content-Type is supplied. Accept-Encoding is fixed to identity.
+
+### Bounds and evidence
+
+- One 2-second shared deadline covers connect/send/response reads. A deadline-aware binary socket reader checks remaining time before every underlying receive, preventing indefinitely renewed read timeouts. Response-header parsing retains standard-library line/count limits. Response body reads retain at most 32768 bytes plus one overflow-detection byte; request JSON is capped at 32768 bytes and uses the verifier's built-in JSON structure bounds.
+- Return envelope: `execution`, `observation`, `result`. Execution metadata contains established, reason, method, status, body_truncated, and json_available. Path/query, authorization values, cookies, and full raw request/response bodies are not copied into metadata. No recorder integration was added.
+- Established observation contains type=http_response and integer status. Only complete, bounded, valid parsed JSON is added as json; invalid/duplicate-key/nonfinite/oversized JSON, incomplete bodies, or unsupported content encoding omit it. Parsed observation JSON can itself contain sensitive application data and is for verification, not automatic logging; reportable assertion evidence remains selected/bounded by the existing verifier.
+- A real 404/500 is an established response and may produce PASS or FAIL according to the assertions. Policy rejection, connection failure, timeout before response establishment, or invalid response framing yields no observation and UNVERIFIED with a concise infrastructure reason. Missing/incomplete body data preserves reliable status evidence and leaves JSON assertions UNVERIFIED. All verdicts are delegated to verify_observation.
+- No external dependency, remote-target support, schema broadening, multistep behavior, or semantics claim beyond observed assertions. No scope deviations; an isolated HTTP helper avoids redesigning the existing test-execution module.
+
+### Tests and results
+
+Added 25 tests using an in-process loopback server: status/JSON outcomes, nested fields, real error statuses, JSON request bodies, custom headers and methods, dangerous headers, URL/path rejection, redirect non-following, timeout/refusal, oversized/non-JSON/malformed/incomplete bodies, nonmutation, verdict delegation, and DNS/proxy independence. An oversized-body test exposed response-stream socket ownership; fixed by giving the reader its own socket handle, closed with the response.
+
+The sandbox initially denied loopback bind. Tests were rerun with approved escalation so the local server could bind; no external network service was used.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 147/147 passed (122 existing and 25 new tests).
+- Sample-app suite: 4/4 passed.
+- Historical work-log prefixes checked; all previous bytes preserved exactly.
+
+### Result
+
+Controlled HTTP execute → observe → verify is ready for review. Existing execution behavior remains intact. No changes were committed or pushed.
