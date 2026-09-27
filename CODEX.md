@@ -721,3 +721,49 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 Controlled HTTP execute → observe → verify is ready for review. Existing execution behavior remains intact. No changes were committed or pushed.
+
+
+## 21. 2026-09-27 — Day-5 controlled subscription integration proof
+
+### Files and controlled interface
+
+- Created `sample_app/subscription_http.py`, `agentguard/subscription_demo.py`, and `tests/test_subscription_demo.py`.
+- The demo-only standard-library HTTP fixture binds to numeric IPv4 loopback on an ephemeral port. Only POST /subscriptions/1/cancel performs cancellation. Each request creates {"status": "active", "premium_access": True}, calls the existing subscription.cancel_subscription function, and returns its result as JSON with HTTP 200. The context manager stops and closes the server even on errors. No persistence, authentication, unrelated feature routes, framework, or dependency was added.
+- The original subscription.py and implementation-side tests remain unchanged. The intentional premium-access defect is preserved; cancellation is not reimplemented in the handler.
+
+### Frozen scenario, execution, and report
+
+- `acceptance_scenario()` returns a fresh dictionary for the frozen explicit requirement: POST /subscriptions/1/cancel; assert HTTP 200, JSON status equals cancelled, and JSON premium_access equals False. Cancellation/access intent comes from the original task; the concrete route, controlled ID, and HTTP status come from the newly supplied fixture contract.
+- `run_demo()` reuses execute_test_scenario with its exact existing allowlisted sample-app command and a temporary JSONL recorder, then starts the fixture and calls execute_http_scenario. No new HTTP client, command execution, verdict calculation, planner/provider integration, or policy broadening was introduced.
+- Run `python3 -m agentguard.subscription_demo` for a structured JSON report. It contains implementation_tests, acceptance, acceptance_execution, repeated_cancellation, and a scope statement. Assertion expected/observed values and verdicts come from the verifier; raw response bodies and test output logs are not copied into the report. Temporary test recording is cleaned up.
+- Repeated cancellation is represented separately as unsupported and passed to verify_observation, producing UNVERIFIED with the fresh-state/single-request limitation. No repeated-cancellation PASS is claimed and no multi-step mechanism is added.
+
+### Actual observations and validation
+
+The real HTTP observation established by the integration test was:
+
+```json
+{"type":"http_response","status":200,"json":{"status":"cancelled","premium_access":true}}
+```
+
+- HTTP status: expected 200, observed 200 → PASS.
+- JSON status: expected cancelled, observed cancelled → PASS.
+- JSON premium_access: expected false, observed true → FAIL.
+- Overall acceptance verdict: FAIL, calculated by the existing verifier from contradictory observation.
+- Existing implementation-test result: PASS with actual return code 0.
+
+Added 7 integration tests covering frozen scenario validation/fresh copies, real endpoint/function delegation, loopback binding, exact response and assertion outcomes, verifier delegation, scenario nonmutation, green existing-test contrast, preserved defect/object identity, non-reimplemented handler behavior, unrelated route rejection, reporting delegation, and repeated-cancellation non-claim.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 154/154 passed (147 existing and 7 new tests).
+- Sample-app implementation suite: 4/4 passed, unchanged.
+- Loopback regression tests ran with approved sandbox escalation; no external service was used.
+- Historical log prefixes checked; all existing work-log bytes preserved exactly.
+
+### Result
+
+The controlled integration demonstrates green implementation tests alongside a real acceptance failure. This is a downstream integration proof, not evidence of general effectiveness or live model planning quality. No scope deviations, existing execution/verification changes, frozen-input changes, or subscription repair. No changes were committed or pushed.
