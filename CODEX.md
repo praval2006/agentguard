@@ -884,3 +884,55 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 - Loopback regression tests used approved sandbox escalation.
 - All historical work-log prefixes were checked; entries 1–22 and every pre-existing byte remain unchanged.
 - No scope deviations. No changes were committed or pushed.
+
+
+## 24. 2026-09-28 — Registered-check trust foundation
+
+### Changes
+
+- Added the registered_check scenario action with exactly type and check_id,
+  bounded to 128 characters. Assertions and extra action authority fields are
+  rejected. Existing scenario variants are unchanged. A reference is not execution
+  authorization or proof of coverage.
+- Added agentguard/check_registry.py with explicit parse_registry(text,
+  repository_root=...) and load_registry(repository_root=..., registry_path=...).
+  Registry locations are caller-approved repository-relative strings; no automatic
+  configuration discovery occurs. Returned frozen dataclasses contain tuples and
+  immutable coverage records.
+- Strict version-1 JSON requires exact fields, unique check and coverage IDs,
+  unittest runner, and a conservative module.Class.test_method target. Bounds:
+  100 checks, 128-character IDs, 512-character cwd/target, 2048-character coverage
+  description, and 262144 UTF-8 bytes. Duplicate JSON keys are rejected.
+- Paths reject absolute/drive/UNC syntax, traversal, backslashes, malformed
+  components, symlink cwd/registry components, missing paths, and wrong file types.
+  Cwd '.' is supported. Paths resolve beneath the trusted caller's canonical root.
+- Coverage metadata is descriptive provenance only. No target imports, subprocess
+  execution, verdicts, filesystem writes, or snapshot/coverage approvals occur in
+  the registry module. No execution integration is implemented in this phase.
+
+### Validation
+
+Added 21 tests in tests/test_check_registry.py covering schema references and
+injected authority, immutable registry data, exact shapes, version/type/size bounds,
+unique IDs, duplicate keys, target/runner restrictions, path confinement, symlinks,
+missing files, and no subprocess execution during parsing/loading.
+
+- Focused: python3 -B -m unittest discover -s tests -p test_check_registry.py -v
+  — 21/21 passed.
+- Full: python3 -m unittest discover -s tests -p 'test_*.py' -v
+  — 193/193 passed (172 existing, unchanged; 21 new).
+- Full regression used approved loopback escalation for existing HTTP tests.
+- Verified no diff under evaluation; Day-5 and Day-6 artifacts were untouched.
+- Historical CODEX.md versions were verified as prefixes before appending; all
+  previous bytes remain unchanged.
+
+### Limitations and result
+
+This is path confinement, not a sandbox or proof of trust. Caller approval is
+required; filesystem checks assume no concurrent mutation and must be repeated
+before future execution. Target syntax does not prove a method exists or selects
+exactly one test. The verifier, acceptance orchestrator, and grounder remain
+unchanged: registered_check is not yet supported by those execution pathways.
+Legacy test_command execution and its sample-app exact allowlist remain unchanged.
+Coverage metadata does not establish acceptance coverage or cause PASS.
+No Day-6 rerun, LLM integration, or capability beyond this foundation was added.

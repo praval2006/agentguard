@@ -7,6 +7,8 @@ Unsupported actions are descriptive records, never executable actions or verdict
 
 from math import isfinite
 
+MAX_CHECK_ID_CHARS = 128
+
 
 def _shape(value, required, optional, location):
     if not isinstance(value, dict):
@@ -80,6 +82,14 @@ def validate_scenario(scenario: dict) -> None:
             _text(argument, "command argument")
         if "assertions" in scenario:
             raise ValueError("test_command scenarios must not contain assertions")
+    elif kind == "registered_check":
+        # Reference validation only: no authorization, coverage proof, or execution.
+        _shape(action, {"type", "check_id"}, set(), "action")
+        _text(action["check_id"], "action.check_id")
+        if len(action["check_id"]) > MAX_CHECK_ID_CHARS:
+            raise ValueError("action.check_id exceeds character limit")
+        if "assertions" in scenario:
+            raise ValueError("registered_check scenarios must not contain assertions")
     elif kind == "unsupported":
         _shape(action, {"type", "explanation"}, set(), "action")
         _text(action["explanation"], "action.explanation")
