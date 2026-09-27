@@ -505,3 +505,40 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 Completed the qualitative Day-2 review and recorded the GO decision with its limitations. No implementation-correctness or independent-benchmark claim is made. No changes were committed or pushed.
+
+
+## 15. 2026-09-27 — Day-3 strict scenario schema checkpoint
+
+### Files and public API
+
+- Created `agentguard/scenarios.py` and `tests/test_scenarios.py`.
+- `validate_scenario(scenario)` returns None on valid dictionaries and raises descriptive ValueError on malformed input, without mutation or execution.
+- `unsupported_scenario(name=..., source=..., reason=..., explanation=...)` constructs and validates a non-executable record.
+
+### Exact schema and design boundaries
+
+- Common required keys: `name`, `source`, `reason`, `action`. Name and reason are nonblank strings; source is exactly `explicit` or `inferred`. Optional `variables` is a dictionary with nonblank string keys and opaque values. No substitution is performed.
+- HTTP action: `type="http_request"`, method in GET/POST/PUT/PATCH/DELETE, and nonblank path beginning with `/`. Optional `json` must be a dictionary; optional `headers` must be a dictionary of string keys and string values. Payload contents are not interpreted.
+- HTTP scenarios require a nonempty `assertions` list. Status assertions contain exactly `type="status"` and integer `equals` in 100–599, excluding booleans. JSON-field assertions contain exactly `type="json_field"`, a nonblank dotted `path` with nonblank segments, and scalar `equals` (string, integer, finite float, boolean, or None). No expression evaluation or array-path language is introduced.
+- Test-command action: exactly `type="test_command"` and `command`, a nonempty list of nonblank string arguments. Assertions are forbidden, including empty lists. Validation establishes representation only, not command safety or availability.
+- Unsupported representation: common fields plus `action={"type": "unsupported", "explanation": <nonblank string>}`. Optional variables remain allowed; assertions are forbidden. This is a descriptive non-executable variant, not a third executable capability or a verdict.
+- Extra fields are rejected at scenario, action, and assertion schema levels. Header names, JSON payload keys, and variable names are data rather than schema fields.
+- No scope deviations. The unsupported action representation and return-None validation API are concrete choices where the request left representation open. Nonblank text and finite scalar numbers clarify strict validation.
+- No filesystem, network, subprocess, environment, or API access occurs in the module. No planner changes, conversion, execution, verifier, verdict logic, dependencies, evaluation-input changes, fixture changes, or infrastructure redesign were introduced.
+
+### Tests and results
+
+Added 21 unit tests covering valid action/assertion variants, placeholder preservation, unsupported records, missing and extra fields, malformed containers, source labels, HTTP methods/paths, assertion requirements, status boundaries, scalar/path validation, command representation, variables, headers, and payload types.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 54/54 passed (33 existing and 21 new tests).
+- Sample-app suite: 4/4 passed.
+- Historical work-log entries were checked and already preserved. This entry is appended with all prior bytes unchanged.
+
+### Result
+
+The first Day-3 schema checkpoint is ready for review. Existing behavior remains unchanged. No changes were committed or pushed.
