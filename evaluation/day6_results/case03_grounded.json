@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Dispatch updates shipment and both inventory counts",
+    "source": "explicit",
+    "reason": "All four related state updates are directly required by the task; the context names the shipment and inventory fields.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Only a Python callable and mutable records are supplied. No HTTP interface or permitted test command can invoke dispatch and observe the shipment and both inventory counts. Direct Python execution and state inspection are outside the frozen schema."
+    }
+  },
+  {
+    "name": "Reject empty tracking without state changes",
+    "source": "explicit",
+    "reason": "The task explicitly requires rejection and preservation of both records for an empty tracking reference.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Establishing rejection and preservation requires invoking the callable and comparing both records. There is no HTTP interface, and direct Python observation is unsupported. The documented development test command is outside the frozen allowlist."
+    }
+  },
+  {
+    "name": "Reject insufficient stock without state changes",
+    "source": "explicit",
+    "reason": "The task directly specifies insufficient on-hand stock as a rejection condition with no changes.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The context provides no supported interface for arranging insufficient stock and observing both records after rejection. Direct callable execution is unsupported and the documented development command is outside the frozen allowlist."
+    }
+  },
+  {
+    "name": "Repeated dispatch does not deduct inventory again",
+    "source": "explicit",
+    "reason": "The task explicitly prohibits a second inventory deduction on repeated dispatch.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "This requires two invocations on the same shipment and comparison of inventory after each. There is no HTTP interface, supported multi-step or direct Python action, or permitted test command for this fixture."
+    }
+  }
+]

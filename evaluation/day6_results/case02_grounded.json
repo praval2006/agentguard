@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Accept both duration limits",
+    "source": "explicit",
+    "reason": "The task explicitly makes both limits inclusive and specifies the successful return information.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The scenario requires both 15-minute and 120-minute requests, but one frozen HTTP scenario represents only one request. The returned ID is also unspecified, and scalar equality assertions cannot express ID presence or integer type without inventing an expected ID. No permitted test command establishes the full behavior."
+    }
+  },
+  {
+    "name": "Accept interior duration increments",
+    "source": "explicit",
+    "reason": "The task permits durations in 15-minute increments throughout the stated range.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The context documents the request and response fields but no expected reservation ID. The frozen assertions cannot check an unspecified ID for presence or type, and there is no reservation lookup to establish creation independently. A single duration/status assertion would omit required behavior. The documented development command is outside the allowlist."
+    }
+  },
+  {
+    "name": "Reject out-of-range durations",
+    "source": "explicit",
+    "reason": "The task explicitly bounds reservation length and specifies rejection without creation.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The HTTP interface does not expose the reservation list after rejection, so absence of reservation creation cannot be observed. The context gives an error field but no exact error text, and the schema has no clarity or nonempty-string assertion. A status-only check would omit planned behavior. No permitted test command covers it."
+    }
+  },
+  {
+    "name": "Reject fractional and off-increment durations",
+    "source": "explicit",
+    "reason": "The task separately requires whole minutes and 15-minute increments.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The full behavior includes fractional and off-increment rejection, a clear error, and no creation. One HTTP action cannot represent the multiple input classes, and the error response does not expose reservation state or a specified error value for scalar equality. The documented development command is outside the allowlist."
+    }
+  },
+  {
+    "name": "Preserve existing reservations on rejection",
+    "source": "inferred",
+    "reason": "The context supplies a mutable reservation list; preserving unrelated entries is a directly relevant consequence of rejecting a new reservation request.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Each documented HTTP request uses an empty list; it cannot supply pre-existing reservations or observe their state after rejection. Direct Python state inspection is not a supported action, and the documented development command is outside the frozen allowlist."
+    }
+  }
+]

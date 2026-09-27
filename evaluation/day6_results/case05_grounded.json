@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Schedule a future UTC announcement",
+    "source": "explicit",
+    "reason": "The task directly requests future UTC scheduling and delivery of the announcement to the team; the context identifies team, body, and due_at inputs.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Only Python scheduling functions and an in-memory job list are documented. There is no HTTP interface or permitted test command for observing stored team, message, and due time, and direct callable execution is unsupported."
+    }
+  },
+  {
+    "name": "Deliver at the due time and never early",
+    "source": "explicit",
+    "reason": "The task explicitly specifies delivery timing and prohibits early delivery; the context supplies time and sender interfaces without defining a polling schedule.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Establishing no early delivery and delivery at the due time requires clock control, scheduler invocations, and sender observation. The frozen schema supplies none of those capabilities; no HTTP interface or permitted test command is available. No delivery-latency policy is assumed."
+    }
+  },
+  {
+    "name": "Repeated scheduler checks do not duplicate delivery",
+    "source": "explicit",
+    "reason": "The task directly requires once-only delivery despite repeated checks.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "This requires observing delivery across repeated scheduler invocations on the same job. The schema has no direct callable, multi-step, or sender-observation mechanism, and the documented development test command is outside the allowlist."
+    }
+  },
+  {
+    "name": "Withdraw a pending announcement before it is due",
+    "source": "explicit",
+    "reason": "The task explicitly permits pre-due withdrawal to prevent delivery.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "This requires scheduling, withdrawal before the due time, and later delivery observations on shared state. No HTTP interface, supported multi-step or clock mechanism, or permitted test command establishes this sequence."
+    }
+  },
+  {
+    "name": "Withdrawal is limited to the selected announcement",
+    "source": "inferred",
+    "reason": "The context uses a shared list with per-job IDs and withdrawal by job ID; isolating that operation is directly relevant to scheduling multiple announcements.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "This requires two jobs, withdrawal of one, and later observation of the other through the sender or job state. The frozen schema cannot execute this Python workflow or observe those records, and the documented development test command is outside the allowlist."
+    }
+  }
+]

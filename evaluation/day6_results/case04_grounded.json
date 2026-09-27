@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Fill one vacancy from the waiting list",
+    "source": "explicit",
+    "reason": "The task explicitly requires one transfer, the selected ID, and the capacity limit, but supplies no selection policy.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The context supplies only a Python callable with mutable lists, not an HTTP interface or permitted test command. The schema cannot directly invoke it or compare list membership, capacity, and returned ID. No candidate-selection policy is assumed."
+    }
+  },
+  {
+    "name": "Leave a full class unchanged",
+    "source": "explicit",
+    "reason": "The task explicitly requires no change or promotion when no seat exists.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Observing unchanged class state and the no-promotion return requires direct callable execution and state comparison. Neither is supported, no HTTP interface exists, and the documented test command is outside the frozen allowlist."
+    }
+  },
+  {
+    "name": "Leave a class with no waiting attendees unchanged",
+    "source": "explicit",
+    "reason": "The task explicitly specifies unchanged state and no promotion when nobody is waiting.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The empty-waiting-list behavior requires callable execution and observation of the retained classroom and return value. There is no supported HTTP interface or permitted test command; direct Python observation is outside the schema."
+    }
+  },
+  {
+    "name": "Support both membership types",
+    "source": "explicit",
+    "reason": "The task directly requires support for both kinds of membership; a single candidate avoids assuming an unstated priority policy.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Checking each membership type requires callable invocations with corresponding classroom state. No HTTP interface or permitted test command is supplied, and the schema has no direct Python or parameterized multi-invocation action. No membership priority policy is assumed."
+    }
+  }
+]
