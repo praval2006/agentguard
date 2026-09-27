@@ -648,3 +648,38 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 The first Day-4 checkpoint is ready for review. No HTTP request or represented command was executed by the verifier. No dependencies or provider were added. No changes were committed or pushed.
+
+
+## 19. 2026-09-27 — Day-4 allowlisted test execution
+
+### Changes and reuse
+
+- Created `agentguard/execution.py` and `tests/test_execution.py`. Public API: `execute_test_scenario(scenario, *, recorder=None)`.
+- Inspected tools.py, runner.py, and their existing tests. Reused `tools.run_tests` unchanged rather than adding subprocess code: it already provides fixed-command execution, timeout, file-backed output capture, bounded recorded evidence, and automatic recording. Reused its scoped root ContextVar, resetting it in finally. The old runner and recorder schemas remain unchanged.
+- Exact allowlist contains only `python3 -m unittest discover -s sample_app/tests -v`, the existing narrow form. No other executable, options, pattern, directory, shell syntax, or Python module is permitted. Actual execution uses the tool's current `sys.executable` with `-B`, never PATH lookup of a model-selected executable. Root `tests` is deliberately not enabled in this checkpoint; only the existing sample-app primitive is exposed.
+- Fixed working directory is the repository root derived from the execution module, not supplied by a caller. Preflight resolves the sample package, test root, and descendants and rejects missing paths or paths escaping the repository. Symlinked package/test roots are rejected even within the repository. Existing ContextVar overrides cannot redirect this API's execution. No public root override was added; tests patch the private root for controlled temporary fixtures.
+- Reused bounds: 10-second timeout, shell=False, stdin disabled, combined output captured to a temporary file, and first 4096 bytes retained by the existing recorder with truncation flag. These are bounded evidence/runtime measures, not a disk quota or a sandbox for Python test behavior. Preflight assumes no concurrent repository mutation. Trusted tests may themselves import code or perform side effects; policy does not prove semantic acceptance coverage.
+
+### Result and failure semantics
+
+- Return keys: `execution`, `observation`, `result`. Execution fields are `established`, `reason`, `command`, `returncode`, `timed_out`, and `output_truncated`. Rejected command text is not echoed. The new envelope does not copy raw output; the existing recorder retains its usual bounded test output and may include traceback source lines.
+- Established executions create exactly `{"type": "test_result", "returncode": <integer>}` and delegate to `verify_observation`; zero yields PASS and actual nonzero yields FAIL.
+- Policy rejection, timeout, launch failure, malformed evidence, unavailable paths, and capture/recording OSError produce no fabricated return code: observation is None and the verifier produces UNVERIFIED with a concise infrastructure reason. The wrapper conservatively catches recording failures; the underlying tool's behavior remains unchanged. Scope restoration occurs even on errors.
+- Malformed or non-test scenarios raise ValueError. No HTTP execution, new dependencies, planner/grounding/schema changes, frozen-input edits, or fixture changes were introduced.
+
+### Tests and results
+
+Added 18 tests covering real passing/failing execution with verifier delegation, recorded evidence, forbidden executables/shell forms/Python code/modules/paths, escaping symlinks, timeout, launch failure, bounded output, invalid scenarios, nonmutation, fixed cwd/no shell, root-scope restoration, malformed evidence, and recorder failure. Controlled temporary fixtures keep the sample app unchanged. An initial failure-fixture typo was corrected before final verification.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 122/122 passed (104 existing and 18 new tests).
+- Sample-app suite: 4/4 passed.
+- Historical work-log prefixes checked; all prior bytes preserved exactly.
+
+### Result
+
+The narrow existing sample-app command is executable through the deterministic verifier. No scope deviations: the permitted equivalent existing command form was chosen to reuse the safe primitive rather than broaden command execution. No existing production file changed. No changes were committed or pushed.
