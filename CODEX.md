@@ -542,3 +542,39 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 The first Day-3 schema checkpoint is ready for review. Existing behavior remains unchanged. No changes were committed or pushed.
+
+
+## 16. 2026-09-27 — Day-3 conservative grounding boundary
+
+### Files and API
+
+- Created `agentguard/grounding.py` and `tests/test_grounding.py`; appended this entry only to existing files.
+- Public API: `ground_scenarios(planner_output, repository_context, *, grounding_provider)` returns validated scenario dictionaries. The injected callable receives `instructions`, `planner_output` (including ambiguities), and `repository_context`. No other evidence is supplied or discovered.
+- Reused the existing planner validator and maximum constants without editing planner.py. Checkpoint-A scenarios.py remains unchanged; no integration defect required a schema modification.
+
+### Validation and relationship guarantees
+
+- Validate the exact planner dictionary shape, required scenario name/behavior/reason/source strings, valid source labels, and nonempty string entries in requirements, inferences, and ambiguities.
+- Reject inputs before the provider call when context is not a string, provider is not callable, or bounds are exceeded. Context allows 32,000 characters, aggregate planner value text allows 32,000 characters, non-scenario lists allow 100 entries each, and scenarios allow the planner maximum of five. Nothing is truncated.
+- Invoke the provider once, including for empty scenario lists. Provider exceptions propagate without retries. Require a list with exactly one result per input scenario; validate each candidate through `validate_scenario` and compare name/source/reason exactly at each position. Invalid contracts raise ValueError; no partial result is returned.
+- Pass a defensive copy to the provider and retain a separate comparison baseline so request mutation cannot alter caller inputs or bypass identity preservation.
+- Provider instructions distinguish WHAT from HOW, forbid invented execution details and silent ambiguity resolution, require evidence for HTTP requests/assertions and explicitly documented existing test commands, and prefer unsupported when details or capabilities are missing. They preserve inferred labels and require relevance as well as grounding.
+- Only the existing HTTP, test-command, and unsupported representations are used. No verdicts, execution, natural-language parsing, repository discovery, variable substitution, external provider, or additional DSL capabilities were implemented.
+- Deterministic checks establish structure and positional metadata correspondence, not semantic evidence support, behavioral equivalence, or command safety. Scenarios with identical preserved metadata cannot be distinguished by metadata comparison alone. Those reasoning obligations remain with the provider; fake-provider tests do not prove real-model grounding quality.
+
+### Tests and results
+
+Added 22 tests for evidenced HTTP and existing-command representations, unsupported retrieval without a supplied route, provider request contents, failures without retry, missing/added/reordered results, name/source/reason changes, malformed inputs and results, schema-validation delegation, size/count boundaries, empty scenarios, mutation isolation, and absence of execution/external reads.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 76/76 passed (54 existing and 22 new tests).
+- Sample-app suite: 4/4 passed.
+- Checked historical work-log prefixes and preserved all pre-existing bytes exactly.
+
+### Result
+
+Checkpoint B is ready for review with no scope deviations. No existing production files changed, including the planner and Checkpoint-A schema. Existing tests, evaluation inputs, and sample fixtures remain unchanged. No changes were committed or pushed.
