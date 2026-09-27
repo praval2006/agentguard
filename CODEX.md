@@ -607,3 +607,44 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 Final Day-3 validation is documented. No deviations from scope: production code, planner/schema/grounding behavior, existing tests, sample app, and frozen evaluation inputs remain unchanged. No changes were committed or pushed.
+
+
+## 18. 2026-09-27 — Day-4 deterministic result/assertion core
+
+### Files and API
+
+- Created `agentguard/verifier.py` and `tests/test_verifier.py`. No existing production modules, tests, fixtures, or evaluation inputs changed.
+- Public API: `verify_observation(scenario, observation=None) -> dict`. Calls existing `validate_scenario` first; malformed scenarios raise its validation errors. Observations are supplied by the caller; the core performs no execution, I/O, environment access, substitution, discovery, or recorder integration, and does not mutate inputs.
+
+### Observation and result contracts
+
+- HTTP observations are plain dictionaries with exactly `type="http_response"`, integer `status` in 100–599, and optional parsed `json`. Missing/invalid status or envelope makes the HTTP observation unestablished. Optional invalid/unavailable JSON makes JSON assertions unobservable while retaining valid status evidence.
+- Command observations contain exactly `type="test_result"` and integer `returncode`. Booleans are rejected as status/return codes. No output logs or extra observation-envelope fields are accepted.
+- JSON observation traversal accepts only built-in JSON value types with finite floats, string dictionary keys, at most 10,000 nodes, depth 32, and 32,000 aggregate string/key characters. Invalid, cyclic, or oversized JSON produces unavailable JSON evidence. Dotted traversal uses dictionaries only, without array indexing or evaluation.
+- Results always contain `name`, `source`, `verdict`, `assertions`, and `reason` (None unless explanatory information is needed). HTTP assertion entries contain `type`, `expected`, `verdict`, `reason`, optional `path`, and `observed` when available. Missing observations omit `observed`; observed null retains `observed=None`. Observed containers contradict scalar expectations and are summarized as `observed_type` object/array without copying their unrelated contents.
+- Expected/observed strings are limited to 512 evidence characters with corresponding `expected_truncated`/`observed_truncated` flags; comparisons occur on full values. Command results add `expected=0` and valid `observed` return code, with an empty assertions list. Unsupported results preserve the full scenario explanation as reason and require no observation.
+- Evidence includes only assertion-selected values, not complete responses, headers, request bodies, variables, command logs, environment state, or unrelated fields. Callers must avoid selecting sensitive values for reportable assertions; this core does not infer whether arbitrary selected scalar text is a secret.
+
+### Verdict rules and boundaries
+
+- Any observed assertion contradiction yields FAIL, even if another assertion is unobservable. Otherwise any UNVERIFIED assertion yields UNVERIFIED; only all-PASS assertions produce PASS.
+- Missing fields/parsed JSON and invalid observations do not become FAIL. Existing null is distinguishable from a missing path. JSON booleans differ from numbers; integers/floats compare as JSON numbers.
+- Valid command return code 0 produces PASS and nonzero produces FAIL. Missing/malformed command evidence produces UNVERIFIED. Unsupported always produces UNVERIFIED.
+- No scope deviations. Strict envelope keys, bounded JSON validation/evidence, and result-key names are implementation choices within the requested core. Observation authenticity and association with the scenario are caller obligations; structural validation is not proof that execution occurred. The reasoning model does not assign verdicts.
+
+### Tests and results
+
+Added 28 focused unit tests covering assertion outcomes, dotted traversal, null versus missing values, aggregation precedence, commands, unsupported explanation preservation, malformed scenarios/observations, status boundaries, boolean exclusion, numeric equality, containers, cycles, bounds, truncation, nonmutation, deterministic results, and no external access.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 104/104 passed (76 existing and 28 new tests).
+- Sample-app suite: 4/4 passed.
+- Historical work-log prefixes were checked; all prior bytes are preserved exactly.
+
+### Result
+
+The first Day-4 checkpoint is ready for review. No HTTP request or represented command was executed by the verifier. No dependencies or provider were added. No changes were committed or pushed.
