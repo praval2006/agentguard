@@ -767,3 +767,41 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 The controlled integration demonstrates green implementation tests alongside a real acceptance failure. This is a downstream integration proof, not evidence of general effectiveness or live model planning quality. No scope deviations, existing execution/verification changes, frozen-input changes, or subscription repair. No changes were committed or pushed.
+
+
+## 22. 2026-09-27 — Day-5B deterministic acceptance orchestrator
+
+### Files and API
+
+- Created `agentguard/acceptance.py` and `tests/test_acceptance.py`; appended this log entry without changing prior bytes.
+- Public API: `run_acceptance(scenarios, *, base_url=None, recorder=None) -> dict`, returning `{"verdict": ..., "results": [execution envelopes in input order]}`.
+- Accepts only a list of at most five already-grounded scenario dictionaries, using the existing planner maximum constant. Validates every scenario before any execution, so a malformed later entry cannot cause earlier actions to execute. Invalid containers/scenarios and oversized lists fail clearly without truncation.
+
+### Dispatch and aggregation
+
+- HTTP scenarios use execute_http_scenario with the supplied base_url. Missing, blank, or non-string target configuration produces a no-observation verifier result and bounded execution metadata explaining target unavailability. Nonblank URL policy decisions remain entirely with the existing HTTP executor.
+- Test-command scenarios use execute_test_scenario with the supplied recorder, without changing command policy or implementing subprocess execution.
+- Unsupported scenarios invoke verify_observation without execution, normalized into execution established=False, bounded explanation, observation=None, and the unmodified verifier result. Metadata explanations over 512 characters have a truncation flag; original verifier explanations remain preserved in results.
+- Individual scenario/assertion verdicts remain exclusively owned by existing executors/verifier. The orchestrator reads their final verdicts, preserves envelopes/order without duplicating raw logs, and only aggregates: FAIL takes precedence over UNVERIFIED, otherwise a nonempty all-PASS list is PASS. An empty list returns UNVERIFIED with empty results.
+- Unknown returned verdict labels fail clearly; unexpected executor exceptions propagate rather than silently dropping scenarios. Inputs are read only. No model/planner/grounder calls, provider, reasoning, retries, variable substitution, or multi-step scenario behavior was introduced.
+- Frozen demo, execution/verification modules, runner, fixtures, evaluation inputs, and existing tests are unchanged. No compatibility defect required modification of frozen components.
+
+### Tests and results
+
+Added 18 tests for empty/unsupported behavior, aggregation combinations, dispatch and recorder forwarding, verdict ownership, order/nonmutation, validation before side effects, scenario-count bounds, missing and invalid HTTP configuration, preserved infrastructure inability, bounded metadata, error handling, and a real controlled subscription HTTP integration.
+
+The integration observes cancelled status and premium_access=True through the existing fixture and executor. The verifier returns PASS/PASS/FAIL for its assertions; the orchestrator preserves that FAIL, preserves the separate unsupported UNVERIFIED, and aggregates overall FAIL without assigning an individual verdict.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 172/172 passed (154 existing and 18 new tests).
+- Sample-app implementation suite: 4/4 passed, unchanged.
+- Loopback tests used approved sandbox escalation; no external network dependency.
+- Historical work-log prefixes checked and all pre-existing bytes preserved exactly.
+
+### Result
+
+The generic deterministic orchestration checkpoint is ready for review. No scope deviations, planner/grounder/model changes, intentional defect repair, or product-effectiveness claims. No changes were committed or pushed.
