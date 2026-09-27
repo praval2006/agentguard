@@ -578,3 +578,32 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 Checkpoint B is ready for review with no scope deviations. No existing production files changed, including the planner and Checkpoint-A schema. Existing tests, evaluation inputs, and sample fixtures remain unchanged. No changes were committed or pushed.
+
+
+## 17. 2026-09-27 — Final Day-3 qualitative grounding validation
+
+### Changes and observations
+
+- Created `evaluation/day3_grounding_validation.md` using only frozen case 08 (API pagination), case 10 (resource deletion), and case 01 (subscription cancellation) task/context inputs as application evidence. Recorded fresh planner-style outputs, grounded representations, missing evidence, unresolved ambiguities, and Day-4 implications.
+- Considered 11 scenarios: four pagination, four resource deletion, and three subscription cancellation. Results: 0 HTTP, 0 test-command, 11 unsupported representations. Explicit/inferred distinctions, order, and name/source/reason were preserved.
+- Pagination SQL and handler names do not establish a public route. The resource task requests DELETE /reports/{id}, but context does not evidence a bound delete route, authentication inputs, or fixtures; the detail handler's 404 cannot substitute for deletion evidence. Subscription context supplies only a Python function, which is outside current execution capabilities. None supplies an existing test command.
+- Preserved useful acceptance intent instead of inventing endpoints, commands, identifiers, or runtime values. Symbolic variables cannot establish missing mechanisms or fixture guarantees. Multi-step and collection checks also exceed the current single-action/scalar-assertion representation unless a supported existing command covers them.
+- This is qualitative engineering validation, not an independent benchmark or proof of correctness. It demonstrates conservative abstention in these authored outputs, not successful execution or general real-provider grounding reliability. Day 4 needs explicitly evidenced execution contracts and setup for executable demonstrations while preserving honest unsupported handling.
+
+### Validation and results
+
+- Validated three planner outputs through `plan_acceptance` and three grounding lists through `ground_scenarios`, using local injected callables returning the recorded dictionaries. Separately validated all 11 representations with `validate_scenario`. No external provider was added and no represented HTTP or command action was executed.
+- Ran the existing suites after creating the document:
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard: 76/76 passed.
+- Sample app: 4/4 passed.
+- Historical log prefixes were checked; all previous bytes were preserved exactly before appending.
+
+### Result
+
+Final Day-3 validation is documented. No deviations from scope: production code, planner/schema/grounding behavior, existing tests, sample app, and frozen evaluation inputs remain unchanged. No changes were committed or pushed.
