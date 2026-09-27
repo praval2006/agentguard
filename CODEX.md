@@ -422,3 +422,35 @@ No changes were committed or pushed.
 - `python3 -m unittest discover -s tests -p "test_*.py" -v`: 23/23 passed.
 - `python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v`: 4/4 passed.
 - The independent task artifact is ready for review. No changes were committed.
+
+
+## 12. 2026-09-27 — Day-2 Acceptance Planner prototype
+
+### Changes and contract
+
+- Created `agentguard/planner.py` with `plan_acceptance(task_text, repository_context, *, reasoning_provider)`. The caller supplies selected repository context as text; no indexing or file access is performed by the planner.
+- The injected callable receives one dictionary containing `instructions`, `task_text`, and `repository_context`, and returns structured Python data. The provider owns any model transport or JSON parsing. There is no default provider, external SDK, API-key requirement, retry, or fixture-specific planning rule. Provider errors propagate.
+- Generic instructions distinguish explicit behaviours directly stated by the original task from inferred behaviours suggested by context or consequences of requirements. Unresolved product decisions belong in `ambiguities` and must not silently become acceptance failures. Current implementation behaviour is not the source of product requirements.
+- Output has exactly `explicit_requirements`, `inferred_behaviors`, `ambiguities`, and `scenarios`. The first three are lists of nonempty strings. Each scenario has exactly `name`, `behavior`, `reason`, and `source`, all nonempty strings; source is `explicit` or `inferred`. The reason explains grounding.
+- At most five scenarios are accepted, in provider-assigned highest-priority-first order. Excess scenarios fail validation rather than being silently truncated. Empty lists are allowed. Unknown fields are rejected, including extra verdict fields.
+- Input assumptions: task and context must be strings, task must be nonblank, and each input is limited to 32,000 characters. Empty context is allowed. Oversized text is rejected without truncation. This is a prototype character bound, not a model token budget.
+- Malformed output raises a descriptive `ValueError`. Validation covers required/exact keys, container and entry types, nonempty text, scenario count, and allowed source labels. It does not establish semantic grounding, coverage, or truth.
+- No verdicts or acceptance checks are executed. Existing implementation, fixtures, tests, runner, and recorder remain unchanged. No verifier or formal Day-3 scenario module was created.
+
+### Tests
+
+Created `tests/test_planner.py` with 10 tests covering generic request forwarding, preserved priority and grounding categories, the subscription smoke pipeline, empty plans/context, five/six-scenario boundaries, missing/extra fields, malformed field and scenario types, source labels, invalid inputs, text-size boundaries, and provider failure propagation without retries.
+
+The subscription smoke test reads `tasks/subscription_cancellation.md` and supplies the subscription function code with explanatory fixture-answer docstrings omitted. Its deterministic fake provider returns the three explicit task behaviours: cancelled state, removal of premium access, and safe repeated cancellation. It does not execute these behaviours.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 33/33 passed (23 existing and 10 new planner tests).
+- Sample-app suite: 4/4 passed.
+
+### Result and limitations
+
+Fake-provider tests establish engineering correctness of the planner pipeline and contract, not real planner intelligence. The product hypothesis—useful, independently grounded scenarios for unfamiliar tasks—remains unevaluated and requires separate real-model evaluation across multiple tasks. Previous work-log bytes are preserved exactly. No changes were committed or pushed.
