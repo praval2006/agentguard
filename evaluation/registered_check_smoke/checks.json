@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "checks": [
+    {
+      "id": "document.archive_flag",
+      "runner": "unittest",
+      "cwd": ".",
+      "target": "tests.test_document.DocumentAcceptance.test_archive_flag",
+      "coverage": {
+        "id": "document.archive_flag.v1",
+        "description": "Archiving a document sets archived to true."
+      }
+    },
+    {
+      "id": "document.archive_readonly",
+      "runner": "unittest",
+      "cwd": ".",
+      "target": "tests.test_document.DocumentAcceptance.test_archive_disables_editing",
+      "coverage": {
+        "id": "document.archive_readonly.v1",
+        "description": "Archiving a document sets editable to false."
+      }
+    }
+  ]
+}

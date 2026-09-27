@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Archiving a document sets archived to true.",
+    "source": "explicit",
+    "reason": "Archiving a document sets archived to true.",
+    "action": {
+      "type": "registered_check",
+      "check_id": "document.archive_flag"
+    }
+  },
+  {
+    "name": "Archiving a document sets editable to false.",
+    "source": "explicit",
+    "reason": "Archiving a document sets editable to false.",
+    "action": {
+      "type": "registered_check",
+      "check_id": "document.archive_readonly"
+    }
+  }
+]

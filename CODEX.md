@@ -1060,3 +1060,50 @@ repository snapshot, source freshness, or reviewer/digest mechanism is claimed.
 A same-ID code change is not detected by this association. Tests and registry inputs
 remain trusted executable/configuration data. No planner/grounder/API integration,
 legacy allowlist change, HTTP semantic change, or frozen-artifact modification.
+
+
+## 27. 2026-09-28 — Fresh registered-check acceptance smoke validation
+
+### Purpose and methodology
+
+Created evaluation/registered_check_smoke/ with a minimal document archive fixture,
+explicit requirements, two unittest acceptance checks, checks.json, scenarios.json,
+trusted authorizations.json, and run_smoke.py. All fixture inputs and requirements
+were written before the first execution and were not changed after observing it.
+The controlled implementation sets archived to true but deliberately retains editable.
+This fixture is outside sample_app and separate from Day-5/Day-6 historical inputs.
+
+The harness calls only the actual run_acceptance integration to obtain results;
+it does not invoke the verifier directly or calculate verdicts. First returned
+results are preserved in result.json; the harness refuses to overwrite them.
+
+### First execution and evidence
+
+Executed once: python3 -B -m evaluation.registered_check_smoke.run_smoke.
+The first run completed without infrastructure failure or repair.
+
+- document.archive_flag / document.archive_flag.v1: authorization matched;
+  status success, tests_run=1, failures=0, errors=0, skips=0; verdict PASS.
+- document.archive_readonly / document.archive_readonly.v1: authorization matched;
+  status assertion_failure, tests_run=1, failures=1, errors=0, skips=0; verdict FAIL.
+- Both runner processes returned 0, reporting their distinct test outcomes through
+  the private structured channel. Neither timed out or truncated output.
+- Overall deterministic acceptance verdict: FAIL.
+
+Scenario identities and coverage provenance are preserved alongside counts and
+statuses. No stdout parsing or manually assigned verdicts were used.
+
+### Regression and limitations
+
+After preserving the smoke result, ran separately:
+python3 -m unittest discover -s tests -p 'test_*.py' -v — 231/231 passed.
+Approved escalation allowed existing HTTP regression tests to bind loopback.
+The smoke assertions are not counted as regression tests.
+
+This is controlled trusted-check execution validation, not autonomous missing-test
+invention, autonomous bug discovery, arbitrary repository support, semantic
+completeness, secure sandboxing, proof of correctness, or independent benchmark
+success. The acceptance tests and exact scenario associations were explicitly
+trusted for this smoke exercise. No implementation tuning or repeated smoke run
+occurred. Day-5/Day-6 artifacts have no diff and were not rerun. No production code
+changed. Historical work-log prefixes and all prior bytes are preserved exactly.

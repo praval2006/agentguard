@@ -1,0 +1,12 @@
+[
+  [
+    "{\"action\":{\"check_id\":\"document.archive_flag\",\"type\":\"registered_check\"},\"name\":\"Archiving a document sets archived to true.\",\"reason\":\"Archiving a document sets archived to true.\",\"source\":\"explicit\"}",
+    "document.archive_flag",
+    "document.archive_flag.v1"
+  ],
+  [
+    "{\"action\":{\"check_id\":\"document.archive_readonly\",\"type\":\"registered_check\"},\"name\":\"Archiving a document sets editable to false.\",\"reason\":\"Archiving a document sets editable to false.\",\"source\":\"explicit\"}",
+    "document.archive_readonly",
+    "document.archive_readonly.v1"
+  ]
+]

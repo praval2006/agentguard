@@ -1,0 +1,89 @@
+{
+  "verdict": "FAIL",
+  "results": [
+    {
+      "execution": {
+        "established": true,
+        "status": "success",
+        "check_id": "document.archive_flag",
+        "coverage_id": "document.archive_flag.v1",
+        "coverage_authorized": true,
+        "reason": "Authorized check completed one successful test"
+      },
+      "observation": {
+        "check_id": "document.archive_flag",
+        "coverage_id": "document.archive_flag.v1",
+        "target": "tests.test_document.DocumentAcceptance.test_archive_flag",
+        "status": "success",
+        "returncode": 0,
+        "timed_out": false,
+        "output_truncated": false,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0
+      },
+      "result": {
+        "name": "Archiving a document sets archived to true.",
+        "source": "explicit",
+        "verdict": "PASS",
+        "assertions": [],
+        "reason": "Authorized check completed one successful test",
+        "check_id": "document.archive_flag",
+        "coverage_id": "document.archive_flag.v1",
+        "coverage_authorized": true,
+        "execution_status": "success",
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0
+      }
+    },
+    {
+      "execution": {
+        "established": true,
+        "status": "assertion_failure",
+        "check_id": "document.archive_readonly",
+        "coverage_id": "document.archive_readonly.v1",
+        "coverage_authorized": true,
+        "reason": "Authorized check observed an assertion failure"
+      },
+      "observation": {
+        "check_id": "document.archive_readonly",
+        "coverage_id": "document.archive_readonly.v1",
+        "target": "tests.test_document.DocumentAcceptance.test_archive_disables_editing",
+        "status": "assertion_failure",
+        "returncode": 0,
+        "timed_out": false,
+        "output_truncated": false,
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0
+      },
+      "result": {
+        "name": "Archiving a document sets editable to false.",
+        "source": "explicit",
+        "verdict": "FAIL",
+        "assertions": [],
+        "reason": "Authorized check observed an assertion failure",
+        "check_id": "document.archive_readonly",
+        "coverage_id": "document.archive_readonly.v1",
+        "coverage_authorized": true,
+        "execution_status": "assertion_failure",
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "expected_failures": 0,
+        "unexpected_successes": 0
+      }
+    }
+  ]
+}
