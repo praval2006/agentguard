@@ -479,3 +479,29 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 - Verified exactly 10 case directories, each containing exactly `task.md` and `context.txt` (20 input files total), and 70 empty review fields across 10 results sections.
 - Reviewed all case inputs for answer leakage and confirmed the subscription task matches its source byte-for-byte.
 - No changes were committed or pushed. Dataset is ready for review.
+
+
+## 14. 2026-09-27 — Completed Day-2 planner evaluation and GO decision
+
+### Changes and findings
+
+- Updated `evaluation/planner_results.md` with qualitative reviews of all 10 completed cases, covering grounding, usefulness, unsupported observations, ambiguity handling, testability, and reviewer notes. No numeric scores were introduced.
+- All 10 cases produced generally grounded and useful acceptance scenarios. Repository-aware inference extended beyond task paraphrasing: password-reset credential persistence, cart persistence with detached dictionaries, normalized email uniqueness, blob + SQL cleanup, and timestamp-tie traversal were strong examples. Account-deletion and notification security-alert ambiguity handling were also particularly useful.
+- Case 05 revealed mild over-inference: CSRF preservation was repository-grounded but potentially peripheral to the logout request. Day-3 grounding work should require both repository support and direct relevance to the requested change. The planner generally kept unresolved product decisions separate from acceptance requirements.
+- Decision: GO to Day 3 scenario schema and grounding work. This is an engineering validation set, not an independent benchmark, because Codex helped generate the cases and responses were produced in the same conversation. Day 6 should include genuinely unfamiliar tasks with fresh context.
+- Reviews use the completed conversation responses; case 07 uses the later complete-context response. Raw model-output sections were empty in the repository and remain empty. No outputs were fabricated or reconstructed, and no new model evaluation or acceptance execution occurred during this documentation update.
+- Only evaluation documentation and this appended entry changed. Production code, planner behavior, evaluation inputs, and tests remain unchanged. Historical work-log versions were checked and already preserved; all prior bytes remain intact.
+
+### Validation
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard suite: 33/33 passed.
+- Sample-app suite: 4/4 passed.
+
+### Result
+
+Completed the qualitative Day-2 review and recorded the GO decision with its limitations. No implementation-correctness or independent-benchmark claim is made. No changes were committed or pushed.
