@@ -1,0 +1,75 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "Only Python scheduling functions and an in-memory job list are documented. There is no HTTP interface or permitted test command for observing stored team, message, and due time, and direct callable execution is unsupported."
+      },
+      "observation": null,
+      "result": {
+        "name": "Schedule a future UTC announcement",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Only Python scheduling functions and an in-memory job list are documented. There is no HTTP interface or permitted test command for observing stored team, message, and due time, and direct callable execution is unsupported."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Establishing no early delivery and delivery at the due time requires clock control, scheduler invocations, and sender observation. The frozen schema supplies none of those capabilities; no HTTP interface or permitted test command is available. No delivery-latency policy is assumed."
+      },
+      "observation": null,
+      "result": {
+        "name": "Deliver at the due time and never early",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Establishing no early delivery and delivery at the due time requires clock control, scheduler invocations, and sender observation. The frozen schema supplies none of those capabilities; no HTTP interface or permitted test command is available. No delivery-latency policy is assumed."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "This requires observing delivery across repeated scheduler invocations on the same job. The schema has no direct callable, multi-step, or sender-observation mechanism, and the documented development test command is outside the allowlist."
+      },
+      "observation": null,
+      "result": {
+        "name": "Repeated scheduler checks do not duplicate delivery",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "This requires observing delivery across repeated scheduler invocations on the same job. The schema has no direct callable, multi-step, or sender-observation mechanism, and the documented development test command is outside the allowlist."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "This requires scheduling, withdrawal before the due time, and later delivery observations on shared state. No HTTP interface, supported multi-step or clock mechanism, or permitted test command establishes this sequence."
+      },
+      "observation": null,
+      "result": {
+        "name": "Withdraw a pending announcement before it is due",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "This requires scheduling, withdrawal before the due time, and later delivery observations on shared state. No HTTP interface, supported multi-step or clock mechanism, or permitted test command establishes this sequence."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "This requires two jobs, withdrawal of one, and later observation of the other through the sender or job state. The frozen schema cannot execute this Python workflow or observe those records, and the documented development test command is outside the allowlist."
+      },
+      "observation": null,
+      "result": {
+        "name": "Withdrawal is limited to the selected announcement",
+        "source": "inferred",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "This requires two jobs, withdrawal of one, and later observation of the other through the sender or job state. The frozen schema cannot execute this Python workflow or observe those records, and the documented development test command is outside the allowlist."
+      }
+    }
+  ]
+}

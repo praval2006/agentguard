@@ -1,0 +1,61 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "Only a Python callable and mutable records are supplied. No HTTP interface or permitted test command can invoke dispatch and observe the shipment and both inventory counts. Direct Python execution and state inspection are outside the frozen schema."
+      },
+      "observation": null,
+      "result": {
+        "name": "Dispatch updates shipment and both inventory counts",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Only a Python callable and mutable records are supplied. No HTTP interface or permitted test command can invoke dispatch and observe the shipment and both inventory counts. Direct Python execution and state inspection are outside the frozen schema."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Establishing rejection and preservation requires invoking the callable and comparing both records. There is no HTTP interface, and direct Python observation is unsupported. The documented development test command is outside the frozen allowlist."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject empty tracking without state changes",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Establishing rejection and preservation requires invoking the callable and comparing both records. There is no HTTP interface, and direct Python observation is unsupported. The documented development test command is outside the frozen allowlist."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The context provides no supported interface for arranging insufficient stock and observing both records after rejection. Direct callable execution is unsupported and the documented development command is outside the frozen allowlist."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject insufficient stock without state changes",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The context provides no supported interface for arranging insufficient stock and observing both records after rejection. Direct callable execution is unsupported and the documented development command is outside the frozen allowlist."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "This requires two invocations on the same shipment and comparison of inventory after each. There is no HTTP interface, supported multi-step or direct Python action, or permitted test command for this fixture."
+      },
+      "observation": null,
+      "result": {
+        "name": "Repeated dispatch does not deduct inventory again",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "This requires two invocations on the same shipment and comparison of inventory after each. There is no HTTP interface, supported multi-step or direct Python action, or permitted test command for this fixture."
+      }
+    }
+  ]
+}

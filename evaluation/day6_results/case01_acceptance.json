@@ -1,0 +1,47 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "The HTTP route and state transition are documented, but no concrete description value is supplied. Inventing one is prohibited, and the frozen executor does not substitute symbolic values or compare a returned field with a request variable. The full transition-and-description-preservation check therefore lacks supported concrete assertion inputs. The documented development test command is outside the frozen allowlist."
+      },
+      "observation": null,
+      "result": {
+        "name": "Start a queued work order",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The HTTP route and state transition are documented, but no concrete description value is supplied. Inventing one is prohibited, and the frozen executor does not substitute symbolic values or compare a returned field with a request variable. The full transition-and-description-preservation check therefore lacks supported concrete assertion inputs. The documented development test command is outside the frozen allowlist."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The HTTP route accepts an in_progress order, but the context supplies no concrete description value for the required preservation assertion. Symbolic input/output equality is not supported by the frozen executor. Checking status alone would omit part of the planned behavior, and the documented development test command is outside the frozen allowlist."
+      },
+      "observation": null,
+      "result": {
+        "name": "Starting an in-progress order is harmless",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The HTTP route accepts an in_progress order, but the context supplies no concrete description value for the required preservation assertion. Symbolic input/output equality is not supported by the frozen executor. Checking status alone would omit part of the planned behavior, and the documented development test command is outside the frozen allowlist."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The error response exposes only an error string, not the order after rejection. There is no order lookup or supported state observation to establish that the entire order remained unchanged. HTTP rejection alone would not establish the full behavior; direct callable inspection and the documented development test command are not available through the frozen execution boundary."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject starting a completed order",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The error response exposes only an error string, not the order after rejection. There is no order lookup or supported state observation to establish that the entire order remained unchanged. HTTP rejection alone would not establish the full behavior; direct callable inspection and the documented development test command are not available through the frozen execution boundary."
+      }
+    }
+  ]
+}

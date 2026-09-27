@@ -1,0 +1,61 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "The context supplies only a Python callable with mutable lists, not an HTTP interface or permitted test command. The schema cannot directly invoke it or compare list membership, capacity, and returned ID. No candidate-selection policy is assumed."
+      },
+      "observation": null,
+      "result": {
+        "name": "Fill one vacancy from the waiting list",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The context supplies only a Python callable with mutable lists, not an HTTP interface or permitted test command. The schema cannot directly invoke it or compare list membership, capacity, and returned ID. No candidate-selection policy is assumed."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Observing unchanged class state and the no-promotion return requires direct callable execution and state comparison. Neither is supported, no HTTP interface exists, and the documented test command is outside the frozen allowlist."
+      },
+      "observation": null,
+      "result": {
+        "name": "Leave a full class unchanged",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Observing unchanged class state and the no-promotion return requires direct callable execution and state comparison. Neither is supported, no HTTP interface exists, and the documented test command is outside the frozen allowlist."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The empty-waiting-list behavior requires callable execution and observation of the retained classroom and return value. There is no supported HTTP interface or permitted test command; direct Python observation is outside the schema."
+      },
+      "observation": null,
+      "result": {
+        "name": "Leave a class with no waiting attendees unchanged",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The empty-waiting-list behavior requires callable execution and observation of the retained classroom and return value. There is no supported HTTP interface or permitted test command; direct Python observation is outside the schema."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Checking each membership type requires callable invocations with corresponding classroom state. No HTTP interface or permitted test command is supplied, and the schema has no direct Python or parameterized multi-invocation action. No membership priority policy is assumed."
+      },
+      "observation": null,
+      "result": {
+        "name": "Support both membership types",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Checking each membership type requires callable invocations with corresponding classroom state. No HTTP interface or permitted test command is supplied, and the schema has no direct Python or parameterized multi-invocation action. No membership priority policy is assumed."
+      }
+    }
+  ]
+}
