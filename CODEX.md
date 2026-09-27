@@ -805,3 +805,82 @@ python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
 ### Result
 
 The generic deterministic orchestration checkpoint is ready for review. No scope deviations, planner/grounder/model changes, intentional defect repair, or product-effectiveness claims. No changes were committed or pushed.
+
+
+## 23. 2026-09-27 — Day-5C end-to-end acceptance reasoning proof
+
+### Methodology
+
+This was a controlled end-to-end reasoning experiment for the subscription-cancellation task. The original task remained the source of product requirements. `evaluation/day5c_subscription_context.md` supplied bounded neutral repository/interface context without revealing the runtime premium_access value after cancellation, identifying the intentional defect, or stating an expected AgentGuard verdict.
+
+Codex acted manually as the injected reasoning provider for the planner and grounder. AgentGuard did not autonomously call a model API. Planner output was frozen before grounding; grounding output was frozen before execution. Both outputs were subsequently saved unchanged as JSON before execution. Neither reasoning artifact was regenerated or revised after observing runtime behavior.
+
+The reasoning calls were instructed to use only their supplied inputs. This was performed in the existing project conversation, so it was not an independently blinded evaluation free of prior project context.
+
+### Planner result
+
+The planner independently proposed three explicit acceptance behaviors from the task:
+
+1. Active subscription becomes cancelled.
+2. Cancellation removes premium access.
+3. Repeated cancellation remains safe and consistent.
+
+It specifically proposed checking that premium_access becomes false, while distinguishing that observable state field from broader premium-feature enforcement that the supplied context could not establish.
+
+### Grounding result
+
+- “Active subscription becomes cancelled” used the documented POST /subscriptions/1/cancel interface, with HTTP 200 and status == "cancelled" assertions.
+- “Cancellation removes premium access” used the same endpoint, with HTTP 200 and premium_access == false assertions.
+- “Repeated cancellation remains safe and consistent” became unsupported: each documented HTTP request creates fresh state, and the current schema has no justified same-subscription multi-step mechanism or supplied existing test command for this behavior.
+
+No endpoint, command, multi-step capability, or verdict was invented. Scenario names, sources, reasons, and order were preserved between the reasoning outputs.
+
+### Deterministic execution
+
+The minimal harness loaded the frozen grounded scenarios unchanged and passed them to the existing `run_acceptance(...)` pipeline with the existing loopback subscription server. The pipeline validated the scenario dictionaries and used its existing executors and verifier. The existing fixture produced the real HTTP observation:
+
+```json
+{"status":"cancelled","premium_access":true}
+```
+
+- Active subscription becomes cancelled → PASS.
+  - HTTP status: expected 200, observed 200.
+  - status: expected "cancelled", observed "cancelled".
+- Cancellation removes premium access → FAIL.
+  - HTTP status: expected 200, observed 200.
+  - premium_access: expected false, observed true.
+- Repeated cancellation remains safe and consistent → UNVERIFIED.
+  - Current evidence/execution capability cannot establish repeated cancellation of the same subscription.
+
+Overall AgentGuard acceptance verdict: FAIL. Individual verdicts came from the existing deterministic verifier and aggregation from the existing orchestrator; neither the reasoning model nor the execution harness assigned them. The harness ran once and its exact JSON result was preserved.
+
+### Green-test contrast
+
+The unchanged sample-app implementation suite ran 4/4 PASS after the experiment. This controlled experiment therefore demonstrates green implementation tests alongside an independently derived acceptance failure. The intentional subscription behavior and existing tests were not modified.
+
+### Artifacts
+
+- `evaluation/day5c_subscription_context.md`
+- `evaluation/day5c_planner_output.json`
+- `evaluation/day5c_grounded_scenarios.json`
+- `evaluation/day5c_execute.py`
+- `evaluation/day5c_acceptance_result.json`
+
+### Claim boundary
+
+This is a controlled end-to-end reasoning proof: a real reasoning model produced useful planning/grounding artifacts, and AgentGuard validated the grounded scenario representations and executed the supported checks. Schema validation does not itself prove semantic grounding. This is not evidence of general effectiveness across arbitrary repositories and is not an autonomous model-provider integration. Fresh unfamiliar tasks are still required for broader validation.
+
+### Documentation checkpoint validation
+
+This checkpoint appends documentation only. No Day-5C artifact or implementation/test file was modified; reasoning outputs were not regenerated and the Day-5C harness was not rerun. No model/API integration was added, and nothing was committed or pushed. Regression results are recorded below after running the requested suites.
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+python3 -m unittest discover -s sample_app/tests -p "test_*.py" -v
+```
+
+- AgentGuard regression suite: 172/172 passed.
+- Sample-app implementation suite: 4/4 passed, unchanged.
+- Loopback regression tests used approved sandbox escalation.
+- All historical work-log prefixes were checked; entries 1–22 and every pre-existing byte remain unchanged.
+- No scope deviations. No changes were committed or pushed.

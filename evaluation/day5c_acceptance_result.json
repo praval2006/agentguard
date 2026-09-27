@@ -1,0 +1,101 @@
+{
+  "verdict": "FAIL",
+  "results": [
+    {
+      "execution": {
+        "established": true,
+        "reason": null,
+        "method": "POST",
+        "status": 200,
+        "body_truncated": false,
+        "json_available": true
+      },
+      "observation": {
+        "type": "http_response",
+        "status": 200,
+        "json": {
+          "status": "cancelled",
+          "premium_access": true
+        }
+      },
+      "result": {
+        "name": "Active subscription becomes cancelled",
+        "source": "explicit",
+        "verdict": "PASS",
+        "assertions": [
+          {
+            "type": "status",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": 200,
+            "observed": 200
+          },
+          {
+            "type": "json_field",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": "cancelled",
+            "path": "status",
+            "observed": "cancelled"
+          }
+        ],
+        "reason": null
+      }
+    },
+    {
+      "execution": {
+        "established": true,
+        "reason": null,
+        "method": "POST",
+        "status": 200,
+        "body_truncated": false,
+        "json_available": true
+      },
+      "observation": {
+        "type": "http_response",
+        "status": 200,
+        "json": {
+          "status": "cancelled",
+          "premium_access": true
+        }
+      },
+      "result": {
+        "name": "Cancellation removes premium access",
+        "source": "explicit",
+        "verdict": "FAIL",
+        "assertions": [
+          {
+            "type": "status",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": 200,
+            "observed": 200
+          },
+          {
+            "type": "json_field",
+            "verdict": "FAIL",
+            "reason": null,
+            "expected": false,
+            "path": "premium_access",
+            "observed": true
+          }
+        ],
+        "reason": null
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Each documented HTTP request creates fresh subscription state, so it cannot establish repeated cancellation of the same subscription. The supported schema cannot directly invoke the Python callable or execute a multi-step sequence, and the context supplies no existing test command covering this behavior."
+      },
+      "observation": null,
+      "result": {
+        "name": "Repeated cancellation remains safe and consistent",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Each documented HTTP request creates fresh subscription state, so it cannot establish repeated cancellation of the same subscription. The supported schema cannot directly invoke the Python callable or execute a multi-step sequence, and the context supplies no existing test command covering this behavior."
+      }
+    }
+  ]
+}

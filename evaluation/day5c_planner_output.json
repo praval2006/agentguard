@@ -1,0 +1,33 @@
+{
+    "explicit_requirements": [
+        "Cancelling an active subscription must change its status to cancelled.",
+        "After cancellation, the user must no longer have access to premium features.",
+        "Repeated cancellation must not crash the application.",
+        "Cancellation must leave the subscription in a consistent cancelled state without premium access."
+    ],
+    "inferred_behaviors": [],
+    "ambiguities": [
+        "Cancellation behavior for subscription states other than active or already cancelled is unspecified.",
+        "The supplied context describes a premium_access state field but does not establish how access to premium features is enforced beyond that field."
+    ],
+    "scenarios": [
+        {
+            "name": "Active subscription becomes cancelled",
+            "behavior": "Cancel an active subscription and check that its status becomes cancelled.",
+            "reason": "The original task directly requires this state transition. The repository context identifies status as the subscription state field.",
+            "source": "explicit"
+        },
+        {
+            "name": "Cancellation removes premium access",
+            "behavior": "Cancel an active subscription with premium access and check that premium_access becomes false. Distinguish this state observation from any separate claim about enforcement of access to premium features.",
+            "reason": "The original task explicitly requires removal of premium access. The context identifies premium_access as the corresponding boolean field, but supplies no separate feature-access enforcement interface.",
+            "source": "explicit"
+        },
+        {
+            "name": "Repeated cancellation remains safe and consistent",
+            "behavior": "Cancel the same subscription again after it has been cancelled and check that the application does not crash, its status remains cancelled, and premium access remains disabled.",
+            "reason": "The original task explicitly requires safe repeated cancellation and a consistent cancelled state without premium access. The context says each HTTP request creates fresh state, so separate requests alone would not establish repeated cancellation of the same subscription.",
+            "source": "explicit"
+        }
+    ]
+}
