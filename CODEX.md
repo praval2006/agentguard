@@ -1006,3 +1006,57 @@ semantic code/configuration changes cannot be detected without future snapshot
 binding. Temporary capture bounds retained evidence, not total disk usage.
 Coverage metadata is descriptive only and cannot establish acceptance coverage.
 No final registered-check verifier/orchestrator integration exists yet.
+
+
+## 26. 2026-09-28 — Registered-check acceptance verification
+
+### Changes
+
+- Added coverage_authorization.py: frozen CoverageAuthorizations stores at most
+  100 immutable identity/check/coverage triples. scenario_identity uses canonical
+  JSON of the complete validated grounded scenario, including optional variables,
+  bounded to 32000 characters. IDs are bounded to 128 characters; duplicate or
+  noncanonical identities are rejected. No repository digest infrastructure added.
+- Authorization is supplied separately by a trusted caller. Exact scenario identity,
+  selected check ID, and trusted registry coverage ID must match. Model JSON cannot
+  self-authorize via extra action/scenario fields. Missing or mismatched authority
+  prevents registered execution and produces UNVERIFIED.
+- Added registered-check handling in verify_observation, with optional registry and
+  coverage_authorizations arguments. Strict Phase-2 observation fields, identity,
+  target, count types/bounds, return code, timeout, and outcome consistency are checked.
+  Exactly one ordinary successful authorized test yields PASS. Exactly one authorized
+  test with ordinary assertion failure yields FAIL. Missing/malformed observations,
+  errors, skips, expected failures, unexpected successes, timeout, crash, and
+  configuration failures remain UNVERIFIED. The verifier performs no execution/I/O.
+- run_acceptance accepts optional repository_root, registry, and
+  coverage_authorizations, dispatches registered actions only through the Phase-2
+  executor, and delegates verdicts to the verifier. Existing envelopes/order,
+  prevalidation, nonmutation, five-scenario cap, empty behavior, and aggregation
+  precedence remain intact. Evidence contains bounded provenance/counts, not logs.
+
+### Tests and results
+
+Added 14 tests in tests/test_registered_acceptance.py covering temporary-repository
+PASS/FAIL, missing/mismatched/stale authorizations, changed scenario identity or
+selected check, injected model authority, immutable bounded associations, skipped
+and errored tests, timeout/crash/configuration failures, malformed evidence,
+verifier no-I/O, prevalidation before execution, and mixed aggregation.
+
+- Focused: python3 -B -m unittest discover -s tests -p test_registered_acceptance.py -v
+  — 14/14 passed.
+- Full: python3 -m unittest discover -s tests -p 'test_*.py' -v
+  — 231/231 passed (217 existing unchanged and 14 new).
+- Existing security/process tests passed unchanged, including shell-free invocation.
+- Approved escalation allowed existing HTTP regression tests to bind loopback.
+- Frozen evaluation files have no diff; no Day-5/Day-6 evaluation was rerun.
+- All prior work-log bytes and historical prefixes preserved exactly.
+
+### Boundary and limitations
+
+Trusted association is not mathematical proof of coverage. Identity covers the
+current grounded representation, not omitted planner behavior; the caller must
+review the full intended requirement before authorizing. No observation authenticity,
+repository snapshot, source freshness, or reviewer/digest mechanism is claimed.
+A same-ID code change is not detected by this association. Tests and registry inputs
+remain trusted executable/configuration data. No planner/grounder/API integration,
+legacy allowlist change, HTTP semantic change, or frozen-artifact modification.

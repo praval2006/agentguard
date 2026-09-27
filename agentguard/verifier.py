@@ -64,7 +64,8 @@ def _equal(expected, observed):
     return type(expected) is type(observed) and expected == observed
 
 
-def verify_observation(scenario: dict, observation=None) -> dict:
+def verify_observation(scenario: dict, observation=None, *, registry=None,
+                       coverage_authorizations=None) -> dict:
     """Validate scenario first, then return name/source/verdict/assertions/reason.
 
     Observations are exact plain dictionaries:
@@ -83,12 +84,18 @@ def verify_observation(scenario: dict, observation=None) -> dict:
 
     Caller must supply genuine observations associated with this scenario. This
     core validates representation, not provenance or whether execution occurred.
+    Registered checks additionally require separately supplied Registry and
+    CoverageAuthorizations objects. These are trusted caller inputs, not model
+    data; coverage association is not semantic completeness or source freshness.
     Comparisons use complete values before evidence truncation. Input is unchanged.
     """
     validate_scenario(scenario)
     result = {"name": scenario["name"], "source": scenario["source"],
               "verdict": "UNVERIFIED", "assertions": [], "reason": None}
     kind = scenario["action"]["type"]
+    if kind == "registered_check":
+        return _verify_registered(scenario, observation, result, registry,
+                                  coverage_authorizations)
     if kind == "unsupported":
         result["reason"] = scenario["action"]["explanation"]
         return result
@@ -146,4 +153,47 @@ def verify_observation(scenario: dict, observation=None) -> dict:
         result["reason"] = "One or more required assertions lack sufficient observation"
     else:
         result["verdict"] = "PASS"
+    return result
+
+
+def _verify_registered(scenario, observation, result, registry, authorizations):
+    from .coverage_authorization import authorized_registration
+    check = authorized_registration(scenario, registry, authorizations)
+    result.update(check_id=scenario['action']['check_id'], coverage_id=None,
+                  coverage_authorized=check is not None)
+    if check is None:
+        result['reason'] = 'Missing or mismatched trusted coverage authorization'
+        return result
+    result['coverage_id'] = check.coverage.id
+    counts = ('tests_run', 'failures', 'errors', 'skips', 'expected_failures', 'unexpected_successes')
+    keys = {'check_id', 'coverage_id', 'target', 'status', 'returncode', 'timed_out',
+            'output_truncated', *counts}
+    result['reason'] = 'Missing, malformed, or nonconclusive registered-check observation'
+    if type(observation) is not dict or set(observation) != keys:
+        return result
+    if (observation['check_id'] != check.id or observation['coverage_id'] != check.coverage.id
+            or observation['target'] != check.target
+            or type(observation['timed_out']) is not bool
+            or type(observation['output_truncated']) is not bool):
+        return result
+    statuses = {'success', 'assertion_failure', 'test_error', 'load_error', 'skipped',
+                'expected_failure', 'unexpected_success', 'zero_tests', 'multiple_tests',
+                'malformed_result', 'process_crash', 'timeout', 'unknown_check',
+                'configuration_error', 'execution_error'}
+    if type(observation['status']) is not str or observation['status'] not in statuses:
+        return result
+    result['execution_status'] = observation['status']
+    if (observation['timed_out'] or type(observation['returncode']) is not int
+            or observation['returncode'] != 0
+            or any(type(observation[k]) is not int or not 0 <= observation[k] <= 1000000 for k in counts)
+            or observation['tests_run'] != 1):
+        return result
+    for key in counts:
+        result[key] = observation[key]
+    if any(observation[k] for k in counts[2:]):
+        return result
+    if observation['status'] == 'success' and observation['failures'] == 0:
+        result.update(verdict='PASS', reason='Authorized check completed one successful test')
+    elif observation['status'] == 'assertion_failure' and observation['failures'] > 0:
+        result.update(verdict='FAIL', reason='Authorized check observed an assertion failure')
     return result
