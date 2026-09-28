@@ -204,3 +204,86 @@ written, and append new work as the next numbered entry with the date, changes,
 tests, and result. Never replace or summarize earlier entries. Recover missing
 entries from Git history when available before appending. Update this README
 normally to reflect the current project.
+
+## Bounded derived test inputs
+
+`ground_scenarios(..., derivation_policy=...)` can compile a provider's bounded
+input-derivation requests. This is opt-in: a trusted caller supplies immutable
+`DerivationPolicy` / `InputConstraint` records from `agentguard.derivations`.
+The caller must review the constraint's meaning and exclude fields whose validity
+or use depends on identity, domain vocabulary, formats, credentials or runtime state.
+The policy binds the exact context SHA-256, a source quotation, and one concrete
+HTTP method/path/top-level JSON field. Include relevant task-derived constraints
+in the supplied context if they are to be reviewed for this policy. Hash/quote
+matching checks provenance, not whether prose logically establishes a constraint.
+A model-emitted policy dictionary is not accepted as caller authority.
+
+The six rules are:
+
+- `below_inclusive_lower_bound`: inclusive integer bound N → N-1.
+- `above_inclusive_upper_bound`: inclusive integer bound N → N+1.
+- `blank_string`: reviewed nonblank text → `""`.
+- `whitespace_string`: reviewed nonblank text → three ASCII spaces.
+- `wrong_primitive_type`: a fixed incompatible representative from string
+  (`"agentguard-test"`), integer (`0`), number (`0.5`), boolean (`false`), null.
+  Integer is compatible with expected number; `0.5` is incompatible with integer.
+- `neutral_nonblank_text`: only reviewed `arbitrary_text` → `"agentguard-test"`.
+
+Bounds and derived integers are limited to ±(2**31-1); arithmetic is integer-only.
+There are at most 32 policy constraints and 8 derivations per HTTP action.
+Neutral text requires a nonblank string with no enum, format, domain, identity or
+state semantics. `plain_scalar` marks other reviewed non-identity validation inputs;
+it is not a license to describe resource/domain fields as ordinary scalars.
+
+A caller can prepare a policy without executing anything:
+
+```python
+from hashlib import sha256
+from agentguard.derivations import InputConstraint, DerivationPolicy
+
+context = "POST /validate: amount is an integer from 10 through 20 inclusive."
+policy = DerivationPolicy(sha256(context.encode()).hexdigest(), (
+    InputConstraint("amount-range", "POST", "/validate", "amount", context,
+                    "integer", "plain_scalar", lower=10, upper=20),
+))
+```
+
+The provider receives copied `derivation_facts` only when a policy is supplied.
+It may add the following to an otherwise evidenced HTTP action, whose `json`
+object must omit `amount`:
+
+```json
+{"derive": [{"field": "amount", "fact_id": "amount-range",
+             "rule": "below_inclusive_lower_bound"}]}
+```
+
+Deterministic code constructs `amount: 9`; the provider cannot supply `value`,
+`source_value`, a replacement constraint, or finished provenance. Requests with
+unavailable justification become unsupported leaves, without retries. Stale or
+malformed caller configuration fails before provider invocation. Other schema and
+planner-identity errors retain their existing validation behavior.
+
+The compiled action contains `derivations` records with `kind`, `rule`, `field`,
+`fact_id`, exact reviewed `constraint`, `context_sha256`, and constructed `value`;
+arithmetic adds `source_value`, and wrong-type rules add `representative`.
+Scenario validation checks these records against the request values. Existing HTTP
+execution sends only the concrete JSON body and preserves copied provenance under
+`execution.input_derivations`, including policy rejection or unavailable target
+configuration. Composite children retain their existing nested evidence structure.
+Non-derived actions/results have no new fields. The verifier is unchanged.
+
+Repository-grounded constraints justify input construction; derived values are
+input data; only observed application responses supply acceptance evidence.
+Serialized provenance is descriptive, not a signature or authorization token.
+A caller bypassing grounding can already submit concrete request JSON; attaching
+provenance does not establish that the source was reviewed. Trusted caller review
+is required, and inappropriate caller classification is not detected by semantic
+text analysis. Use non-sensitive source quotations: reviewed constraint text and
+fixed generated values are intentionally reportable metadata.
+
+No rules generate existing or absent IDs, accounts, emails/domain-specific values,
+paths/filenames, secrets, authentication, headers, endpoints, expected responses,
+commands, coverage or authorization. No arrays, workflows, state assumptions,
+registered-check binding, automatic constraint extraction, or repository indexing
+are added. Planner ambiguity and complete-behavior grounding obligations still
+apply. Frozen evaluation artifacts have not been changed or rerun.

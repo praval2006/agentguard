@@ -1,5 +1,6 @@
 """Controlled loopback HTTP observations; all verdicts come from the verifier."""
 
+from copy import deepcopy
 import http.client
 import io
 import json
@@ -114,6 +115,8 @@ def execute_http_scenario(scenario: dict, *, base_url: str) -> dict:
         raise ValueError("execute_http_scenario requires an http_request scenario")
     evidence = {"established": False, "reason": None, "method": scenario["action"]["method"],
                 "status": None, "body_truncated": False, "json_available": False}
+    if "derivations" in scenario["action"]:
+        evidence["input_derivations"] = deepcopy(scenario["action"]["derivations"])
     observation = None
     try:
         port, path, headers, body = _request_policy(scenario["action"], base_url)

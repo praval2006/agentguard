@@ -5,6 +5,7 @@ from copy import deepcopy
 
 from .planner import MAX_SCENARIOS, MAX_TEXT_CHARS, _validate_plan
 from .scenarios import validate_scenario
+from .derivations import DerivationPolicy, materialize
 
 MAX_PLANNER_LIST_ITEMS = 100
 MAX_PLANNER_TEXT_CHARS = 32_000
@@ -87,17 +88,38 @@ login -> cookie/session workflow, mutate -> later inspect continuous state, vari
 between children, retries, branches, loops, conditionals, optional checks, setup/teardown,
 state resets, or speculative/nice-to-have checks. Sequential requests do not prove
 state isolation. Unsupported is required when these capabilities are needed.
+Bounded input derivation exception: only when caller-reviewed derivation_facts are
+supplied, an HTTP action may include derive, a list of at most 8 requests. Each is
+exactly {field, rule, fact_id}; wrong_primitive_type additionally requires
+representative in string/integer/number/boolean/null. json must be an explicit object
+and must OMIT each derived field. Never emit concrete generated values or derivations
+provenance. Deterministic code constructs the value and provenance or makes the leaf
+unsupported. Facts bind exact method/path/top-level field and context. They do not
+prove that an assertion is correct or that a complete scenario is covered.
+Allowed rules: below_inclusive_lower_bound, above_inclusive_upper_bound (integer
+only), blank_string, whitespace_string, wrong_primitive_type, neutral_nonblank_text.
+Neutral text requires reviewed arbitrary_text, not enum/format/domain semantics.
+This exception only supplies JSON input values. It never creates endpoints, headers,
+expected outputs, commands, coverage, authorization, IDs (existing or fresh/absent),
+resource references, filenames, secrets, users, state, workflows or business policy.
+Only request a rule whose fact and behavior justify that test input. Planner ambiguity
+and complete-observation obligations remain unchanged. Without reviewed facts the
+existing evidence restriction applies. Do not manufacture or alter fact authority.
 No database queries, browser actions, filesystem assertions, arbitrary Python,
 shell expressions, regex evaluators, callbacks, or custom execution mechanisms.
 """
 
 
 def ground_scenarios(planner_output: dict, repository_context: str, *,
-                     grounding_provider: Callable[[dict], object]) -> list[dict]:
+                     grounding_provider: Callable[[dict], object],
+                     derivation_policy: DerivationPolicy | None = None) -> list[dict]:
     """Validate, invoke provider once, then validate ordered results; never execute.
 
     Request keys: instructions, planner_output (including ambiguities), and
-    repository_context. Input text is not truncated. Context is limited to the
+    repository_context; copied derivation_facts only with a caller-reviewed policy.
+    Derivation requests compile before schema validation; unjustified requests become
+    unsupported leaves. Policy is not accepted from provider output.
+    Input text is not truncated. Context is limited to the
     planner's MAX_TEXT_CHARS; aggregate planner value text to 32,000 characters;
     each non-scenario list to 100 entries and scenarios to MAX_SCENARIOS.
     Empty scenarios still invoke the provider once and require an empty result.
@@ -111,17 +133,26 @@ def ground_scenarios(planner_output: dict, repository_context: str, *,
     _validate_input(planner_output, repository_context)
     if not callable(grounding_provider):
         raise ValueError("grounding_provider must be callable")
+    if derivation_policy is not None:
+        if type(derivation_policy) is not DerivationPolicy:
+            raise ValueError("derivation_policy must be caller-reviewed DerivationPolicy")
+        derivation_policy.validate_context(repository_context)
     baseline = deepcopy(planner_output)
-    result = grounding_provider({
+    request = {
         "instructions": GROUNDING_INSTRUCTIONS,
         "planner_output": deepcopy(baseline),
         "repository_context": repository_context,
-    })
+    }
+    if derivation_policy is not None:
+        request['derivation_facts'] = derivation_policy.provider_facts()
+    result = grounding_provider(request)
     if not isinstance(result, list):
         raise ValueError("grounding provider result must be a list")
     expected = baseline["scenarios"]
     if len(result) != len(expected):
         raise ValueError("grounding must return exactly one result per planner scenario")
+    result = [materialize(candidate, policy=derivation_policy, context=repository_context)
+              for candidate in result]
     for index, (candidate, original) in enumerate(zip(result, expected)):
         validate_scenario(candidate)
         for field in ("name", "source", "reason"):

@@ -1559,3 +1559,89 @@ protocol, fixtures, planner/grounding/results and historical artifacts are uncha
 All prior log bytes/historical prefixes are preserved. Regression was not rerun;
 recorded baseline remains 283/283. Existing-conversation/fixture-author methodology
 is not independently blinded, and trusted setup is not independently human-authored.
+
+
+## 38. 2026-09-28 — Bounded provenance-recorded input derivations
+
+### Starting point and trust boundary
+
+Started clean on feature/acceptance-mvp at 3c9a0518f12120eaffe37a353b75a5e5374f9e55.
+Motivated by frozen Set-2 input-evidence restrictions; no evaluation was repaired.
+Added agentguard/derivations.py with immutable InputConstraint and DerivationPolicy
+records, a deterministic derive function, provenance consistency validation and
+provider-request materialization. A separate trusted caller reviews source meaning
+and excludes identity/domain/state-dependent fields. The policy binds exact context
+SHA-256, source quotation, method/path and top-level JSON field. Model-emitted policy
+JSON is not authority. Context hashes and quotes do not prove semantic truth.
+
+Allowed rules: below_inclusive_lower_bound, above_inclusive_upper_bound,
+blank_string, whitespace_string, wrong_primitive_type, neutral_nonblank_text.
+Arithmetic uses inclusive integers only, bounded along with results to ±(2**31-1).
+Blank and whitespace return empty text / three ASCII spaces; neutral text is exactly
+agentguard-test, only for reviewed arbitrary nonblank text. Fixed incompatible
+primitive representatives: string agentguard-test, integer 0, number 0.5, boolean
+false, null. Integer is compatible with number; 0.5 is incompatible with integer.
+At most 32 reviewed constraints and 8 derivations per HTTP action. Quotes are bounded
+to 512 characters, field/fact IDs to 128, concrete paths to 2048.
+
+Forbidden: invented existing/absent IDs, resource references, users/auth/credentials,
+enums or domain/format-specific values, filenames/filesystem state, secrets, paths,
+methods/endpoints, headers, expected responses, business/tie policy, state continuity,
+output chaining, commands, test coverage and registered authorization. No fresh-ID
+rule. Caller review must not mislabel those fields as ordinary scalar/text inputs.
+
+### Grounding, provenance and execution
+
+Extended ground_scenarios with optional derivation_policy. The provider gets copied
+facts and may request exact field/rule/fact_id (plus representative for wrong type).
+It cannot supply a source bound, concrete value, replacement fact or finished
+provenance. Concrete JSON fields must be omitted until deterministic construction;
+collisions, unknown rules, malformed requests and unavailable justification produce
+unsupported leaves without retry. Invalid/stale caller policy fails before provider
+invocation. Existing non-derived shapes and identity/order validation remain intact.
+
+HTTP actions may retain derivations records: kind, rule, field, fact_id, constraint,
+context_sha256, value, plus source_value for arithmetic / representative for type
+substitution. Schema checks generated arithmetic/types/target/body consistency.
+The existing HTTP executor sends only concrete JSON and copies provenance into
+execution.input_derivations; acceptance preserves it on unavailable target config.
+Composite children keep their existing evidence envelopes. Provenance is descriptive,
+not an authorization token, and never counts as application observation. The verifier,
+HTTP safety policy, aggregation, registered trust and workflow semantics are unchanged.
+
+Changed files: agentguard/derivations.py (new), agentguard/grounding.py,
+agentguard/scenarios.py, agentguard/http_execution.py, agentguard/acceptance.py,
+tests/test_derivations.py (new), README.md, and this appended log entry.
+
+### Tests and results
+
+Added 21 focused tests for all six rules, primitive compatibility, integer bounds
+and overflow, forbidden semantic classes/rules/targets, nonblank justification,
+immutable bounded policy, stale context/absent quotation, provider authority/value
+injection, collisions/duplicates/count bounds, provenance tampering, defensive copies,
+legacy shapes, composite propagation, no-observation behavior and real HTTP delivery.
+The HTTP test confirms amount=9 is transmitted and verifies observed PASS, FAIL and
+policy-rejected UNVERIFIED without assigning verdicts from provenance.
+
+python3 -B -m unittest discover -s tests -p test_derivations.py -v
+21/21 passed with approved loopback escalation. The initial sandbox run had 20 passing
+tests and a loopback-bind PermissionError; no application assertion failure occurred.
+
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+304/304 passed (283 existing unchanged plus 21 new), exit 0. Approved escalation
+allowed local loopback tests. No dependencies or external services were added.
+
+### Limitations and integrity
+
+Trusted source review is required; no automatic constraint extraction, semantic
+proof, source freshness beyond supplied context, or credential/domain inference is
+claimed. Serialized provenance is not authenticated, and direct callers can already
+supply concrete JSON without grounding. This feature does not authorize such callers
+or establish correctness. Reviewed quotations/fixed generated values are reportable;
+callers must use non-sensitive constraint text. Expected assertions and behavioral
+completeness remain grounding obligations, not derivation guarantees.
+
+All frozen evaluation bytes remain unchanged, including Set 2/postmortem, Day-5,
+Day-6 and smoke artifacts. None were rerun; no retrospective score is claimed.
+No arrays, workflows, registered binding or Evaluation Set 3 was started. All prior
+CODEX.md bytes and historical prefixes are preserved exactly.

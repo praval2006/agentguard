@@ -8,6 +8,8 @@ Unsupported actions are descriptive records, never executable actions or verdict
 from math import isfinite
 import json
 
+from .derivations import validate_provenance
+
 MAX_CHECK_ID_CHARS = 128
 MAX_JSON_ASSERTION_PATH_CHARS = 32000
 MAX_COMPOSITE_BYTES = 32000
@@ -63,7 +65,7 @@ def validate_scenario(scenario: dict) -> None:
         raise ValueError("action must be a dictionary")
     kind = action.get("type")
     if kind == "http_request":
-        _shape(action, {"type", "method", "path"}, {"json", "headers"}, "action")
+        _shape(action, {"type", "method", "path"}, {"json", "headers", "derivations"}, "action")
         if action["method"] not in ("GET", "POST", "PUT", "PATCH", "DELETE"):
             raise ValueError("action.method is not a supported HTTP method")
         _text(action["path"], "action.path")
@@ -78,6 +80,8 @@ def validate_scenario(scenario: dict) -> None:
                 for k, v in headers.items()
             ):
                 raise ValueError("action.headers must contain string keys and values")
+        if "derivations" in action:
+            validate_provenance(action)
         assertions = scenario.get("assertions")
         if not isinstance(assertions, list) or not assertions:
             raise ValueError("HTTP scenarios require a nonempty assertions list")

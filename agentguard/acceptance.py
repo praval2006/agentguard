@@ -17,6 +17,8 @@ def _unobserved(scenario, reason=None):
     execution = {"established": False, "reason": execution_reason[:MAX_EVIDENCE_CHARS]}
     if len(execution_reason) > MAX_EVIDENCE_CHARS:
         execution["reason_truncated"] = True
+    if "derivations" in scenario["action"]:
+        execution["input_derivations"] = deepcopy(scenario["action"]["derivations"])
     return {"execution": execution, "observation": None, "result": result}
 
 
