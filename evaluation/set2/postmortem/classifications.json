@@ -1,0 +1,140 @@
+[
+  {
+    "case": "01_roast_temperature",
+    "scenario_name": "Accept the inclusive temperature range",
+    "primary_category": "SCHEMA_CAPABILITY_GAP",
+    "explanation": "The required remaining-range child has no representable complete observation within the composite bound, so its lack of evidence keeps the parent unverified despite two observed endpoints.",
+    "secondary_factors": [
+      "Possible semantic grounding-contract violation: exceeding the observation bound should leave the whole parent unsupported; structural validation accepted the shape."
+    ]
+  },
+  {
+    "case": "01_roast_temperature",
+    "scenario_name": "Reject invalid temperature settings",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "The frozen grounding abstains because no concrete invalid inputs or behavior-specific coverage were supplied under the strict request-value evidence rule.",
+    "secondary_factors": [
+      "Integral-decimal interpretation remains ambiguous, but does not explain the lack of all other rejection evidence."
+    ]
+  },
+  {
+    "case": "01_roast_temperature",
+    "scenario_name": "Validate without equipment effects",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "The context exposes only temperature/unit responses, with no equipment-state or roast-start observable and no documented side-effect check.",
+    "secondary_factors": []
+  },
+  {
+    "case": "02_parcel_label",
+    "scenario_name": "Produce one normalized label",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "The context supplies transformations and fields but no concrete valid recipient/postal-code pair; the current evidence policy does not authorize generating it.",
+    "secondary_factors": []
+  },
+  {
+    "case": "02_parcel_label",
+    "scenario_name": "Reject blank label fields",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "No supported valid counterpart values are supplied to isolate each blank-field rejection. Both-blank rejection alone would not establish both obligations.",
+    "secondary_factors": []
+  },
+  {
+    "case": "02_parcel_label",
+    "scenario_name": "Preview without purchasing postage",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "No purchase-state observable or behavior-specific side-effect coverage is supplied; a preview response does not establish the absence of a purchase.",
+    "secondary_factors": []
+  },
+  {
+    "case": "02_parcel_label",
+    "scenario_name": "Reject absent or non-text label fields",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "Discriminating absent/non-text cases need a valid counterpart that is not concretely supplied; the inferred scenario receives the same strict evidence policy.",
+    "secondary_factors": []
+  },
+  {
+    "case": "03_payroll",
+    "scenario_name": "Calculate regular and overtime gross pay",
+    "primary_category": "REGISTERED_COVERAGE_GAP",
+    "explanation": "Registered metadata explicitly describes regular/overtime calculation, but grounding selection integration and legitimate exact-identity authorization cannot bind this scenario to that coverage.",
+    "secondary_factors": []
+  },
+  {
+    "case": "03_payroll",
+    "scenario_name": "Handle zero hours",
+    "primary_category": "REGISTERED_COVERAGE_GAP",
+    "explanation": "Registered metadata explicitly includes zero hours, yet no legitimate registered selection and exact scenario authorization association exists.",
+    "secondary_factors": []
+  },
+  {
+    "case": "03_payroll",
+    "scenario_name": "Reject inputs outside the pay contract",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "The exposed registered coverage describes calculations on allowed inputs, not rejection of all invalid inputs; the general test command provides no behavior-specific coverage evidence.",
+    "secondary_factors": [
+      "Registered selection/authorization is also unavailable; resolving it alone would not establish this rejection coverage."
+    ]
+  },
+  {
+    "case": "03_payroll",
+    "scenario_name": "Preserve gross pay without tax deduction",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "Calculation metadata is relevant but does not explicitly establish a separate no-deduction obligation; the frozen input has no behavior-specific test evidence for that full scenario.",
+    "secondary_factors": [
+      "Gross calculation samples could support this obligation, but treating a coverage description as proof of all no-tax behavior would overclaim; registered selection/authorization is also unavailable."
+    ]
+  },
+  {
+    "case": "04_tournament",
+    "scenario_name": "Include entrants and points",
+    "primary_category": "SCHEMA_CAPABILITY_GAP",
+    "explanation": "The response is an array; existing dictionary-only scalar assertions cannot establish its entrant membership and points preservation.",
+    "secondary_factors": []
+  },
+  {
+    "case": "04_tournament",
+    "scenario_name": "Order by descending points",
+    "primary_category": "SCHEMA_CAPABILITY_GAP",
+    "explanation": "Array ordering and comparisons between positions are not expressible by the current assertions.",
+    "secondary_factors": [
+      "Tied-score policy remains ambiguous, but the frozen scenario explicitly excludes choosing it."
+    ]
+  },
+  {
+    "case": "04_tournament",
+    "scenario_name": "Show empty standings",
+    "primary_category": "SCHEMA_CAPABILITY_GAP",
+    "explanation": "The assertions cannot compare an empty array or assert array length; field presence is insufficient.",
+    "secondary_factors": []
+  },
+  {
+    "case": "04_tournament",
+    "scenario_name": "Preserve preview input",
+    "primary_category": "SCHEMA_CAPABILITY_GAP",
+    "explanation": "The required before/after observation of caller-owned in-memory objects is outside the HTTP/scalar independent-observation model.",
+    "secondary_factors": [
+      "No documented behavior-specific command supplies an alternative observation."
+    ]
+  },
+  {
+    "case": "05_quiz_attempt",
+    "scenario_name": "Revisit the submitted answer and correctness",
+    "primary_category": "SCHEMA_CAPABILITY_GAP",
+    "explanation": "The behavior needs a runtime-created identifier and submission followed by retrieval of continuous state; output references/workflows are unsupported.",
+    "secondary_factors": []
+  },
+  {
+    "case": "05_quiz_attempt",
+    "scenario_name": "Keep attempt answers separate",
+    "primary_category": "SCHEMA_CAPABILITY_GAP",
+    "explanation": "Multiple runtime identifiers and before/after continuous state across attempts are required, not independent composite requests.",
+    "secondary_factors": []
+  },
+  {
+    "case": "05_quiz_attempt",
+    "scenario_name": "Report unknown attempts",
+    "primary_category": "CONTEXT_EVIDENCE_GAP",
+    "explanation": "No concrete identifier is guaranteed absent under supplied running-state evidence. Inventing an identifier is not permitted and freshness must be established rather than assumed.",
+    "secondary_factors": []
+  }
+]

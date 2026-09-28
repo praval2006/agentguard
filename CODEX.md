@@ -1514,3 +1514,48 @@ and historical Day-5/Day-6/smoke artifacts are unchanged. No implementation-test
 historical evaluation rerun occurred. Prior CODEX.md bytes and historical prefixes
 remain preserved exactly. Results are bounded observed evidence, not a benchmark
 accuracy or semantic completeness claim.
+
+
+## 37. 2026-09-28 — Evaluation Set 2 formal postmortem
+
+Created evaluation/set2/postmortem/classifications.json, summary.md and next_steps.md.
+Exactly 18 top-level UNVERIFIED records: CONTEXT_EVIDENCE_GAP 9,
+SCHEMA_CAPABILITY_GAP 7, REGISTERED_COVERAGE_GAP 2; all other frozen categories 0.
+Primary causes are counted once; secondary ambiguities/limitations remain separate.
+No planner, grounder, acceptance, fixture or test reruns; no repairs or verdict changes.
+
+Context/synthetic-value restrictions and schema expressiveness dominate. Payroll
+regular/overtime and zero have directly relevant registered metadata but no legitimate
+binding. Invalid-input and separate no-tax coverage are not established by supplied
+metadata; enabling selection alone does not prove them. No executor-policy block or
+infrastructure failure was observed. Strict evidence policy is not labelled a grounder
+mistake merely because a human could invent sample inputs.
+
+Two top-level PASS results retain their narrow runtime evidence: temperature 160/C
+and practice creation with string id/question, including json_exists/json_type.
+Composite children remain 2 PASS / 0 FAIL / 1 UNVERIFIED, parent UNVERIFIED.
+Aggregation was correct; the accepted structural shape does not resolve the possible
+semantic-contract violation concerning its unsupported remaining-range child.
+Exact practice question equality remains fixture-specific. No result was repaired.
+
+Day 6 remains 0/0/21 and Set 2 remains 2/0/18 (PASS/FAIL/UNVERIFIED).
+Fresh cases demonstrated some executable observations; different datasets and
+architecture preclude accuracy or general-improvement claims.
+
+Candidates considered: bounded synthetic inputs, trusted registered binding, arrays,
+stateful workflows and semantic grounding validation. Recommend at most one final
+architecture improvement: bounded provenance-recorded derived/synthetic test values,
+without inventing repository facts, authorization, identifiers or state guarantees.
+Then prioritize LLM provider integration, CLI, coherent demo, README, trust-boundary
+diagram, technical report and presentation. No implementation was started.
+
+After classifications were written, consistent read-only fixture/test inspection found
+no clear task/implementation contradiction. Concrete tests and source observations
+are explicitly labelled POST-HOC FIXTURE FINDINGS — NOT AGENTGUARD-DETECTED FAILURES.
+This is neither proof of correctness nor newly detected acceptance evidence.
+
+All frozen evaluation bytes match 0160faa before and after analysis. Production/tests,
+protocol, fixtures, planner/grounding/results and historical artifacts are unchanged.
+All prior log bytes/historical prefixes are preserved. Regression was not rerun;
+recorded baseline remains 283/283. Existing-conversation/fixture-author methodology
+is not independently blinded, and trusted setup is not independently human-authored.
