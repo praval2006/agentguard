@@ -1244,3 +1244,57 @@ Sequential independent observations do not prove state isolation or complete
 semantic coverage. The existing per-child HTTP bounds apply, and nested reports
 retain each executor's bounded observation; parsed JSON may contain sensitive data.
 No grounder integration or broader child capabilities were introduced.
+
+
+## 31. 2026-09-28 — Conservative composite grounding support
+
+### Changes and compatibility constraint
+
+- Extended grounding-provider instructions to permit one planner scenario to become
+  one composite with 2–3 required independent HTTP/unsupported children. Parent
+  name/source/reason/order remain exact; composite behavior is additionally checked
+  against the defensive planner baseline. No splitting/merging top-level scenarios.
+- Applied the user's explicit compatibility exception: composite parents retain
+  behavior, while legacy standalone grounded result shapes remain unchanged.
+  No standalone behavior field, parallel metadata wrapper, or schema migration.
+- Documented json_exists/json_type with evidence-backed response shape and existing
+  dotted dictionary-only paths. Composite expressiveness does not authorize guessed
+  endpoints, request values, identifiers, headers, expected values, or capabilities.
+- Instructions require complete decomposition of the same behavior, never omission
+  to fit the three-child limit. Missing evidence remains unsupported; an unsupported
+  child must represent a genuinely required part alongside executable independent
+  observations, never filler. Unrepresentable parents remain wholly unsupported.
+- Explicitly prohibit workflows, output chaining, cookies/session propagation,
+  state-continuity assumptions, retries, branches, loops, setup/teardown, speculative
+  interpretations, and unrelated/new child requirements. No nesting or registered/
+  test-command children. Existing schema enforces structural restrictions unchanged.
+- Provider still called once; malformed output fails without repair/retry. No
+  execution, filesystem/network/API access, semantic keyword heuristics, or second
+  planning layer was added.
+
+### Tests and results
+
+Added 14 tests in tests/test_composite_grounding.py covering 2/3-child composites,
+exact identity including behavior, child/top-level ordering, split/merge rejection,
+byte-compatible standalone shapes, insufficient-evidence/ambiguity forwarding,
+unsupported children, new assertion validation, action/count/label/size restrictions,
+workflow-field rejection, conservative instructions, defensive copies/no I/O, and
+invalid-output rejection without retry.
+
+- Focused: python3 -B -m unittest discover -s tests -p test_composite_grounding.py -v
+  — 14/14 passed.
+- Full: python3 -m unittest discover -s tests -p 'test_*.py' -v
+  — 283/283 passed (269 existing unchanged and 14 new).
+- Approved escalation allowed existing regression HTTP loopback tests.
+- Execution, verifier, schema, registered execution/authorization, and HTTP files
+  have no diff. Day-5/Day-6/smoke artifacts are untouched and were not rerun.
+- All previous CODEX.md bytes and historical prefixes remain preserved exactly.
+
+### Limitations
+
+Fake-provider tests establish contract/validation behavior, not real-model evidence
+support or semantic completeness. Prose-level workflow dependence, unrelated child
+intent, and completeness remain provider obligations; no semantic validator is
+claimed. Composite PASS establishes only that all represented frozen required
+children passed. Historical Day-6 remains 0 PASS / 0 FAIL / 21 UNVERIFIED.
+No fresh evaluation set or model API integration was started.

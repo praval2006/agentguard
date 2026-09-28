@@ -32,7 +32,7 @@ file's existence is not evidence for an invented command. Schema validation does
 not establish command safety. HTTP requests and assertions likewise require evidence.
 Do not execute anything. Do not produce PASS, FAIL, or UNVERIFIED verdicts.
 Return only a list of scenario dictionaries compatible with agentguard.scenarios:
-Common required fields: name, source, reason, action. Optional variables is a dict
+Standalone required fields: name, source, reason, action. Optional variables is a dict
 with nonempty string names; values are symbolic and no substitution occurs.
 HTTP action: type=http_request, method in GET/POST/PUT/PATCH/DELETE, path beginning
 with /; optional json dict and headers dict of string keys and values. HTTP needs
@@ -42,6 +42,51 @@ equals: JSON scalar (finite number, string, boolean, or null)}.
 Test action: {type: test_command, command: nonempty list of nonempty string arguments}.
 Unsupported action: {type: unsupported, explanation: nonempty string}.
 Test and unsupported scenarios must omit assertions. No extra schema fields.
+HTTP also supports {type: json_exists, path: nonempty dotted field path} and
+{type: json_type, path: nonempty dotted field path, equals: string/number/integer/boolean/null}.
+Expected types are literal strings. These assertions require evidence for response
+shape; their availability does not establish that a field exists. Paths traverse
+dictionaries only. Presence and type are separate obligations.
+
+One planner scenario still produces exactly one top-level result. A composite is
+permitted only for 2–3 required independent observations of the SAME parent behavior.
+Preserve composite name, source, reason, behavior, and top-level order exactly.
+Compatibility constraint: composite parents retain behavior; legacy standalone
+grounded result shapes remain unchanged and must NOT gain behavior or wrappers.
+Grounding must not rewrite the planner's WHAT, including when the legacy schema
+does not carry behavior. No second-round planning or new child requirements.
+Composite exact parent keys: name, source, reason, behavior, action.
+Composite action has exactly type=composite and children, a list of length 2 or 3.
+EVERY included child is required.
+Each child has a unique nonblank label of at most 64 characters, plus action and
+HTTP assertions where applicable. Children have no name/source/reason/behavior
+or variables. Only http_request and unsupported child actions are allowed.
+HTTP children reuse the existing HTTP schema, with at most 8 assertions each.
+Unsupported children contain only label and action={type: unsupported, explanation}.
+No nesting, registered_check children, or test_command children. Composite compact
+serialization is bounded to 32000 UTF-8 bytes. Never truncate obligations to fit.
+
+Use composites only when multiple observations are genuinely necessary, not to
+increase execution count. Do not merge unrelated planner behaviors or split one
+planner scenario into multiple top-level outputs. Every child must be grounded in
+supplied evidence, including request values, identifiers, expected values, headers,
+fixture assumptions, and independence. No weaker evidence rules apply to children.
+Freeze the complete required child set before execution. Never omit known required
+observations because they are inconvenient, unsupported, or might fail. If faithful
+decomposition requires more than 3 observations, return the whole parent unsupported.
+An unsupported child is allowed only for a genuinely required part of the same
+behavior when other required independent observations are executable. It is never
+filler to meet the minimum. Use a standalone check for one meaningful observation;
+use whole-parent unsupported if the decomposition cannot faithfully preserve intent.
+Do not encode alternative interpretations of ambiguities as children or silently
+choose product policy. Composite PASS means only all frozen required children
+passed, not proof that the decomposition was semantically complete.
+
+Composites are NOT workflows: no output -> input chaining, create -> fetch-by-returned-ID,
+login -> cookie/session workflow, mutate -> later inspect continuous state, variables
+between children, retries, branches, loops, conditionals, optional checks, setup/teardown,
+state resets, or speculative/nice-to-have checks. Sequential requests do not prove
+state isolation. Unsupported is required when these capabilities are needed.
 No database queries, browser actions, filesystem assertions, arbitrary Python,
 shell expressions, regex evaluators, callbacks, or custom execution mechanisms.
 """
@@ -82,6 +127,8 @@ def ground_scenarios(planner_output: dict, repository_context: str, *,
         for field in ("name", "source", "reason"):
             if candidate[field] != original[field]:
                 raise ValueError(f"grounded scenario {index} must preserve {field} and order")
+        if candidate["action"]["type"] == "composite" and candidate["behavior"] != original["behavior"]:
+            raise ValueError(f"grounded scenario {index} must preserve behavior")
     return result
 
 
