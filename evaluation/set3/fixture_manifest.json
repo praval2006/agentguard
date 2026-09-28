@@ -1,0 +1,148 @@
+{
+  "stage": "fixtures_frozen",
+  "protocol_checkpoint": "fa4193c",
+  "architecture_checkpoint": "0e50d12",
+  "freeze_commit": "Commit titled Freeze Evaluation Set 3 fixtures containing this manifest",
+  "original_manifest": "evaluation/set3/manifest.json (unchanged)",
+  "cases": [
+    {
+      "id": "01_profile_display_name",
+      "task": "evaluation/set3/cases/01_profile_display_name/task.md",
+      "context": "evaluation/set3/cases/01_profile_display_name/context.md",
+      "context_characters": 2546,
+      "repository_root": "evaluation/set3/cases/01_profile_display_name/repository",
+      "trusted_policy": "evaluation/set3/cases/01_profile_display_name/derivation_policy.json",
+      "implementation_test_command": "cd evaluation/set3/cases/01_profile_display_name/repository && python3 -B -m unittest discover -s . -p 'test_*.py' -v",
+      "implementation_tests": {
+        "passed": 6,
+        "total": 6,
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "02_shipping_weight_quote",
+      "task": "evaluation/set3/cases/02_shipping_weight_quote/task.md",
+      "context": "evaluation/set3/cases/02_shipping_weight_quote/context.md",
+      "context_characters": 2108,
+      "repository_root": "evaluation/set3/cases/02_shipping_weight_quote/repository",
+      "trusted_policy": "evaluation/set3/cases/02_shipping_weight_quote/derivation_policy.json",
+      "implementation_test_command": "cd evaluation/set3/cases/02_shipping_weight_quote/repository && python3 -B -m unittest discover -s . -p 'test_*.py' -v",
+      "implementation_tests": {
+        "passed": 6,
+        "total": 6,
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "03_catalog_lookup",
+      "task": "evaluation/set3/cases/03_catalog_lookup/task.md",
+      "context": "evaluation/set3/cases/03_catalog_lookup/context.md",
+      "context_characters": 2627,
+      "repository_root": "evaluation/set3/cases/03_catalog_lookup/repository",
+      "trusted_policy": "evaluation/set3/cases/03_catalog_lookup/derivation_policy.json",
+      "implementation_test_command": "cd evaluation/set3/cases/03_catalog_lookup/repository && python3 -B -m unittest discover -s . -p 'test_*.py' -v",
+      "implementation_tests": {
+        "passed": 6,
+        "total": 6,
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "04_promo_preview",
+      "task": "evaluation/set3/cases/04_promo_preview/task.md",
+      "context": "evaluation/set3/cases/04_promo_preview/context.md",
+      "context_characters": 2550,
+      "repository_root": "evaluation/set3/cases/04_promo_preview/repository",
+      "trusted_policy": "evaluation/set3/cases/04_promo_preview/derivation_policy.json",
+      "implementation_test_command": "cd evaluation/set3/cases/04_promo_preview/repository && python3 -B -m unittest discover -s . -p 'test_*.py' -v",
+      "implementation_tests": {
+        "passed": 6,
+        "total": 6,
+        "exit_code": 0
+      }
+    },
+    {
+      "id": "05_notification_preferences",
+      "task": "evaluation/set3/cases/05_notification_preferences/task.md",
+      "context": "evaluation/set3/cases/05_notification_preferences/context.md",
+      "context_characters": 2705,
+      "repository_root": "evaluation/set3/cases/05_notification_preferences/repository",
+      "trusted_policy": "evaluation/set3/cases/05_notification_preferences/derivation_policy.json",
+      "implementation_test_command": "cd evaluation/set3/cases/05_notification_preferences/repository && python3 -B -m unittest discover -s . -p 'test_*.py' -v",
+      "implementation_tests": {
+        "passed": 6,
+        "total": 6,
+        "exit_code": 0
+      }
+    }
+  ],
+  "implementation_tests": {
+    "passed": 30,
+    "total": 30
+  },
+  "regression": {
+    "command": "python3 -m unittest discover -s tests -p 'test_*.py' -v",
+    "passed": 304,
+    "total": 304,
+    "exit_code": 0
+  },
+  "reasoning_or_acceptance_run": false,
+  "policy_author": "Codex, pre-reasoning caller/setup review; not independently human-authored",
+  "sha256": {
+    "evaluation/set3/cases/01_profile_display_name/context.md": "7a3d911fc8fe0ecaf478a36058860ea3414ccda2d8f7e61e1cc451c3f6c6c4dd",
+    "evaluation/set3/cases/01_profile_display_name/derivation_policy.json": "b89e531c310ab73d0f656b54b6baa24036f2f474dbd077ed865982b7077bd4f8",
+    "evaluation/set3/cases/01_profile_display_name/repository/INTERFACE.md": "b0affcf3d06dbdc189a36f8cf5a7a25644c77e92afadba0bb68cfc29ee7aa4e7",
+    "evaluation/set3/cases/01_profile_display_name/repository/README.md": "305a3b9913beef8500de44a3a4f1cf58ed500a2d76f3919d2ec96d9c4b256102",
+    "evaluation/set3/cases/01_profile_display_name/repository/app.py": "6314ca0cbaed41c63ef5fbc9a486ce5f734d2384aba263b418927056d19fb1f2",
+    "evaluation/set3/cases/01_profile_display_name/repository/server.py": "7a555bbe02769c34ec72642df091b53b25a68e3f0ef5e9f4881faf795cf6ef29",
+    "evaluation/set3/cases/01_profile_display_name/repository/test_app.py": "48934c7f725416323b426f532fb86016f3eabfc213f76921b1b322d05bf755bd",
+    "evaluation/set3/cases/01_profile_display_name/repository/test_transport.py": "6cf775f060008f1e81e44aca6b96d3dcddea1e23c0234b13c0a871b4711b9eec",
+    "evaluation/set3/cases/01_profile_display_name/spec.md": "dcb56655f68273246cd2f72e76619d47aa4e89e2a40dd16dd5ae414d53a77713",
+    "evaluation/set3/cases/01_profile_display_name/task.md": "dcb56655f68273246cd2f72e76619d47aa4e89e2a40dd16dd5ae414d53a77713",
+    "evaluation/set3/cases/02_shipping_weight_quote/context.md": "fa1e87bd29038d0fbbbc5f35c6944a2707b5042f91db566608afad6bccb6b5d7",
+    "evaluation/set3/cases/02_shipping_weight_quote/derivation_policy.json": "1ec24451d4a9c23ee5ab1cb72cbd5f0d6791d5cad58178b643ca1ef2a53d66b4",
+    "evaluation/set3/cases/02_shipping_weight_quote/repository/INTERFACE.md": "7ca38ebcafa10058110dffdecb0e1f1d3f7209dfd72ff3cdeb4dd2d4e030acbc",
+    "evaluation/set3/cases/02_shipping_weight_quote/repository/README.md": "34a099afc238349970fcd802733b3ea0c7a23ee176eff44a5031245aef489956",
+    "evaluation/set3/cases/02_shipping_weight_quote/repository/app.py": "14c91ba49f65d0be8090a559c6f5b572e120edde3e7bdf968acdbbdb3db67dd0",
+    "evaluation/set3/cases/02_shipping_weight_quote/repository/server.py": "7a555bbe02769c34ec72642df091b53b25a68e3f0ef5e9f4881faf795cf6ef29",
+    "evaluation/set3/cases/02_shipping_weight_quote/repository/test_app.py": "6ef9ff28aa0bb58f66c3c6fa52e029a575895e6142f9bb0415edb39067132395",
+    "evaluation/set3/cases/02_shipping_weight_quote/repository/test_transport.py": "a0c8a7f7a9fb83bb2ed37164f6fa462dd88555b9d46dfbe461bdf72ad801cda8",
+    "evaluation/set3/cases/02_shipping_weight_quote/spec.md": "2176623a611b6806e3e582ea30212c59e6b17baab6985ef050910c22e37246d4",
+    "evaluation/set3/cases/02_shipping_weight_quote/task.md": "2176623a611b6806e3e582ea30212c59e6b17baab6985ef050910c22e37246d4",
+    "evaluation/set3/cases/03_catalog_lookup/context.md": "cd5fa8671f947d885f09328126e5211cb8df58af1fc6b61868c0b4de437c2c4d",
+    "evaluation/set3/cases/03_catalog_lookup/derivation_policy.json": "5ef21c26e0f559ecf7495daea1b54a73be06d9ae85771bbb43fff31cfea90723",
+    "evaluation/set3/cases/03_catalog_lookup/repository/INTERFACE.md": "08ab577c6b8d3e94516a293a15a7e27619845e73893e6a2276fbf6447be6fae6",
+    "evaluation/set3/cases/03_catalog_lookup/repository/README.md": "20d47c60de803f7744c1d84eb0fcfc5f755bed906bb7f6e3e96d68b4be4fafd3",
+    "evaluation/set3/cases/03_catalog_lookup/repository/app.py": "2b2074b54ac29e66f0aff30c32357b95273f8969eb3523197d493d98cc1bd20e",
+    "evaluation/set3/cases/03_catalog_lookup/repository/server.py": "7a555bbe02769c34ec72642df091b53b25a68e3f0ef5e9f4881faf795cf6ef29",
+    "evaluation/set3/cases/03_catalog_lookup/repository/test_app.py": "a190b498f7b5e32a24b4465fa6573d62b1a7dc34074090c1c632e1978ec26c9c",
+    "evaluation/set3/cases/03_catalog_lookup/repository/test_transport.py": "5f118132e41fe3661e0aeefe92403fc6c90deca4bb398cb76eef8526a1f2926f",
+    "evaluation/set3/cases/03_catalog_lookup/spec.md": "4de41806d3fce10575192a8664f2fe76bda933fcdf8f78d73fe54b085e6c78ce",
+    "evaluation/set3/cases/03_catalog_lookup/task.md": "4de41806d3fce10575192a8664f2fe76bda933fcdf8f78d73fe54b085e6c78ce",
+    "evaluation/set3/cases/04_promo_preview/context.md": "85744afb50ae8c0ff819264844ac9cfe029e55a70e230c7981e3ca6ca74af0d8",
+    "evaluation/set3/cases/04_promo_preview/derivation_policy.json": "3ccb65a9e6cd821066b73665b53721f6445fdb721177d4daf2a0fc4b0d8459a0",
+    "evaluation/set3/cases/04_promo_preview/repository/INTERFACE.md": "62ffd7f680be52f520c4df80bfe903a4f76593b08f9d6939b12ce93f509b488d",
+    "evaluation/set3/cases/04_promo_preview/repository/README.md": "a15c25f982550a2638b3c2475416794c950c7e5681f336a07dd9c529376cca92",
+    "evaluation/set3/cases/04_promo_preview/repository/app.py": "3f191fe5a75aa95c1127cab14717ac43af133a5bfe420b8a96f015bd5fcc4fea",
+    "evaluation/set3/cases/04_promo_preview/repository/server.py": "7a555bbe02769c34ec72642df091b53b25a68e3f0ef5e9f4881faf795cf6ef29",
+    "evaluation/set3/cases/04_promo_preview/repository/test_app.py": "5fd754f6fd22344545650ae09bad0e545a1dc131ad22e994058df9dc1b10b330",
+    "evaluation/set3/cases/04_promo_preview/repository/test_transport.py": "c021b5efc0530c3c05ccf4c19eda91417322b60cb86f0c8bd4d86d010f3132b4",
+    "evaluation/set3/cases/04_promo_preview/spec.md": "12c8a6b08887e107b3d0ad358de22c81070523d4c3632e722dc62150d80bd61a",
+    "evaluation/set3/cases/04_promo_preview/task.md": "12c8a6b08887e107b3d0ad358de22c81070523d4c3632e722dc62150d80bd61a",
+    "evaluation/set3/cases/05_notification_preferences/context.md": "5f3b04f35a74a3b5856d12a1c6cc6fb3a400c241b7940824343e829d2bcc5314",
+    "evaluation/set3/cases/05_notification_preferences/derivation_policy.json": "5dfed29c0592e604523184dbf19df686304011f13779abdc5f0f4cbc928206bd",
+    "evaluation/set3/cases/05_notification_preferences/repository/INTERFACE.md": "d61f32cae52bb3378d8510a7e881c2690ddac8889dae564bb644b757aaecfcd7",
+    "evaluation/set3/cases/05_notification_preferences/repository/README.md": "0d4093c775bb48b9fa91c5b82c67e63c4bf82712eba4f23eb1e2d26b61e701ea",
+    "evaluation/set3/cases/05_notification_preferences/repository/app.py": "04d5b96e352557c4a2b854844a85d4d044c06c8ddb50ef62b62989d6864782f3",
+    "evaluation/set3/cases/05_notification_preferences/repository/server.py": "7a555bbe02769c34ec72642df091b53b25a68e3f0ef5e9f4881faf795cf6ef29",
+    "evaluation/set3/cases/05_notification_preferences/repository/test_app.py": "7b72e95b8cc84b6c09266239043cda7f6cd584def3cb813e12a2fc0b03af745e",
+    "evaluation/set3/cases/05_notification_preferences/repository/test_transport.py": "1a282644396e19f21e3defe5abd9bd03efc47f45124f6c9e733858cfa808b1d1",
+    "evaluation/set3/cases/05_notification_preferences/spec.md": "84e608e6fd91ed46a6a9187865a5923ee13a45f5bff2f577fe76a3bdf3248bb3",
+    "evaluation/set3/cases/05_notification_preferences/task.md": "84e608e6fd91ed46a6a9187865a5923ee13a45f5bff2f577fe76a3bdf3248bb3",
+    "evaluation/set3/fixture_review.md": "2a53dd9afa3f56801553f9b098926e2a212346396384f0f341f5106fc092d29b",
+    "evaluation/set3/leakage_review.md": "36f609d94d999ec0e0a43bca3b88e95f3efcf13987d3e322f59c49c934939a8c",
+    "evaluation/set3/manifest.json": "64aecdd5efea6dff2c49ed8624b8fde74f6559b705ecddcc12bfd4adaa9e6534",
+    "evaluation/set3/protocol.md": "0db59c571cc57cdbdf4a516383e292645d7c54b1620ec56713d27e8c674e19a0",
+    "evaluation/set3/transport.py": "e859bfae47252ba241dd1e2b73048d44c2c437092fba0d2d9f58a4f3b3d504a4"
+  }
+}

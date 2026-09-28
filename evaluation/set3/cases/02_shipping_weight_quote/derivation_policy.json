@@ -1,0 +1,17 @@
+{
+  "context_sha256": "fa1e87bd29038d0fbbbc5f35c6944a2707b5042f91db566608afad6bccb6b5d7",
+  "constraints": [
+    {
+      "id": "weight-range",
+      "method": "POST",
+      "path": "/shipping/quote",
+      "field": "weight_grams",
+      "quote": "POST /shipping/quote takes weight_grams, an integer from 100 through 30000 inclusive.",
+      "expected_type": "integer",
+      "value_class": "plain_scalar",
+      "lower": 100,
+      "upper": 30000,
+      "nonblank": false
+    }
+  ]
+}

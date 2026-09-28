@@ -1,0 +1,17 @@
+{
+  "context_sha256": "85744afb50ae8c0ff819264844ac9cfe029e55a70e230c7981e3ca6ca74af0d8",
+  "constraints": [
+    {
+      "id": "subtotal-integer",
+      "method": "POST",
+      "path": "/promotions/preview",
+      "field": "subtotal_cents",
+      "quote": "subtotal_cents is a nonnegative integer excluding booleans.",
+      "expected_type": "integer",
+      "value_class": "plain_scalar",
+      "lower": 0,
+      "upper": null,
+      "nonblank": false
+    }
+  ]
+}

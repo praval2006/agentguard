@@ -1680,3 +1680,48 @@ are unchanged. No fixture, planner, grounder, acceptance or test execution occur
 Regression was not rerun; recorded baseline remains 304/304. All prior work-log bytes
 and historical prefixes are preserved. Separate README credits request is deferred
 to respect this checkpoint's explicit artifact-only commit scope.
+
+
+## 40. 2026-09-28 — Evaluation Set 3 fixture freeze
+
+Implemented five fresh deterministic standard-library repositories from frozen
+protocol/spec checkpoint fa4193c, evaluating unchanged architecture 0e50d12.
+Profile stores normalized names; shipping quotes integer grams with the stated
+tariff; catalog preserves collection filtering/order/fields; promotion previews
+LOCAL10 without committing purchases; preferences applies validated atomic patches
+while preserving omitted channels and digest hour. Stateful applications retain
+caller-owned records. Shared local transport provides ordinary JSON HTTP interfaces.
+
+Added task.md copies byte-identical to specs, bounded context.md, app/server/interface
+and README files, ordinary core/transport tests, plus separate pre-reasoning trusted
+policy JSON for each case. Five reviewed constraints total: profile text, weight,
+subtotal and two boolean channels. Catalog policy is empty; promo-code and lookup
+identity semantics are not authorized for generation. Policy objects/context binding
+were validated without derivation calls. Codex authored the caller/setup review;
+independently human-authored trust or blinding is not claimed.
+
+New fixture_manifest.json records frozen-stage metadata and hashes without modifying
+the original frozen manifest. fixture_review.md documents spec fidelity, policy
+review and leakage audit. Context lengths: 2546, 2108, 2627, 2550, 2705 characters.
+Contexts contain ordinary interfaces/source and test commands, not test results,
+scenario suggestions, derivation coaching, or invented coverage claims.
+
+Each case ran from its repository:
+python3 -B -m unittest discover -s . -p 'test_*.py' -v
+01: 6/6; 02: 6/6; 03: 6/6; 04: 6/6; 05: 6/6 — all passed, total 30/30.
+These include ordinary loopback transport tests, not acceptance evaluation.
+No correction was needed after first suite runs. No intentional defects introduced.
+
+Separate existing AgentGuard regression:
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+304/304 passed, exit 0. Approved escalation enabled local loopback tests.
+
+Keyword/manual review found no benchmark leakage; only neutral 'passes' matched the
+PASS substring. Arrays, persistence, partial-update atomicity and side-effect intent
+were not weakened for executability. No planner/grounder/Set-3 acceptance reasoning
+or execution occurred, and no historical evaluation harness was rerun.
+
+Only new fixture/evaluation files and this appended entry changed. All frozen Set-3
+protocol/specification/original manifest bytes, Set 2/postmortem, historical artifacts,
+production architecture and tests remain unchanged. All prior CODEX.md bytes and
+historical prefixes are preserved exactly. No evaluation outcome is claimed.

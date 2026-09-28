@@ -1,0 +1,17 @@
+{
+  "context_sha256": "7a3d911fc8fe0ecaf478a36058860ea3414ccda2d8f7e61e1cc451c3f6c6c4dd",
+  "constraints": [
+    {
+      "id": "display-name-text",
+      "method": "PATCH",
+      "path": "/profile",
+      "field": "display_name",
+      "quote": "display_name is arbitrary nonblank\ntext, with no format, enum, identity or uniqueness requirement.",
+      "expected_type": "string",
+      "value_class": "arbitrary_text",
+      "lower": null,
+      "upper": null,
+      "nonblank": true
+    }
+  ]
+}

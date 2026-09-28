@@ -1,0 +1,29 @@
+{
+  "context_sha256": "5f3b04f35a74a3b5856d12a1c6cc6fb3a400c241b7940824343e829d2bcc5314",
+  "constraints": [
+    {
+      "id": "email-boolean",
+      "method": "PATCH",
+      "path": "/preferences",
+      "field": "email_enabled",
+      "quote": "PATCH /preferences accepts optional email_enabled and push_enabled, each strictly\nboolean; at least one is required.",
+      "expected_type": "boolean",
+      "value_class": "plain_scalar",
+      "lower": null,
+      "upper": null,
+      "nonblank": false
+    },
+    {
+      "id": "push-boolean",
+      "method": "PATCH",
+      "path": "/preferences",
+      "field": "push_enabled",
+      "quote": "PATCH /preferences accepts optional email_enabled and push_enabled, each strictly\nboolean; at least one is required.",
+      "expected_type": "boolean",
+      "value_class": "plain_scalar",
+      "lower": null,
+      "upper": null,
+      "nonblank": false
+    }
+  ]
+}
