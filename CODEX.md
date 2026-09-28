@@ -1954,3 +1954,48 @@ All other tracked bytes matched c88bfa0 before this append, including frozen Set
 all evaluation artifacts, core contracts and the smoke script. No frozen evaluation
 was rerun. Historical work-log prefixes verified; all previous bytes preserved.
 Only provider instructions, offline tests, docs and this append change. No push.
+
+
+## 47. 2026-09-28 — First AgentGuard verification CLI
+
+Added agentguard/cli.py and __main__.py, minimal setuptools pyproject.toml console
+entry point, editable-install metadata ignore rule, tests/test_cli.py and docs/cli.md.
+Install with python3 -m pip install -e .; invoke agentguard verify --task TASK_FILE
+--context CONTEXT_FILE, or python3 -m agentguard verify with the same arguments.
+Packaging reads the existing requirements.txt; no new runtime dependency or framework.
+Editable source-checkout installation preserves the legacy fixed sample-app test root;
+installation does not grant arbitrary repository command execution.
+
+Only explicit UTF-8 task/context files are read, each nonblank and bounded by the
+existing 32000-character limit using a limit-plus-one read. No crawling or discovery.
+The same OpenAIProvider instance is reused for plan_acceptance then ground_scenarios;
+validated grounded output goes unchanged to run_acceptance. Normal completed flow
+has two model requests, no retries. --base-url forwards caller configuration without
+changing executor policy. No registry authority or derivation policy is fabricated.
+
+Terminal reporting uses actual result/assertion evidence and existing verdicts,
+including nested composite children, null versus absent observations, observed types,
+reasons and truncation flags. Raw bodies/headers/logs are not dumped; displayed values
+escape terminal controls. --show-reasoning adds only explicit requirements, inferred
+behaviors, ambiguities and action types, never chain-of-thought. The CLI does not
+aggregate or reinterpret verdicts. Exit codes: 0 PASS, 1 FAIL, 2 UNVERIFIED, 3 input/
+configuration/provider/schema/unexpected runtime errors. Operational exceptions use
+sanitized stage messages and never become fabricated UNVERIFIED results. Existing
+executor-returned inability results remain unchanged.
+
+Added 14 offline tests covering help/arguments, bounded Unicode/invalid/missing/empty/
+unreadable files, composition/provider reuse/two calls, three verdicts and exit codes,
+core-owned mixed aggregation, reasoning visibility, base URL forwarding, missing
+configuration, provider/schema failures preventing execution, runtime errors and
+nonmutating nested evidence formatting. Full regression:
+python3 -m unittest discover -s tests -p 'test_*.py' -v — 338/338 passed
+(324 prior plus 14 new). Sample-app suite: 4/4 passed. Approved escalation enabled
+existing loopback tests. Editable installation in a temporary virtual environment
+and both console/module help paths were checked successfully. All reasoning tests
+use mocks; no paid API calls or live verify/smoke runs occurred.
+
+All prior tracked files except the intended packaging ignore addition matched
+2209c42 before this append, including core implementations, existing tests, all
+frozen evaluation artifacts and Set 2/3. No frozen evaluation was rerun or interpreted.
+Historical work-log prefixes checked; every previous CODEX byte preserved. No UI,
+automatic context discovery, executor redesign or push was performed.

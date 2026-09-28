@@ -9,3 +9,6 @@ agentguard/events.jsonl
 .env
 .env.*
 !.env.example
+
+# Editable-install metadata
+*.egg-info/
