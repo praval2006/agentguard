@@ -1878,3 +1878,36 @@ All pre-existing tracked files except the intentional .gitignore addition matche
 1e72cf9 before appending, including all evaluation artifacts and core code/tests.
 Historical CODEX prefixes checked; every prior byte preserved. Only provider,
 dependency/config/docs, new tests and this log append change. No push.
+
+
+## 45. 2026-09-28 — Manual live OpenAI reasoning smoke path
+
+Added scripts/live_openai_smoke.py, invoked explicitly from the repository root as:
+AGENTGUARD_MODEL=gpt-5.6-terra python3 -m scripts.live_openai_smoke
+The model choice follows the user's reported manual verification; provider defaults
+and configuration remain unchanged. Missing/blank OPENAI_API_KEY stops before model
+use without printing the key. No credentials or real .env were created.
+
+The small embedded fictional username task/context passes through plan_acceptance
+and its existing validation, prints the validated plan, then passes that exact plan
+to ground_scenarios and prints only its validated output. A completed run makes one
+planner request and one grounder request; errors stop immediately without retries,
+so an unsuccessful run may make fewer requests. No run_acceptance, application HTTP,
+test command, execution or verdict calculation is invoked. No fixture or derivation
+policy was introduced. Unsupported grounding remains permitted. Added concise manual
+usage and failure semantics to docs/openai_provider.md; no CLI or interface redesign.
+
+The live smoke was NOT run during this checkpoint, including via automated tests.
+Kept this straight-line developer wrapper deliberately simple without new tests;
+reviewed its source and parsed its syntax without importing/executing it. Existing
+provider tests use fake clients. Full regression:
+python3 -m unittest discover -s tests -p 'test_*.py' -v — 320/320 passed.
+Sample-app suite: 4/4 passed. Existing loopback tests used approved escalation.
+No real or paid API calls occurred. The user's earlier manual planner success is
+reported context, not a live smoke result from this checkpoint.
+
+All pre-existing tracked files except the intended documentation change matched
+e28cb6f before this append, including evaluation/set2, evaluation/set3 and production
+code. No frozen evaluation was rerun. Historical work-log prefixes checked; every
+previous CODEX byte remains unchanged. Only the new script, its usage documentation
+and this append change. No push or further productization work performed.

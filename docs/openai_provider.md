@@ -62,3 +62,25 @@ fields to bypass validation. No automatic acceptance execution is part of this A
 
 References: [OpenAI JSON mode and Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs),
 [GPT-4.1 mini](https://developers.openai.com/api/docs/models/gpt-4.1-mini).
+
+## Manual live reasoning smoke
+
+After installing the dependency and exporting OPENAI_API_KEY, run from the repository
+root (this spends API credit):
+
+```sh
+AGENTGUARD_MODEL=gpt-5.6-terra python3 -m scripts.live_openai_smoke
+```
+
+The model override uses the configuration reported manually verified for this project;
+the provider default remains unchanged. The script uses a small embedded fictional
+username task/context. A completed run makes exactly two model requests: one through
+`plan_acceptance`, then one through `ground_scenarios` with the exact validated plan.
+It prints each output only after its existing validation succeeds. No retries occur;
+a configuration, API or validation failure stops immediately, potentially before
+both requests are made. Planner output remains visible if grounding fails.
+
+This is manual opt-in only, never part of automated tests. No application HTTP
+request, command execution, acceptance engine or verdict code is invoked. Unsupported
+scenarios are legitimate when the example lacks sufficient execution evidence; no
+fixtures, sample values or derivation authority are added to force executability.
