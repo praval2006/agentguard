@@ -1298,3 +1298,33 @@ intent, and completeness remain provider obligations; no semantic validator is
 claimed. Composite PASS establishes only that all represented frozen required
 children passed. Historical Day-6 remains 0 PASS / 0 FAIL / 21 UNVERIFIED.
 No fresh evaluation set or model API integration was started.
+
+
+## 32. 2026-09-28 — Evaluation Set 2 protocol freeze
+
+### Scope and methodology
+
+- Created evaluation/evaluation_set_2_protocol.md, freezing the primary/secondary
+  questions, exactly five fresh case categories, excluded prior domains, ordered
+  artifact freezes, information boundaries, and first-valid-output policy.
+- No target verdict distribution or success rate. One provider attempt per stage
+  per case; malformed outputs stop the affected case without retries. Preserve
+  negative results and stopped cases. Existing-conversation reasoning is not an
+  independently blinded evaluation.
+- Defined separate planner, grounding, and execution metrics, denominator rules,
+  postmortem categories, FAIL attribution, integrity rules, and stop conditions.
+- Documented the registered-check constraint: current grounding instructions do
+  not advertise check selection, and trusted authorization requires an exact
+  scenario identity frozen before reasoning. No post-hoc authorization, model
+  trust assignment, prompt expansion, or forced executable output is permitted.
+- Historical Day-6 remains 21 scenarios: 0 PASS / 0 FAIL / 21 UNVERIFIED.
+  Future cross-set comparison is descriptive, not an accuracy improvement claim.
+
+### Verification and boundary
+
+Only the new protocol and this appended entry changed. All previous work-log bytes
+and historical prefixes were preserved exactly. No fixtures, task repositories,
+reasoning outputs, or execution results were created. No production code or tests
+changed. Day-5, Day-6, and registered-check smoke artifacts remain untouched and
+were not rerun. Regression tests were not rerun for this documentation-only change;
+the recorded baseline remains 283/283. No evaluation result is claimed.
