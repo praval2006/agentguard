@@ -1999,3 +1999,128 @@ All prior tracked files except the intended packaging ignore addition matched
 frozen evaluation artifacts and Set 2/3. No frozen evaluation was rerun or interpreted.
 Historical work-log prefixes checked; every previous CODEX byte preserved. No UI,
 automatic context discovery, executor redesign or push was performed.
+
+
+## 48. 2026-09-28 — AgentGuard product frontend, Phase 1
+
+Built a separate frontend/ React 19, Vite 6 and TypeScript landing page using plain
+CSS, system typography and a locked npm dependency tree. Worked only on the current
+feature/product-frontend branch. No Python behavior, CLI/provider/schema changes,
+API integration, live calls or evaluation reruns. No commit or push performed.
+
+Added an original ivory/graphite editorial identity, typographic wordmark, responsive
+hero, clickable acceptance evidence graph/inspector, problem section, controlled
+demo, interactive four-stage explanation, trust-boundary diagram, three-verdict
+explanation, final CTA and GitHub navigation. Controls use native buttons, pressed
+states, visible focus, a skip link and live announcements. Mobile graph becomes a
+vertical connected list; reduced motion removes animations and playback delays.
+Subtle one-time heading/connection motion and selected states support inspection.
+
+Central src/data.ts labels the records illustrative-controlled-playback. The page
+explicitly says the simulation is local, not live verification or a fresh benchmark.
+The coding-agent panel shows 2/2 subscription-specific tests, not the full sample
+suite. Run verification animates five phases then reveals the three requirement
+records, expected/observed premium-access difference, unsupported repeated-state
+limitation and fixed overall demo result. Replay/reset are available. The browser
+does not infer verdicts, call executors or fabricate backend execution. Unsupported
+is an evidence limit, not a failure or a correctness guarantee. Future integration
+can replace the local data/playback with backend-returned evidence without moving
+verdict authority into the frontend.
+
+Validation: npm run build, npm run typecheck and npm test passed; 4/4 meaningful
+interaction tests cover graph selection, phase playback/reset, stage switching and
+reduced-motion completion. Existing AgentGuard suite: 338/338 passed; sample-app:
+4/4 passed. Approved escalation allowed dependency installation and existing local
+loopback regression tests. Headless Chrome inspected desktop 1440px and mobile 390px,
+with screenshots reviewed: no browser errors, no mobile horizontal overflow, completed
+playback and keyboard-focusable skip link. Temporary browser tooling stayed outside
+the repository. No paid API calls occurred.
+
+Added frontend/README.md covering npm ci, npm run dev (127.0.0.1:5173), checks,
+controlled-demo limitations and future integration point. No backend service,
+authentication, billing, analytics or UI framework was added. All pre-existing
+tracked bytes matched HEAD before this append, including frozen Set 2/3 and backend
+files. Historical CODEX prefixes checked; all prior content preserved exactly.
+
+
+## 49. 2026-09-28 — Frontend scroll narrative refinement
+
+Refined only the existing frontend on feature/product-frontend, preserving its
+ivory/graphite editorial identity, evidence graph, stage explorer and trust semantics.
+Added CodingStory.tsx and reusable Reveal.tsx; updated App.tsx, data.ts, styles.css,
+interaction tests and frontend README. No backend, API, CLI, schema or frozen data
+changes. Prior uncommitted Phase-1 work is preserved. No commit or push performed.
+
+The controlled story now progresses from canonical task requirements (neutral markers)
+to coding activity, unannotated cancellation code, named 2/2 subscription tests and
+TASK COMPLETE, then the question of actual task satisfaction and independent handoff.
+AgentGuard starts with unresolved acceptance claims. Scrolling never starts verification;
+only the explicit button triggers the existing five phases and progressive evidence.
+The tests-passed/requirement-did-not payoff appears after completion and clears with
+reset/replay. All launch CTAs now say Run the demo and target the controlled section.
+The original controlled observations/verdicts are unchanged. No live coding-agent,
+new benchmark, autonomous execution or browser-assigned verdict is implied.
+
+Reveal-once IntersectionObserver/CSS motion supports fade-rise, slide-left/right,
+stagger and boundary/line treatments at restrained 24px and 550–700ms. Hero choreography,
+problem explanation, story chapters, stage list/panel, trust boundary and verdict rows
+use the existing typography/layout. No scroll hijack, parallax or stage auto-selection.
+Content is visible by default if observation initialization is unavailable or fails;
+reduced motion removes delays/animations. Native controls, pressed states, focus styles,
+skip link and playback status remain. Mobile story panels stack and code wraps.
+
+Final frontend build, typecheck and all 8/8 interaction tests passed. Tests cover the
+ordered coding story, neutral queue, scroll never triggering verification, graph,
+stages, progressive evidence/payoff, reset/replay, navigation, reduced motion and
+failed-observer fallback. Python regression: 338/338 passed; sample-app: 4/4 passed.
+No paid API calls. Headless Chrome inspected 1440px desktop and 390px mobile screenshots;
+no console errors or horizontal overflow, 15 reveal targets activated, verification
+remained ready after scrolling, keyboard activation completed playback, reset returned
+to ready, and reduced motion yielded immediate completion with animation:none.
+
+Updated frontend docs for the separate controlled coding-agent and verification data
+tracks and future API boundary. All tracked nonfrontend files except this append match
+HEAD, including frozen Set 2/3. No evaluation rerun. Historical log prefixes checked;
+all prior CODEX bytes, including entry 48, are preserved exactly. Live integrations,
+hosted workspace, auth and repository discovery remain intentionally deferred.
+
+
+## 50. 2026-09-28 — Cinematic scroll story and editorial typography
+
+Revised the main Phase-49 reveal-once narrative into a native-scroll cinematic
+stage. Added frontend/src/CinematicStory.tsx, scrollTimeline.ts and its tests;
+updated App.tsx, App.test.tsx, styles.css and frontend/README.md. Reused canonical
+codingStory data, controlled evidence, explicit verification/playback/reset logic,
+graph and stage explorer. Reveal remains for ordinary sections; no dependency added.
+
+A 560svh outer section contains a sticky viewport stage. Passive scroll events are
+sampled through requestAnimationFrame; normalized local progress drives overlapping
+opacity, position and scale windows without rerendering React on each scroll. Task,
+implementation, two passing tests, completion claim, independent question, AgentGuard
+handoff, explicit verification and conditional payoff occupy the same stage. Backward
+scroll reverses poses. No wheel interception, snapping or forced playback. Verification
+still requires a click and scroll alone never produces acceptance evidence.
+
+Responsive clamp typography gives major serif statements title-card scale, while
+technical details remain compact. Mobile uses vertical layering and reduced travel.
+Reduced motion disables sticky choreography and presents readable stacked content;
+verification completes immediately only after its explicit trigger. Inactive scenes
+are inert/aria-hidden, with semantic DOM order, a screen-reader overview and a skip
+link. No backend, model, execution or browser-side verdict calculation was introduced.
+
+Validation: build and typecheck passed; frontend 10/10 tests passed. Timeline tests
+cover continuous scene coverage and reversible poses; existing interaction checks
+cover explicit playback, reset/replay, graph, stages, navigation and reduced motion.
+AgentGuard regression: 338/338; sample app: 4/4. Existing loopback tests ran with
+approved escalation. No paid API calls or frozen evaluation reruns.
+
+Headless Chrome reviewed 1440px desktop and 390px mobile task/question/handoff/demo/
+payoff states. Checked native progress, backward reversal, inert inactive controls,
+keyboard activation, reset, and immediate reduced-motion playback. No page errors
+or horizontal overflow in final normal/reduced mobile layouts. Fixed a reduced-motion
+label overflow discovered during review. Visual pacing remains subject to human
+trackpad/mobile-device review; no physical-device claim is made.
+
+All tracked nonfrontend bytes except this append match HEAD, including frozen Set 2/3.
+All prior work-log bytes and historical prefixes are preserved. No commit or push.
+Live integration and CLI work remain outside this frontend checkpoint.
