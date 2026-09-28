@@ -1,0 +1,150 @@
+[
+  {
+    "name": "Accept the inclusive whole-gram range",
+    "source": "explicit",
+    "reason": "The task explicitly states the inclusive range from 100 through 30000 grams.",
+    "behavior": "Accept integer weights throughout the documented range, including its lower and upper limits.",
+    "action": {
+      "type": "composite",
+      "children": [
+        {
+          "label": "inclusive_lower_limit",
+          "action": {
+            "type": "http_request",
+            "method": "POST",
+            "path": "/shipping/quote",
+            "json": {
+              "weight_grams": 100
+            }
+          },
+          "assertions": [
+            {
+              "type": "status",
+              "equals": 200
+            }
+          ]
+        },
+        {
+          "label": "inclusive_upper_limit",
+          "action": {
+            "type": "http_request",
+            "method": "POST",
+            "path": "/shipping/quote",
+            "json": {
+              "weight_grams": 30000
+            }
+          },
+          "assertions": [
+            {
+              "type": "status",
+              "equals": 200
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Reject invalid weights without coercion",
+    "source": "explicit",
+    "reason": "The task explicitly specifies the invalid inputs and prohibits rounding and clamping.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Faithful invalid-input coverage needs lower and upper violations, fractional/non-integer values and the explicitly excluded boolean category. These are at least four independent observations, beyond the three-child bound. A single rejection or dropping a category would weaken the behavior."
+    }
+  },
+  {
+    "name": "Return the correctly priced quote",
+    "source": "explicit",
+    "reason": "The task supplies both the tariff and the required quote fields.",
+    "behavior": "For valid input, return its submitted gram weight, an integer-cent total calculated as 500 cents plus 100 cents for every started kilogram, and currency AUD.",
+    "action": {
+      "type": "composite",
+      "children": [
+        {
+          "label": "partial_kilogram_tariff",
+          "action": {
+            "type": "http_request",
+            "method": "POST",
+            "path": "/shipping/quote",
+            "json": {
+              "weight_grams": 100
+            }
+          },
+          "assertions": [
+            {
+              "type": "status",
+              "equals": 200
+            },
+            {
+              "type": "json_field",
+              "path": "weight_grams",
+              "equals": 100
+            },
+            {
+              "type": "json_field",
+              "path": "total_cents",
+              "equals": 600
+            },
+            {
+              "type": "json_type",
+              "path": "total_cents",
+              "equals": "integer"
+            },
+            {
+              "type": "json_field",
+              "path": "currency",
+              "equals": "AUD"
+            }
+          ]
+        },
+        {
+          "label": "whole_kilograms_tariff",
+          "action": {
+            "type": "http_request",
+            "method": "POST",
+            "path": "/shipping/quote",
+            "json": {
+              "weight_grams": 30000
+            }
+          },
+          "assertions": [
+            {
+              "type": "status",
+              "equals": 200
+            },
+            {
+              "type": "json_field",
+              "path": "weight_grams",
+              "equals": 30000
+            },
+            {
+              "type": "json_field",
+              "path": "total_cents",
+              "equals": 3500
+            },
+            {
+              "type": "json_type",
+              "path": "total_cents",
+              "equals": "integer"
+            },
+            {
+              "type": "json_field",
+              "path": "currency",
+              "equals": "AUD"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Quote without creating shipments or payments",
+    "source": "explicit",
+    "reason": "The task explicitly defines a quote as informational and prohibits both effects.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "No HTTP observable establishes absence of shipment/payment creation. Source statements are not runtime evidence, and the supplied implementation command does not establish trusted behavior-specific coverage."
+    }
+  }
+]

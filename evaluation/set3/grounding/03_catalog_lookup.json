@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Find all matching products after term normalization",
+    "source": "explicit",
+    "reason": "The task explicitly requires normalized case-insensitive substring matching and all matches.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "All matching and no unrelated products requires collection content/filter comparison, including normalization. Dictionary-only scalar assertions cannot express these array obligations; no reviewed policy supplies normalized search variations."
+    }
+  },
+  {
+    "name": "Preserve product fields and code ordering",
+    "source": "explicit",
+    "reason": "The task explicitly requires both ordering and preservation of these fields.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Array ordering and preservation of every returned product field cannot be represented with dictionary-only scalar assertions. Presence of items would be weaker than the required collection comparison."
+    }
+  },
+  {
+    "name": "Return an empty collection for no matches",
+    "source": "explicit",
+    "reason": "The task directly specifies the no-match behavior.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The schema cannot assert that items is an empty array, and no supplied no-match term or reviewed derivation policy establishes that input. A successful status alone does not preserve this behavior."
+    }
+  },
+  {
+    "name": "Reject invalid search terms",
+    "source": "explicit",
+    "reason": "These invalid-input categories are explicitly listed in the task.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The frozen policy supplies no term constraints for generating empty, whitespace and wrong-type search inputs. No concrete invalid request examples are supplied; do not manufacture them or substitute an implementation suite."
+    }
+  },
+  {
+    "name": "Leave the catalog unchanged",
+    "source": "explicit",
+    "reason": "The task explicitly says searching must not modify the catalog.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Catalog nonmutation requires state comparison or a trusted check for that behavior. The HTTP response and implementation-source excerpt do not provide runtime nonmutation evidence."
+    }
+  }
+]

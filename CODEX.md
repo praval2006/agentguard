@@ -1753,3 +1753,40 @@ Set-3 specs/context/fixtures/policies/protocol, Set 2 and historical artifacts.
 Production architecture, planner, derivations and existing tests are unchanged.
 No regression rerun; recorded baseline remains 304/304. All prior CODEX.md bytes and
 historical prefixes are preserved exactly. This checkpoint ends before grounding.
+
+
+## 42. 2026-09-28 — Evaluation Set 3 grounding freeze
+
+Preserved exact provider requests, raw first responses, compiled validated scenarios,
+derivation provenance, attempt/hash metadata, metrics and post-freeze read-only review
+under evaluation/set3/grounding/. Protocol fa4193c, fixtures 58f8ead and planner 9e88f5e
+remain frozen; architecture is 0e50d12. Codex acted as a manual injected provider in
+this existing conversation, not an independently blinded or external-API evaluation.
+Each case used its frozen planner/context and separately frozen caller policy through
+the unchanged ground_scenarios API exactly once. All five responses validated on the
+first attempt; all 23 scenario identities/order and composite behaviors are preserved.
+No retries, repairs, planner regeneration or semantic tuning followed validation.
+
+Top-level distribution: 1 HTTP, 3 composite, 19 unsupported, 0 test-command and
+0 registered-check. Four of 23 planner scenarios (17.39%) have at least one potentially
+executable HTTP observation. Composites contain 6 HTTP children, 0 unsupported children.
+Per-case HTTP/composite/unsupported: profile 1/0/3, shipping 0/2/2, catalog 0/0/5,
+promotion 0/0/5, preferences 0/1/4. Executability is not accuracy or verification.
+One neutral_nonblank_text derivation was requested and accepted with compiler-generated
+provenance; zero rejected. All other rules have zero requests. This does not exercise
+rejection behavior. Provenance supplies inputs only, never runtime evidence or trust.
+
+Read-only review flags the free-form label's one-sample/status-only limitation and
+shipping boundary/tariff sampling as potential weakening of broad planner intent;
+structural validation does not prove complete decomposition. The preferences unknown-
+field category also has one representative. These concerns are preserved without
+repair for postmortem. State, arrays/order, preservation, atomicity and side-effect
+absence were not replaced with weaker field-presence checks. No runtime verdicts
+are predicted or assigned.
+
+No acceptance/HTTP/registered execution, fixture tests or regression runs occurred.
+Recorded regression baseline remains 304/304. Every pre-existing tracked file matched
+9e88f5e before this append. Protocol, fixtures, policies, planner outputs, production,
+derivation implementation, Set 2 and historical artifacts remain unchanged. Historical
+work-log prefixes were checked; all prior CODEX bytes are preserved exactly. Only the
+new grounding artifacts and this append are included in the grounding checkpoint.

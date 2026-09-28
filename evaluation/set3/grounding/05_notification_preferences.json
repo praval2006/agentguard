@@ -1,0 +1,91 @@
+[
+  {
+    "name": "Store and return supplied boolean choices",
+    "source": "explicit",
+    "reason": "The task explicitly requires storing choices, returning results and retaining the meaning of false.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The intended behavior includes actual storage, not just echoed boolean fields. Proving stored choices after an update requires a workflow or state-aware trusted check; neither is available in the current representation."
+    }
+  },
+  {
+    "name": "Preserve omitted and unrelated preferences",
+    "source": "explicit",
+    "reason": "The task explicitly requires preservation of omitted channels and the unrelated digest setting.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Preserving omitted channels and daily_digest_hour in storage and response requires comparison to prior stored state. A single response or independent requests do not establish that relationship."
+    }
+  },
+  {
+    "name": "Reject malformed preference values",
+    "source": "explicit",
+    "reason": "The task restricts accepted values to booleans and explicitly rejects other primitive types and null.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The required malformed primitive categories include string, integer, fractional number and null. Faithful independent checks exceed the three-child bound; selecting only some categories would omit stated behavior."
+    }
+  },
+  {
+    "name": "Reject empty updates and unknown fields",
+    "source": "explicit",
+    "reason": "The task requires at least one provided channel and explicitly prohibits unknown fields and empty updates.",
+    "behavior": "Reject updates with no supplied channel preference and updates containing fields outside the two editable channel choices.",
+    "action": {
+      "type": "composite",
+      "children": [
+        {
+          "label": "empty_update",
+          "action": {
+            "type": "http_request",
+            "method": "PATCH",
+            "path": "/preferences",
+            "json": {}
+          },
+          "assertions": [
+            {
+              "type": "status",
+              "equals": 400
+            },
+            {
+              "type": "json_field",
+              "path": "error",
+              "equals": "Provide one or both boolean channel preferences"
+            }
+          ]
+        },
+        {
+          "label": "noneditable_field",
+          "action": {
+            "type": "http_request",
+            "method": "PATCH",
+            "path": "/preferences",
+            "json": {
+              "daily_digest_hour": 9
+            }
+          },
+          "assertions": [
+            {
+              "type": "status",
+              "equals": 400
+            },
+            {
+              "type": "json_field",
+              "path": "error",
+              "equals": "Provide one or both boolean channel preferences"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Keep invalid updates atomic",
+    "source": "explicit",
+    "reason": "The task explicitly requires complete validation before saving to prevent partial changes.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Atomicity requires comparing persisted state before and after a mixed valid/invalid update. Status rejection alone cannot establish that no partial change was saved; stateful workflows and trusted coverage are unavailable."
+    }
+  }
+]

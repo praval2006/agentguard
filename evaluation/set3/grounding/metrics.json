@@ -1,0 +1,109 @@
+{
+  "planner_scenarios": 23,
+  "validated_scenarios": 23,
+  "top_level_actions": {
+    "http_request": 1,
+    "test_command": 0,
+    "registered_check": 0,
+    "composite": 3,
+    "unsupported": 19
+  },
+  "represented_scenarios": 4,
+  "represented_percentage": 17.391304347826086,
+  "composite_child_actions": {
+    "http_request": 6,
+    "unsupported": 0
+  },
+  "derivation_requests": 1,
+  "accepted_derivations": 1,
+  "rejected_derivations": 0,
+  "by_rule": {
+    "below_inclusive_lower_bound": {
+      "accepted": 0,
+      "rejected": 0
+    },
+    "above_inclusive_upper_bound": {
+      "accepted": 0,
+      "rejected": 0
+    },
+    "blank_string": {
+      "accepted": 0,
+      "rejected": 0
+    },
+    "whitespace_string": {
+      "accepted": 0,
+      "rejected": 0
+    },
+    "wrong_primitive_type": {
+      "accepted": 0,
+      "rejected": 0
+    },
+    "neutral_nonblank_text": {
+      "accepted": 1,
+      "rejected": 0
+    }
+  },
+  "per_case": [
+    {
+      "case": "01_profile_display_name",
+      "scenarios": 4,
+      "actions": {
+        "http_request": 1,
+        "test_command": 0,
+        "registered_check": 0,
+        "composite": 0,
+        "unsupported": 3
+      },
+      "represented_scenarios": 1
+    },
+    {
+      "case": "02_shipping_weight_quote",
+      "scenarios": 4,
+      "actions": {
+        "http_request": 0,
+        "test_command": 0,
+        "registered_check": 0,
+        "composite": 2,
+        "unsupported": 2
+      },
+      "represented_scenarios": 2
+    },
+    {
+      "case": "03_catalog_lookup",
+      "scenarios": 5,
+      "actions": {
+        "http_request": 0,
+        "test_command": 0,
+        "registered_check": 0,
+        "composite": 0,
+        "unsupported": 5
+      },
+      "represented_scenarios": 0
+    },
+    {
+      "case": "04_promo_preview",
+      "scenarios": 5,
+      "actions": {
+        "http_request": 0,
+        "test_command": 0,
+        "registered_check": 0,
+        "composite": 0,
+        "unsupported": 5
+      },
+      "represented_scenarios": 0
+    },
+    {
+      "case": "05_notification_preferences",
+      "scenarios": 5,
+      "actions": {
+        "http_request": 0,
+        "test_command": 0,
+        "registered_check": 0,
+        "composite": 1,
+        "unsupported": 4
+      },
+      "represented_scenarios": 1
+    }
+  ],
+  "meaning": "Potentially attemptable HTTP observations using documented fixture base URLs, not runtime evidence or accuracy; no execution performed. Semantic coverage concerns retained separately."
+}

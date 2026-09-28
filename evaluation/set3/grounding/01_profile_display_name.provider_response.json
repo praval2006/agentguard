@@ -1,0 +1,53 @@
+[
+  {
+    "name": "Store and return the normalized display name",
+    "source": "explicit",
+    "reason": "The task explicitly requires normalization before storage, actual record update and returning the stored value.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The behavior requires proving actual stored mutation and equality to the normalized response. The available single-request assertions cannot compare caller-owned state before/after; GET following PATCH would be a workflow. No supported rule constructs a padded nonblank input."
+    }
+  },
+  {
+    "name": "Reject invalid names without changing the stored name",
+    "source": "explicit",
+    "reason": "The task explicitly pairs invalid-input rejection with preservation of the stored name.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Rejection and preservation of the prior stored name must both be checked. The latter needs state comparison or a trusted behavior-specific check, neither representable here; rejection alone would weaken this scenario."
+    }
+  },
+  {
+    "name": "Preserve unrelated profile fields",
+    "source": "explicit",
+    "reason": "The task directly requires preservation of the profile's other fields.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Preserving every other existing profile field needs a baseline and post-update state comparison. No workflow or arbitrary dictionary equality capability is available; a response field alone cannot establish preservation."
+    }
+  },
+  {
+    "name": "Accept free-form nonblank display labels",
+    "source": "explicit",
+    "reason": "The task explicitly distinguishes free-form display labels from account identifiers and disclaims these restrictions.",
+    "action": {
+      "type": "http_request",
+      "method": "PATCH",
+      "path": "/profile",
+      "json": {},
+      "derive": [
+        {
+          "field": "display_name",
+          "rule": "neutral_nonblank_text",
+          "fact_id": "display-name-text"
+        }
+      ]
+    },
+    "assertions": [
+      {
+        "type": "status",
+        "equals": 200
+      }
+    ]
+  }
+]

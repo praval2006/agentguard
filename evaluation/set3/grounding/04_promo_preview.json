@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Return a normalized and correctly calculated promotion preview",
+    "source": "explicit",
+    "reason": "The task directly specifies code normalization, discount arithmetic and all preview fields.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Canonical LOCAL10 and its tariff are supplied, but no supported derivation constructs the whitespace/case variants required by the normalization behavior. Checking only the canonical code and arithmetic would omit part of the planner intent."
+    }
+  },
+  {
+    "name": "Reject invalid promotion codes",
+    "source": "explicit",
+    "reason": "The task explicitly lists these invalid code cases and their required response behavior.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The domain-valued promotion code has no reviewed derivation authority or supplied concrete invalid examples. Do not invent an unrecognized code or manufacture blank/wrong-type values for that field."
+    }
+  },
+  {
+    "name": "Accept only nonnegative integer subtotals",
+    "source": "explicit",
+    "reason": "The task defines the subtotal domain and explicitly excludes booleans.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Acceptance of zero plus rejection of negative, non-integer and explicitly boolean subtotals requires more than three independent observations. Available subtotal derivations cannot remove that complete-decomposition bound."
+    }
+  },
+  {
+    "name": "Preview without committing a purchase or consuming the promotion",
+    "source": "explicit",
+    "reason": "All three prohibited effects are directly stated by the task.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The HTTP preview has no observable for order/payment creation or promotion consumption. Inferring absence from source or returned totals would substitute repository description for runtime evidence."
+    }
+  },
+  {
+    "name": "Allow repeated promotion previews",
+    "source": "explicit",
+    "reason": "The task explicitly permits previewing the promotion again.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Repeated preview after a prior preview requires state continuity across requests. Independent composite children do not represent that workflow, and no trusted behavior-specific check is supplied."
+    }
+  }
+]
