@@ -1,0 +1,42 @@
+{
+  "stage": "protocol_and_case_specifications",
+  "architecture_commit": "0e50d12968ce6bb8638f8d4e9e05982bcb0c613f",
+  "freeze_commit": "Commit titled Freeze Evaluation Set 3 protocol containing this manifest",
+  "methodology": "Final planned fresh architecture evaluation; no outcome target; existing-conversation reasoning, if used, is not independently blinded.",
+  "cases": [
+    {
+      "id": "01_profile_display_name",
+      "name": "Profile display name",
+      "spec_path": "evaluation/set3/cases/01_profile_display_name/spec.md"
+    },
+    {
+      "id": "02_shipping_weight_quote",
+      "name": "Shipping weight quote",
+      "spec_path": "evaluation/set3/cases/02_shipping_weight_quote/spec.md"
+    },
+    {
+      "id": "03_catalog_lookup",
+      "name": "Catalog lookup",
+      "spec_path": "evaluation/set3/cases/03_catalog_lookup/spec.md"
+    },
+    {
+      "id": "04_promo_preview",
+      "name": "Promo-code preview",
+      "spec_path": "evaluation/set3/cases/04_promo_preview/spec.md"
+    },
+    {
+      "id": "05_notification_preferences",
+      "name": "Notification preferences",
+      "spec_path": "evaluation/set3/cases/05_notification_preferences/spec.md"
+    }
+  ],
+  "sha256": {
+    "evaluation/set3/cases/01_profile_display_name/spec.md": "dcb56655f68273246cd2f72e76619d47aa4e89e2a40dd16dd5ae414d53a77713",
+    "evaluation/set3/cases/02_shipping_weight_quote/spec.md": "2176623a611b6806e3e582ea30212c59e6b17baab6985ef050910c22e37246d4",
+    "evaluation/set3/cases/03_catalog_lookup/spec.md": "4de41806d3fce10575192a8664f2fe76bda933fcdf8f78d73fe54b085e6c78ce",
+    "evaluation/set3/cases/04_promo_preview/spec.md": "12c8a6b08887e107b3d0ad358de22c81070523d4c3632e722dc62150d80bd61a",
+    "evaluation/set3/cases/05_notification_preferences/spec.md": "84e608e6fd91ed46a6a9187865a5923ee13a45f5bff2f577fe76a3bdf3248bb3",
+    "evaluation/set3/leakage_review.md": "36f609d94d999ec0e0a43bca3b88e95f3efcf13987d3e322f59c49c934939a8c",
+    "evaluation/set3/protocol.md": "0db59c571cc57cdbdf4a516383e292645d7c54b1620ec56713d27e8c674e19a0"
+  }
+}

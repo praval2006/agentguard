@@ -1645,3 +1645,38 @@ All frozen evaluation bytes remain unchanged, including Set 2/postmortem, Day-5,
 Day-6 and smoke artifacts. None were rerun; no retrospective score is claimed.
 No arrays, workflows, registered binding or Evaluation Set 3 was started. All prior
 CODEX.md bytes and historical prefixes are preserved exactly.
+
+
+## 39. 2026-09-28 — Evaluation Set 3 protocol and specification freeze
+
+Created evaluation/set3/protocol.md, manifest.json, leakage_review.md and five
+cases/<id>/spec.md files: profile display name, shipping weight quote, catalog lookup,
+promo preview and notification preferences. This is the final planned fresh
+architecture evaluation before core freeze/productization, evaluating 0e50d12.
+No fixtures, task/context implementations, reasoning outputs or execution exist yet.
+
+Frozen stages: protocol/specs, fixture/setup freeze, one planner attempt/freeze,
+one grounding attempt/freeze, one execution/result freeze, then postmortem. Malformed
+provider output stops the case; no retries or between-stage repairs. Existing-context
+reasoning is not independently blinded. Caller-reviewed derivation policies must be
+frozen with future fixture setup before reasoning, separate from model authority.
+No new capabilities or policy tuning based on outcomes are permitted.
+
+Metrics cover planner sources, grounded actions, actually attemptable observation
+counts/proportions, derivation requests accepted/rejected by rule, top-level and
+case verdicts, separate child verdicts and infrastructure failures. Exact Set-2
+taxonomy is retained for post-result diagnosis. No desired percentage, executable
+count or verdict distribution is encoded. Historical comparisons are descriptive.
+
+Pre-freeze leakage review found no expected scenarios/verdicts or hidden behavior.
+Concrete weight/tariff/promotion values are product rules; no example display name
+was inserted for grounding. Arrays, state preservation and side-effect requirements
+remain; cases were not weakened to fit current assertions. Domains are user-selected
+and new implementations are required, with historical subject overlap disclosed.
+
+Only new Set-3 protocol/specification artifacts and this append-only entry changed.
+Set 2, historical evaluations, production code/tests and derivation implementation
+are unchanged. No fixture, planner, grounder, acceptance or test execution occurred.
+Regression was not rerun; recorded baseline remains 304/304. All prior work-log bytes
+and historical prefixes are preserved. Separate README credits request is deferred
+to respect this checkpoint's explicit artifact-only commit scope.
