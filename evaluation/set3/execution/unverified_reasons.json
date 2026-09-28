@@ -1,0 +1,97 @@
+[
+  {
+    "case": "01_profile_display_name",
+    "name": "Store and return the normalized display name",
+    "reason": "The behavior requires proving actual stored mutation and equality to the normalized response. The available single-request assertions cannot compare caller-owned state before/after; GET following PATCH would be a workflow. No supported rule constructs a padded nonblank input."
+  },
+  {
+    "case": "01_profile_display_name",
+    "name": "Reject invalid names without changing the stored name",
+    "reason": "Rejection and preservation of the prior stored name must both be checked. The latter needs state comparison or a trusted behavior-specific check, neither representable here; rejection alone would weaken this scenario."
+  },
+  {
+    "case": "01_profile_display_name",
+    "name": "Preserve unrelated profile fields",
+    "reason": "Preserving every other existing profile field needs a baseline and post-update state comparison. No workflow or arbitrary dictionary equality capability is available; a response field alone cannot establish preservation."
+  },
+  {
+    "case": "02_shipping_weight_quote",
+    "name": "Reject invalid weights without coercion",
+    "reason": "Faithful invalid-input coverage needs lower and upper violations, fractional/non-integer values and the explicitly excluded boolean category. These are at least four independent observations, beyond the three-child bound. A single rejection or dropping a category would weaken the behavior."
+  },
+  {
+    "case": "02_shipping_weight_quote",
+    "name": "Quote without creating shipments or payments",
+    "reason": "No HTTP observable establishes absence of shipment/payment creation. Source statements are not runtime evidence, and the supplied implementation command does not establish trusted behavior-specific coverage."
+  },
+  {
+    "case": "03_catalog_lookup",
+    "name": "Find all matching products after term normalization",
+    "reason": "All matching and no unrelated products requires collection content/filter comparison, including normalization. Dictionary-only scalar assertions cannot express these array obligations; no reviewed policy supplies normalized search variations."
+  },
+  {
+    "case": "03_catalog_lookup",
+    "name": "Preserve product fields and code ordering",
+    "reason": "Array ordering and preservation of every returned product field cannot be represented with dictionary-only scalar assertions. Presence of items would be weaker than the required collection comparison."
+  },
+  {
+    "case": "03_catalog_lookup",
+    "name": "Return an empty collection for no matches",
+    "reason": "The schema cannot assert that items is an empty array, and no supplied no-match term or reviewed derivation policy establishes that input. A successful status alone does not preserve this behavior."
+  },
+  {
+    "case": "03_catalog_lookup",
+    "name": "Reject invalid search terms",
+    "reason": "The frozen policy supplies no term constraints for generating empty, whitespace and wrong-type search inputs. No concrete invalid request examples are supplied; do not manufacture them or substitute an implementation suite."
+  },
+  {
+    "case": "03_catalog_lookup",
+    "name": "Leave the catalog unchanged",
+    "reason": "Catalog nonmutation requires state comparison or a trusted check for that behavior. The HTTP response and implementation-source excerpt do not provide runtime nonmutation evidence."
+  },
+  {
+    "case": "04_promo_preview",
+    "name": "Return a normalized and correctly calculated promotion preview",
+    "reason": "Canonical LOCAL10 and its tariff are supplied, but no supported derivation constructs the whitespace/case variants required by the normalization behavior. Checking only the canonical code and arithmetic would omit part of the planner intent."
+  },
+  {
+    "case": "04_promo_preview",
+    "name": "Reject invalid promotion codes",
+    "reason": "The domain-valued promotion code has no reviewed derivation authority or supplied concrete invalid examples. Do not invent an unrecognized code or manufacture blank/wrong-type values for that field."
+  },
+  {
+    "case": "04_promo_preview",
+    "name": "Accept only nonnegative integer subtotals",
+    "reason": "Acceptance of zero plus rejection of negative, non-integer and explicitly boolean subtotals requires more than three independent observations. Available subtotal derivations cannot remove that complete-decomposition bound."
+  },
+  {
+    "case": "04_promo_preview",
+    "name": "Preview without committing a purchase or consuming the promotion",
+    "reason": "The HTTP preview has no observable for order/payment creation or promotion consumption. Inferring absence from source or returned totals would substitute repository description for runtime evidence."
+  },
+  {
+    "case": "04_promo_preview",
+    "name": "Allow repeated promotion previews",
+    "reason": "Repeated preview after a prior preview requires state continuity across requests. Independent composite children do not represent that workflow, and no trusted behavior-specific check is supplied."
+  },
+  {
+    "case": "05_notification_preferences",
+    "name": "Store and return supplied boolean choices",
+    "reason": "The intended behavior includes actual storage, not just echoed boolean fields. Proving stored choices after an update requires a workflow or state-aware trusted check; neither is available in the current representation."
+  },
+  {
+    "case": "05_notification_preferences",
+    "name": "Preserve omitted and unrelated preferences",
+    "reason": "Preserving omitted channels and daily_digest_hour in storage and response requires comparison to prior stored state. A single response or independent requests do not establish that relationship."
+  },
+  {
+    "case": "05_notification_preferences",
+    "name": "Reject malformed preference values",
+    "reason": "The required malformed primitive categories include string, integer, fractional number and null. Faithful independent checks exceed the three-child bound; selecting only some categories would omit stated behavior."
+  },
+  {
+    "case": "05_notification_preferences",
+    "name": "Keep invalid updates atomic",
+    "reason": "Atomicity requires comparing persisted state before and after a mixed valid/invalid update. Status rejection alone cannot establish that no partial change was saved; stateful workflows and trusted coverage are unavailable."
+  }
+]

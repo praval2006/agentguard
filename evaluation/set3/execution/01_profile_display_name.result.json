@@ -1,0 +1,102 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "The behavior requires proving actual stored mutation and equality to the normalized response. The available single-request assertions cannot compare caller-owned state before/after; GET following PATCH would be a workflow. No supported rule constructs a padded nonblank input."
+      },
+      "observation": null,
+      "result": {
+        "name": "Store and return the normalized display name",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The behavior requires proving actual stored mutation and equality to the normalized response. The available single-request assertions cannot compare caller-owned state before/after; GET following PATCH would be a workflow. No supported rule constructs a padded nonblank input."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Rejection and preservation of the prior stored name must both be checked. The latter needs state comparison or a trusted behavior-specific check, neither representable here; rejection alone would weaken this scenario."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject invalid names without changing the stored name",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Rejection and preservation of the prior stored name must both be checked. The latter needs state comparison or a trusted behavior-specific check, neither representable here; rejection alone would weaken this scenario."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Preserving every other existing profile field needs a baseline and post-update state comparison. No workflow or arbitrary dictionary equality capability is available; a response field alone cannot establish preservation."
+      },
+      "observation": null,
+      "result": {
+        "name": "Preserve unrelated profile fields",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Preserving every other existing profile field needs a baseline and post-update state comparison. No workflow or arbitrary dictionary equality capability is available; a response field alone cannot establish preservation."
+      }
+    },
+    {
+      "execution": {
+        "established": true,
+        "reason": null,
+        "method": "PATCH",
+        "status": 200,
+        "body_truncated": false,
+        "json_available": true,
+        "input_derivations": [
+          {
+            "kind": "synthetic",
+            "rule": "neutral_nonblank_text",
+            "field": "display_name",
+            "fact_id": "display-name-text",
+            "constraint": {
+              "id": "display-name-text",
+              "method": "PATCH",
+              "path": "/profile",
+              "field": "display_name",
+              "quote": "display_name is arbitrary nonblank\ntext, with no format, enum, identity or uniqueness requirement.",
+              "expected_type": "string",
+              "value_class": "arbitrary_text",
+              "lower": null,
+              "upper": null,
+              "nonblank": true
+            },
+            "context_sha256": "7a3d911fc8fe0ecaf478a36058860ea3414ccda2d8f7e61e1cc451c3f6c6c4dd",
+            "value": "agentguard-test"
+          }
+        ]
+      },
+      "observation": {
+        "type": "http_response",
+        "status": 200,
+        "json": {
+          "display_name": "agentguard-test",
+          "language": "en"
+        }
+      },
+      "result": {
+        "name": "Accept free-form nonblank display labels",
+        "source": "explicit",
+        "verdict": "PASS",
+        "assertions": [
+          {
+            "type": "status",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": 200,
+            "observed": 200
+          }
+        ],
+        "reason": null
+      }
+    }
+  ]
+}

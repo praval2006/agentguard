@@ -1,0 +1,75 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "Canonical LOCAL10 and its tariff are supplied, but no supported derivation constructs the whitespace/case variants required by the normalization behavior. Checking only the canonical code and arithmetic would omit part of the planner intent."
+      },
+      "observation": null,
+      "result": {
+        "name": "Return a normalized and correctly calculated promotion preview",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Canonical LOCAL10 and its tariff are supplied, but no supported derivation constructs the whitespace/case variants required by the normalization behavior. Checking only the canonical code and arithmetic would omit part of the planner intent."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The domain-valued promotion code has no reviewed derivation authority or supplied concrete invalid examples. Do not invent an unrecognized code or manufacture blank/wrong-type values for that field."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject invalid promotion codes",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The domain-valued promotion code has no reviewed derivation authority or supplied concrete invalid examples. Do not invent an unrecognized code or manufacture blank/wrong-type values for that field."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Acceptance of zero plus rejection of negative, non-integer and explicitly boolean subtotals requires more than three independent observations. Available subtotal derivations cannot remove that complete-decomposition bound."
+      },
+      "observation": null,
+      "result": {
+        "name": "Accept only nonnegative integer subtotals",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Acceptance of zero plus rejection of negative, non-integer and explicitly boolean subtotals requires more than three independent observations. Available subtotal derivations cannot remove that complete-decomposition bound."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The HTTP preview has no observable for order/payment creation or promotion consumption. Inferring absence from source or returned totals would substitute repository description for runtime evidence."
+      },
+      "observation": null,
+      "result": {
+        "name": "Preview without committing a purchase or consuming the promotion",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The HTTP preview has no observable for order/payment creation or promotion consumption. Inferring absence from source or returned totals would substitute repository description for runtime evidence."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Repeated preview after a prior preview requires state continuity across requests. Independent composite children do not represent that workflow, and no trusted behavior-specific check is supplied."
+      },
+      "observation": null,
+      "result": {
+        "name": "Allow repeated promotion previews",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Repeated preview after a prior preview requires state continuity across requests. Independent composite children do not represent that workflow, and no trusted behavior-specific check is supplied."
+      }
+    }
+  ]
+}

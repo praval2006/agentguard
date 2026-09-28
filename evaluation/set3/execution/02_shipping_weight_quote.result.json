@@ -1,0 +1,283 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "kind": "composite",
+        "required": 2
+      },
+      "observation": null,
+      "result": {
+        "name": "Accept the inclusive whole-gram range",
+        "source": "explicit",
+        "reason": "The task explicitly states the inclusive range from 100 through 30000 grams.",
+        "behavior": "Accept integer weights throughout the documented range, including its lower and upper limits.",
+        "verdict": "PASS",
+        "assertions": [],
+        "child_counts": {
+          "required": 2,
+          "pass": 2,
+          "fail": 0,
+          "unverified": 0
+        },
+        "children": [
+          {
+            "label": "inclusive_lower_limit",
+            "execution": {
+              "established": true,
+              "reason": null,
+              "method": "POST",
+              "status": 200,
+              "body_truncated": false,
+              "json_available": true
+            },
+            "observation": {
+              "type": "http_response",
+              "status": 200,
+              "json": {
+                "weight_grams": 100,
+                "total_cents": 600,
+                "currency": "AUD"
+              }
+            },
+            "result": {
+              "name": "inclusive_lower_limit",
+              "source": "explicit",
+              "verdict": "PASS",
+              "assertions": [
+                {
+                  "type": "status",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 200,
+                  "observed": 200
+                }
+              ],
+              "reason": null
+            }
+          },
+          {
+            "label": "inclusive_upper_limit",
+            "execution": {
+              "established": true,
+              "reason": null,
+              "method": "POST",
+              "status": 200,
+              "body_truncated": false,
+              "json_available": true
+            },
+            "observation": {
+              "type": "http_response",
+              "status": 200,
+              "json": {
+                "weight_grams": 30000,
+                "total_cents": 3500,
+                "currency": "AUD"
+              }
+            },
+            "result": {
+              "name": "inclusive_upper_limit",
+              "source": "explicit",
+              "verdict": "PASS",
+              "assertions": [
+                {
+                  "type": "status",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 200,
+                  "observed": 200
+                }
+              ],
+              "reason": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Faithful invalid-input coverage needs lower and upper violations, fractional/non-integer values and the explicitly excluded boolean category. These are at least four independent observations, beyond the three-child bound. A single rejection or dropping a category would weaken the behavior."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject invalid weights without coercion",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Faithful invalid-input coverage needs lower and upper violations, fractional/non-integer values and the explicitly excluded boolean category. These are at least four independent observations, beyond the three-child bound. A single rejection or dropping a category would weaken the behavior."
+      }
+    },
+    {
+      "execution": {
+        "kind": "composite",
+        "required": 2
+      },
+      "observation": null,
+      "result": {
+        "name": "Return the correctly priced quote",
+        "source": "explicit",
+        "reason": "The task supplies both the tariff and the required quote fields.",
+        "behavior": "For valid input, return its submitted gram weight, an integer-cent total calculated as 500 cents plus 100 cents for every started kilogram, and currency AUD.",
+        "verdict": "PASS",
+        "assertions": [],
+        "child_counts": {
+          "required": 2,
+          "pass": 2,
+          "fail": 0,
+          "unverified": 0
+        },
+        "children": [
+          {
+            "label": "partial_kilogram_tariff",
+            "execution": {
+              "established": true,
+              "reason": null,
+              "method": "POST",
+              "status": 200,
+              "body_truncated": false,
+              "json_available": true
+            },
+            "observation": {
+              "type": "http_response",
+              "status": 200,
+              "json": {
+                "weight_grams": 100,
+                "total_cents": 600,
+                "currency": "AUD"
+              }
+            },
+            "result": {
+              "name": "partial_kilogram_tariff",
+              "source": "explicit",
+              "verdict": "PASS",
+              "assertions": [
+                {
+                  "type": "status",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 200,
+                  "observed": 200
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 100,
+                  "path": "weight_grams",
+                  "observed": 100
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 600,
+                  "path": "total_cents",
+                  "observed": 600
+                },
+                {
+                  "type": "json_type",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "path": "total_cents",
+                  "expected": "integer",
+                  "observed_type": "integer"
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": "AUD",
+                  "path": "currency",
+                  "observed": "AUD"
+                }
+              ],
+              "reason": null
+            }
+          },
+          {
+            "label": "whole_kilograms_tariff",
+            "execution": {
+              "established": true,
+              "reason": null,
+              "method": "POST",
+              "status": 200,
+              "body_truncated": false,
+              "json_available": true
+            },
+            "observation": {
+              "type": "http_response",
+              "status": 200,
+              "json": {
+                "weight_grams": 30000,
+                "total_cents": 3500,
+                "currency": "AUD"
+              }
+            },
+            "result": {
+              "name": "whole_kilograms_tariff",
+              "source": "explicit",
+              "verdict": "PASS",
+              "assertions": [
+                {
+                  "type": "status",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 200,
+                  "observed": 200
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 30000,
+                  "path": "weight_grams",
+                  "observed": 30000
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 3500,
+                  "path": "total_cents",
+                  "observed": 3500
+                },
+                {
+                  "type": "json_type",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "path": "total_cents",
+                  "expected": "integer",
+                  "observed_type": "integer"
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": "AUD",
+                  "path": "currency",
+                  "observed": "AUD"
+                }
+              ],
+              "reason": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "No HTTP observable establishes absence of shipment/payment creation. Source statements are not runtime evidence, and the supplied implementation command does not establish trusted behavior-specific coverage."
+      },
+      "observation": null,
+      "result": {
+        "name": "Quote without creating shipments or payments",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "No HTTP observable establishes absence of shipment/payment creation. Source statements are not runtime evidence, and the supplied implementation command does not establish trusted behavior-specific coverage."
+      }
+    }
+  ]
+}

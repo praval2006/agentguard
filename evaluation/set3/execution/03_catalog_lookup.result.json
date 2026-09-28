@@ -1,0 +1,75 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "All matching and no unrelated products requires collection content/filter comparison, including normalization. Dictionary-only scalar assertions cannot express these array obligations; no reviewed policy supplies normalized search variations."
+      },
+      "observation": null,
+      "result": {
+        "name": "Find all matching products after term normalization",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "All matching and no unrelated products requires collection content/filter comparison, including normalization. Dictionary-only scalar assertions cannot express these array obligations; no reviewed policy supplies normalized search variations."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Array ordering and preservation of every returned product field cannot be represented with dictionary-only scalar assertions. Presence of items would be weaker than the required collection comparison."
+      },
+      "observation": null,
+      "result": {
+        "name": "Preserve product fields and code ordering",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Array ordering and preservation of every returned product field cannot be represented with dictionary-only scalar assertions. Presence of items would be weaker than the required collection comparison."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The schema cannot assert that items is an empty array, and no supplied no-match term or reviewed derivation policy establishes that input. A successful status alone does not preserve this behavior."
+      },
+      "observation": null,
+      "result": {
+        "name": "Return an empty collection for no matches",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The schema cannot assert that items is an empty array, and no supplied no-match term or reviewed derivation policy establishes that input. A successful status alone does not preserve this behavior."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The frozen policy supplies no term constraints for generating empty, whitespace and wrong-type search inputs. No concrete invalid request examples are supplied; do not manufacture them or substitute an implementation suite."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject invalid search terms",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The frozen policy supplies no term constraints for generating empty, whitespace and wrong-type search inputs. No concrete invalid request examples are supplied; do not manufacture them or substitute an implementation suite."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Catalog nonmutation requires state comparison or a trusted check for that behavior. The HTTP response and implementation-source excerpt do not provide runtime nonmutation evidence."
+      },
+      "observation": null,
+      "result": {
+        "name": "Leave the catalog unchanged",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Catalog nonmutation requires state comparison or a trusted check for that behavior. The HTTP response and implementation-source excerpt do not provide runtime nonmutation evidence."
+      }
+    }
+  ]
+}

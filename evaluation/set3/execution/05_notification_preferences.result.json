@@ -1,0 +1,166 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "The intended behavior includes actual storage, not just echoed boolean fields. Proving stored choices after an update requires a workflow or state-aware trusted check; neither is available in the current representation."
+      },
+      "observation": null,
+      "result": {
+        "name": "Store and return supplied boolean choices",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The intended behavior includes actual storage, not just echoed boolean fields. Proving stored choices after an update requires a workflow or state-aware trusted check; neither is available in the current representation."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Preserving omitted channels and daily_digest_hour in storage and response requires comparison to prior stored state. A single response or independent requests do not establish that relationship."
+      },
+      "observation": null,
+      "result": {
+        "name": "Preserve omitted and unrelated preferences",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Preserving omitted channels and daily_digest_hour in storage and response requires comparison to prior stored state. A single response or independent requests do not establish that relationship."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The required malformed primitive categories include string, integer, fractional number and null. Faithful independent checks exceed the three-child bound; selecting only some categories would omit stated behavior."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject malformed preference values",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The required malformed primitive categories include string, integer, fractional number and null. Faithful independent checks exceed the three-child bound; selecting only some categories would omit stated behavior."
+      }
+    },
+    {
+      "execution": {
+        "kind": "composite",
+        "required": 2
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject empty updates and unknown fields",
+        "source": "explicit",
+        "reason": "The task requires at least one provided channel and explicitly prohibits unknown fields and empty updates.",
+        "behavior": "Reject updates with no supplied channel preference and updates containing fields outside the two editable channel choices.",
+        "verdict": "PASS",
+        "assertions": [],
+        "child_counts": {
+          "required": 2,
+          "pass": 2,
+          "fail": 0,
+          "unverified": 0
+        },
+        "children": [
+          {
+            "label": "empty_update",
+            "execution": {
+              "established": true,
+              "reason": null,
+              "method": "PATCH",
+              "status": 400,
+              "body_truncated": false,
+              "json_available": true
+            },
+            "observation": {
+              "type": "http_response",
+              "status": 400,
+              "json": {
+                "error": "Provide one or both boolean channel preferences"
+              }
+            },
+            "result": {
+              "name": "empty_update",
+              "source": "explicit",
+              "verdict": "PASS",
+              "assertions": [
+                {
+                  "type": "status",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 400,
+                  "observed": 400
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": "Provide one or both boolean channel preferences",
+                  "path": "error",
+                  "observed": "Provide one or both boolean channel preferences"
+                }
+              ],
+              "reason": null
+            }
+          },
+          {
+            "label": "noneditable_field",
+            "execution": {
+              "established": true,
+              "reason": null,
+              "method": "PATCH",
+              "status": 400,
+              "body_truncated": false,
+              "json_available": true
+            },
+            "observation": {
+              "type": "http_response",
+              "status": 400,
+              "json": {
+                "error": "Provide one or both boolean channel preferences"
+              }
+            },
+            "result": {
+              "name": "noneditable_field",
+              "source": "explicit",
+              "verdict": "PASS",
+              "assertions": [
+                {
+                  "type": "status",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 400,
+                  "observed": 400
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": "Provide one or both boolean channel preferences",
+                  "path": "error",
+                  "observed": "Provide one or both boolean channel preferences"
+                }
+              ],
+              "reason": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Atomicity requires comparing persisted state before and after a mixed valid/invalid update. Status rejection alone cannot establish that no partial change was saved; stateful workflows and trusted coverage are unavailable."
+      },
+      "observation": null,
+      "result": {
+        "name": "Keep invalid updates atomic",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Atomicity requires comparing persisted state before and after a mixed valid/invalid update. Status rejection alone cannot establish that no partial change was saved; stateful workflows and trusted coverage are unavailable."
+      }
+    }
+  ]
+}

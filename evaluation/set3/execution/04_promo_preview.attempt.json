@@ -1,0 +1,10 @@
+{
+  "case": "04_promo_preview",
+  "started_at": "2026-09-28T01:44:11.341312+00:00",
+  "input_path": "evaluation/set3/grounding/04_promo_preview.json",
+  "input_sha256": "de54e6dc55b1efaa58f2587418fc10b6071149c40e7a9a51bc634637118e19aa",
+  "orchestrator_calls": 0,
+  "fixture_required": false,
+  "fixture_started": false,
+  "fixture_closed": false
+}

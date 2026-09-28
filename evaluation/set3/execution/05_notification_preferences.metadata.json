@@ -1,0 +1,13 @@
+{
+  "case": "05_notification_preferences",
+  "started_at": "2026-09-28T01:44:11.402575+00:00",
+  "input_path": "evaluation/set3/grounding/05_notification_preferences.json",
+  "input_sha256": "78eef7483f36ccb58f7947fa32f1b992878de2a4984c13bdd3bd8576aa7c6dd0",
+  "orchestrator_calls": 1,
+  "fixture_required": true,
+  "fixture_started": true,
+  "fixture_closed": true,
+  "base_url": "http://127.0.0.1:50814",
+  "completed": true,
+  "finished_at": "2026-09-28T01:44:11.421368+00:00"
+}

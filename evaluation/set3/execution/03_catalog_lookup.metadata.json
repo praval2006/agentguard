@@ -1,0 +1,12 @@
+{
+  "case": "03_catalog_lookup",
+  "started_at": "2026-09-28T01:44:11.280230+00:00",
+  "input_path": "evaluation/set3/grounding/03_catalog_lookup.json",
+  "input_sha256": "31506fb652217ec48c157d315ae76cf21aba68c8d4b7609af3ef90f484979a5c",
+  "orchestrator_calls": 1,
+  "fixture_required": false,
+  "fixture_started": false,
+  "fixture_closed": false,
+  "completed": true,
+  "finished_at": "2026-09-28T01:44:11.280898+00:00"
+}

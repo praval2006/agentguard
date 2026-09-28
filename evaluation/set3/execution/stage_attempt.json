@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-09-28T01:44:11.025015+00:00",
+  "grounding_checkpoint": "b981480",
+  "cases": [
+    "01_profile_display_name",
+    "02_shipping_weight_quote",
+    "03_catalog_lookup",
+    "04_promo_preview",
+    "05_notification_preferences"
+  ],
+  "policy": "one isolated process and one run_acceptance call per case; no retries"
+}

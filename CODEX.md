@@ -1790,3 +1790,46 @@ Recorded regression baseline remains 304/304. Every pre-existing tracked file ma
 derivation implementation, Set 2 and historical artifacts remain unchanged. Historical
 work-log prefixes were checked; all prior CODEX bytes are preserved exactly. Only the
 new grounding artifacts and this append are included in the grounding checkpoint.
+
+
+## 43. 2026-09-28 — Final Evaluation Set 3 acceptance execution
+
+Executed the frozen b981480 grounding outputs once per case through unchanged
+run_acceptance; protocol fa4193c, fixtures 58f8ead, planner 9e88f5e, architecture
+0e50d12. Preserved exact returned envelopes, ordered child evidence, first-attempt
+metadata, hashes, process records, regression log and read-only review under
+evaluation/set3/execution/. The retained harness refuses to overwrite attempts.
+Five isolated processes each made one orchestrator call. Only profile, shipping and
+preferences started their existing loopback fixture servers, all closed cleanly.
+No planner/grounder calls, scenario retries, repairs, state chaining or new capability.
+
+Per-case PASS/FAIL/UNVERIFIED: profile 1/0/3, shipping 2/0/2, catalog 0/0/5,
+promotion 0/0/5, preferences 1/0/4. Every case overall verdict is UNVERIFIED.
+Aggregate top-level counts are 4/0/19; composite children are 6/0/0. The existing
+orchestrator supplies no cross-case overall verdict, so none was invented.
+Seven HTTP leaves were actually attempted and established. Infrastructure failures:
+zero. Grounding executability remains 4/23 (17.39%), separate from runtime outcomes.
+The single neutral-text provenance record accompanies execution metadata; it did
+not provide runtime evidence or award a verdict.
+
+Read-only review limits PASS to profile status 200 for one generated label; shipping
+200 at the two inclusive bounds and asserted 600/3500 integer-cent AUD quotes;
+and preference rejection of the empty object and supplied noneditable digest field.
+Free-form-label generality and shipping sampling concerns remain unrepaired. All
+nineteen unsupported records retain their exact inability explanations for state,
+array/order, input-evidence, side-effect or decomposition limitations. No FAIL or
+proof of broad correctness is claimed. This remains engineering evaluation, not
+independently blinded benchmark evidence.
+
+After acceptance, ran the full regression once:
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+304 tests passed, OK, exit code 0; reported duration 5.673 seconds. Approved escalation
+permitted local loopback binding for acceptance and regression. No failed preliminary
+execution or regression retry occurred.
+
+All pre-existing tracked bytes matched b981480 after execution/regression and before
+this append. Protocol, fixtures, task/context/specs, policies, planner, grounding,
+derivations, production and Set 2 remain unchanged. Historical log prefixes checked;
+all earlier CODEX bytes preserved exactly. Only execution artifacts and this append
+change. This completes the final Set-3 execution checkpoint; no further evaluation
+or architecture work was started, and no push was performed.

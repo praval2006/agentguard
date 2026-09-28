@@ -1,0 +1,10 @@
+{
+  "case": "02_shipping_weight_quote",
+  "started_at": "2026-09-28T01:44:11.196348+00:00",
+  "input_path": "evaluation/set3/grounding/02_shipping_weight_quote.json",
+  "input_sha256": "2a96909d8b8089978a3f4ebe00b1564d6f24a2de710440ba26c3ea300a162627",
+  "orchestrator_calls": 0,
+  "fixture_required": true,
+  "fixture_started": false,
+  "fixture_closed": false
+}

@@ -1,0 +1,88 @@
+{
+  "per_case": [
+    {
+      "case": "01_profile_display_name",
+      "counts": {
+        "PASS": 1,
+        "FAIL": 0,
+        "UNVERIFIED": 3
+      },
+      "overall_verdict": "UNVERIFIED",
+      "http_observations_attempted": 1,
+      "orchestrator_calls": 1,
+      "fixture_started": true,
+      "fixture_closed": true
+    },
+    {
+      "case": "02_shipping_weight_quote",
+      "counts": {
+        "PASS": 2,
+        "FAIL": 0,
+        "UNVERIFIED": 2
+      },
+      "overall_verdict": "UNVERIFIED",
+      "http_observations_attempted": 4,
+      "orchestrator_calls": 1,
+      "fixture_started": true,
+      "fixture_closed": true
+    },
+    {
+      "case": "03_catalog_lookup",
+      "counts": {
+        "PASS": 0,
+        "FAIL": 0,
+        "UNVERIFIED": 5
+      },
+      "overall_verdict": "UNVERIFIED",
+      "http_observations_attempted": 0,
+      "orchestrator_calls": 1,
+      "fixture_started": false,
+      "fixture_closed": false
+    },
+    {
+      "case": "04_promo_preview",
+      "counts": {
+        "PASS": 0,
+        "FAIL": 0,
+        "UNVERIFIED": 5
+      },
+      "overall_verdict": "UNVERIFIED",
+      "http_observations_attempted": 0,
+      "orchestrator_calls": 1,
+      "fixture_started": false,
+      "fixture_closed": false
+    },
+    {
+      "case": "05_notification_preferences",
+      "counts": {
+        "PASS": 1,
+        "FAIL": 0,
+        "UNVERIFIED": 4
+      },
+      "overall_verdict": "UNVERIFIED",
+      "http_observations_attempted": 2,
+      "orchestrator_calls": 1,
+      "fixture_started": true,
+      "fixture_closed": true
+    }
+  ],
+  "top_level_counts": {
+    "PASS": 4,
+    "FAIL": 0,
+    "UNVERIFIED": 19
+  },
+  "composite_child_counts": {
+    "PASS": 6,
+    "FAIL": 0,
+    "UNVERIFIED": 0
+  },
+  "http_observations_attempted": 7,
+  "infrastructure_failures": [],
+  "evaluation_overall_verdict": null,
+  "overall_note": "Existing orchestrator returns per-case verdicts only; no cross-case verdict invented and no second orchestration pass.",
+  "grounding_executability": {
+    "represented": 4,
+    "total": 23,
+    "percentage": 17.391304347826086
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "case": "01_profile_display_name",
+  "started_at": "2026-09-28T01:44:11.106372+00:00",
+  "input_path": "evaluation/set3/grounding/01_profile_display_name.json",
+  "input_sha256": "f191e451ada1d9ba4def651630e327937a34337354f2600a367f4644681b265e",
+  "orchestrator_calls": 0,
+  "fixture_required": true,
+  "fixture_started": false,
+  "fixture_closed": false
+}
