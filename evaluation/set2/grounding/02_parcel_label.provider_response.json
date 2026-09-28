@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Produce one normalized label",
+    "source": "explicit",
+    "reason": "These related properties and the single-label output are directly specified by the task.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The route and label fields are documented, but no concrete recipient/postal-code input pair and corresponding normalized label are supplied. Creating arbitrary sample text would invent request values; the general test command has no supplied behavior-specific coverage evidence."
+    }
+  },
+  {
+    "name": "Reject blank label fields",
+    "source": "explicit",
+    "reason": "The task requires blank-field rejection and describes trimming the supplied values.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Faithful rejection checks need a blank or whitespace-only field alongside a supported nonblank counterpart for each field. No concrete nonblank counterpart is supplied, and rejecting a request with both fields blank would not independently establish rejection for either field."
+    }
+  },
+  {
+    "name": "Preview without purchasing postage",
+    "source": "explicit",
+    "reason": "The task explicitly separates previewing from purchasing postage.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "No observable postage-purchase state or purchase side-effect check is documented. The preview response alone cannot establish that postage was not purchased."
+    }
+  },
+  {
+    "name": "Reject absent or non-text label fields",
+    "source": "inferred",
+    "reason": "The supplied context processes text and checks both fields for string values; input validation is directly relevant to preview generation.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The context supports text validation, but the full absent/non-text behavior for both fields needs independently discriminating inputs with a supported valid counterpart. Such concrete counterpart values and a behavior-specific test command are not supplied; do not replace the whole behavior with a both-absent request."
+    }
+  }
+]

@@ -1420,3 +1420,53 @@ registered-check execution, or fixture test rerun occurred. Historical Day-5,
 Day-6 and smoke artifacts were untouched and not rerun. Regression tests were not
 rerun; the recorded baseline remains 283/283. All previous work-log bytes and
 historical prefixes are preserved exactly. No acceptance result is claimed.
+
+
+## 35. 2026-09-28 — Evaluation Set 2 grounding freeze
+
+### Method and artifacts
+
+Created evaluation/set2/grounding/ with first provider responses, byte-identical
+validated outputs, stage_manifest.json and review.md. Codex supplied one manual
+injected response per case to unchanged ground_scenarios(). All five structurally
+valid; none stopped, repaired, retried or regenerated. Inputs were only each frozen
+planner output and context plus existing instructions. Exact input/instruction
+hashes and attempts are recorded. Existing-conversation reasoning is not
+independently blinded; prior project context remains a methodology limitation.
+
+### Representation metrics
+
+20 top-level scenarios: 2 standalone HTTP, 0 test-command, 0 registered-check,
+1 composite, 17 unsupported. The composite has 3 children: 2 HTTP and 1 unsupported.
+Across all leaves: 4 executable and 18 unsupported. Per-case HTTP/composite/unsupported:
+01: 1/1/2; 02: 0/0/4; 03: 0/0/4; 04: 0/0/4; 05: 1/0/3.
+3/20 (15%) have an executable observation; 17/20 (85%) are wholly unsupported.
+These are representation executability metrics, not correctness or coverage scores.
+
+### Qualitative observations
+
+Executable details are visible in supplied context. Temperature endpoints remain
+independent and creation uses documented response fields without predicting an ID.
+The temperature composite's unsupported remainder raises a semantic concern: its
+explanation invokes the child bound, while instructions require whole-parent
+unsupported if faithful decomposition needs more than three observations. Structural
+validation does not resolve this concern; the first response is preserved unchanged.
+The exact practice question assertion is context-supported but fixture-specific,
+not a general product question-selection requirement. Review records this limitation.
+
+Text-input evidence, absent observables, arrays and caller-owned object observation
+produce conservative unsupported representations. Ambiguities remain unresolved;
+stateful retrieval/isolation are not encoded as independent workflows. Both inferred
+scenarios retain evidence standards. Nonmutation belongs to the frozen Tournament
+planner, despite the request referring to Parcel Label; no identity was rewritten.
+Case 3 does not select a registered action under the existing grounding instructions;
+exact authorization remains unavailable and no trust or registry change was made.
+
+### Integrity and boundaries
+
+Frozen fixture/planner/protocol bytes match 7197b14 before and after creation.
+Production code/tests and historical Day-5/Day-6/smoke artifacts are unchanged.
+No acceptance execution, fixture server, registered check, test rerun, or historical
+harness ran; no acceptance result artifact was created. Regression was not rerun;
+recorded baseline remains 283/283. All previous CODEX.md bytes and historical
+prefixes are preserved exactly. No runtime acceptance results are claimed.

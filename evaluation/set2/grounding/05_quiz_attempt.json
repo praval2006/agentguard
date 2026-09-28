@@ -1,0 +1,69 @@
+[
+  {
+    "name": "Start an identifiable practice attempt",
+    "source": "explicit",
+    "reason": "The task explicitly specifies both returned pieces of information.",
+    "action": {
+      "type": "http_request",
+      "method": "POST",
+      "path": "/practice/attempts",
+      "json": {}
+    },
+    "assertions": [
+      {
+        "type": "status",
+        "equals": 201
+      },
+      {
+        "type": "json_exists",
+        "path": "id"
+      },
+      {
+        "type": "json_type",
+        "path": "id",
+        "equals": "string"
+      },
+      {
+        "type": "json_exists",
+        "path": "question"
+      },
+      {
+        "type": "json_type",
+        "path": "question",
+        "equals": "string"
+      },
+      {
+        "type": "json_field",
+        "path": "question",
+        "equals": "7 + 5"
+      }
+    ]
+  },
+  {
+    "name": "Revisit the submitted answer and correctness",
+    "source": "explicit",
+    "reason": "The task explicitly requires submission followed by retrieval of the answer and correctness.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Submission and later retrieval require using a runtime-created attempt identifier and observing continuous state across requests. Current independent observations do not support identifier extraction, output chaining, or the required workflow."
+    }
+  },
+  {
+    "name": "Keep attempt answers separate",
+    "source": "explicit",
+    "reason": "The task explicitly requires attempts to keep their answers separate.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Answer isolation requires multiple created attempts and observation of their distinct state before and after submission. This requires runtime identifiers and state continuity, not independent composite children."
+    }
+  },
+  {
+    "name": "Report unknown attempts",
+    "source": "explicit",
+    "reason": "The task explicitly specifies the unknown-attempt behavior.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The context documents the unknown-attempt response but supplies no concrete identifier guaranteed absent in the running server. Do not assume a fresh server state or invent an absent identifier; no documented behavior-specific test command establishes this behavior."
+    }
+  }
+]

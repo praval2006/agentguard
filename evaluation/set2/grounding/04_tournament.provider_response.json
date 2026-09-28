@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Include entrants and points",
+    "source": "explicit",
+    "reason": "The task explicitly requires every entrant and their total points.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Entrants and points are returned inside a standings array. Existing assertions cannot compare arrays or traverse their elements to establish inclusion and preservation of every entrant; supplied test-command information does not establish this behavior coverage."
+    }
+  },
+  {
+    "name": "Order by descending points",
+    "source": "explicit",
+    "reason": "Highest points first is explicit; the fair-ties policy remains unresolved.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Descending order requires comparing positions and points within the standings array. Dictionary-only scalar assertions do not express this ordering, and no documented behavior-specific test command is supplied. Do not choose a tied-score policy."
+    }
+  },
+  {
+    "name": "Show empty standings",
+    "source": "explicit",
+    "reason": "The task directly specifies the empty case.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The documented response uses an empty standings array for no entrants, but current assertions cannot assert array equality, array length, or array type. Presence of the standings field alone would weaken the empty-list requirement."
+    }
+  },
+  {
+    "name": "Preserve preview input",
+    "source": "inferred",
+    "reason": "The context describes a preview and constructs copied sorted records, supporting a directly relevant nonmutation expectation.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "Caller-owned input nonmutation needs before/after observation of the same in-memory list and records. HTTP responses do not expose that object identity/state, independent children cannot establish it, and no documented behavior-specific test command is supplied."
+    }
+  }
+]

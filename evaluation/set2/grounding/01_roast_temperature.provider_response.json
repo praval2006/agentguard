@@ -1,0 +1,121 @@
+[
+  {
+    "name": "Accept the inclusive temperature range",
+    "source": "explicit",
+    "reason": "The task explicitly includes both endpoints and the whole-number range.",
+    "behavior": "Accept whole-number temperatures throughout 160 to 240, including 160 and 240.",
+    "action": {
+      "type": "composite",
+      "children": [
+        {
+          "label": "Lower included endpoint",
+          "action": {
+            "type": "http_request",
+            "method": "POST",
+            "path": "/roast/temperature",
+            "json": {
+              "temperature": 160
+            }
+          },
+          "assertions": [
+            {
+              "type": "status",
+              "equals": 200
+            },
+            {
+              "type": "json_field",
+              "path": "temperature",
+              "equals": 160
+            },
+            {
+              "type": "json_field",
+              "path": "unit",
+              "equals": "C"
+            }
+          ]
+        },
+        {
+          "label": "Upper included endpoint",
+          "action": {
+            "type": "http_request",
+            "method": "POST",
+            "path": "/roast/temperature",
+            "json": {
+              "temperature": 240
+            }
+          },
+          "assertions": [
+            {
+              "type": "status",
+              "equals": 200
+            },
+            {
+              "type": "json_field",
+              "path": "temperature",
+              "equals": 240
+            },
+            {
+              "type": "json_field",
+              "path": "unit",
+              "equals": "C"
+            }
+          ]
+        },
+        {
+          "label": "Remaining whole-number temperatures",
+          "action": {
+            "type": "unsupported",
+            "explanation": "The parent requires acceptance throughout the range, not only its endpoints. The remaining whole-number settings cannot all be observed within the three independent-child bound; no documented behavior-specific command establishes that remaining obligation."
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "Return the accepted temperature and unit",
+    "source": "explicit",
+    "reason": "The task explicitly specifies both returned properties.",
+    "action": {
+      "type": "http_request",
+      "method": "POST",
+      "path": "/roast/temperature",
+      "json": {
+        "temperature": 160
+      }
+    },
+    "assertions": [
+      {
+        "type": "status",
+        "equals": 200
+      },
+      {
+        "type": "json_field",
+        "path": "temperature",
+        "equals": 160
+      },
+      {
+        "type": "json_field",
+        "path": "unit",
+        "equals": "C"
+      }
+    ]
+  },
+  {
+    "name": "Reject invalid temperature settings",
+    "source": "explicit",
+    "reason": "The task requires other settings to be rejected; integral decimal representation remains an ambiguity.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The behavior includes out-of-range and non-whole-number rejection with clear errors. The supplied context does not document concrete invalid example inputs or a behavior-specific test command, and integral decimal policy remains unresolved. Do not reduce the behavior to one convenient invalid request or invent test inputs."
+    }
+  },
+  {
+    "name": "Validate without equipment effects",
+    "source": "explicit",
+    "reason": "The task explicitly prohibits these effects.",
+    "action": {
+      "type": "unsupported",
+      "explanation": "The response reports temperature and unit but exposes no equipment-state or roast-start observation. The documented general test command does not establish coverage of equipment side effects; source inspection alone is not a supported executable observation."
+    }
+  }
+]
