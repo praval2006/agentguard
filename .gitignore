@@ -5,3 +5,7 @@ __pycache__/
 .agentguard/
 
 agentguard/events.jsonl
+
+.env
+.env.*
+!.env.example

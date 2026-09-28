@@ -1833,3 +1833,48 @@ derivations, production and Set 2 remain unchanged. Historical log prefixes chec
 all earlier CODEX bytes preserved exactly. Only execution artifacts and this append
 change. This completes the final Set-3 execution checkpoint; no further evaluation
 or architecture work was started, and no push was performed.
+
+## 44. 2026-09-28 — Productization: OpenAI reasoning provider
+
+Added agentguard/providers/openai_provider.py and package marker. OpenAIProvider()
+serves both unchanged injected provider boundaries, forwarding their instructions
+and caller-selected evidence (plus caller derivation facts for grounding). No tools,
+repository crawling, execution, verdict logic, or core-contract changes. This starts
+productization after frozen Set-3 execution 1e72cf9; no evaluation was rerun.
+
+The official SDK Responses API uses JSON mode and existing AgentGuard validators,
+not a duplicated strict API schema. An API-only scenarios envelope is unwrapped
+into the existing grounder list without changing entries. JSON syntax is not schema
+or semantic assurance. Core validators still reject model verdict fields and changed
+identities; deterministic derivation policy still compiles requested inputs.
+
+Required OPENAI_API_KEY; optional AGENTGUARD_MODEL defaults to gpt-4.1-mini. Blank
+configuration raises OpenAIProviderError. Lazy SDK import keeps core use independent
+of the optional dependency. Each invocation creates/closes a client and makes one
+request: SDK max_retries=0, timeout 60 seconds, max_output_tokens 8192, store=False,
+fixed official API origin, decoded-text bound 262144 characters. No retries, repair,
+fallback reasoning or model substitution. API failures/refusals/incomplete responses,
+malformed envelopes, duplicate keys and nonfinite JSON numbers raise sanitized
+provider errors. Existing core validation errors remain unchanged.
+
+No dependency manifest previously existed. Added minimal requirements.txt with
+openai>=2.0.0,<3.0.0, placeholder .env.example, secret-file ignore rules and
+ docs/openai_provider.md with installation, usage and trust limitations. Main README
+unchanged. Consulted official documentation using the OpenAI Docs skill. No actual
+.env/credentials were created, no CLI or live smoke script was added.
+
+Added 16 offline tests covering both request/response contracts, configuration,
+malformed/refused/incomplete outputs, API error/no-retry behavior, cleanup, input
+bounds/nonmutation, deterministic derivation compilation, core verdict/identity
+validation and absence of execution. Focused: 16/16 passed. Full regression:
+python3 -m unittest discover -s tests -p 'test_*.py' -v — 320/320 passed
+(304 unchanged plus 16 new). Sample-app suite: 4/4 passed. Approved escalation let
+existing HTTP regression tests bind loopback. Also installed SDK 2.54.0 in a temporary
+virtual environment and checked actual SDK response parsing plus 429/no-retry behavior
+using httpx.MockTransport; both passed with no API network requests. Dependency
+installation required network escalation after sandbox DNS denial. No paid API calls.
+
+All pre-existing tracked files except the intentional .gitignore addition matched
+1e72cf9 before appending, including all evaluation artifacts and core code/tests.
+Historical CODEX prefixes checked; every prior byte preserved. Only provider,
+dependency/config/docs, new tests and this log append change. No push.
