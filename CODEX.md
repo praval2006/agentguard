@@ -1192,3 +1192,55 @@ identity/cardinality validation, nonmutation, and pure aggregation without I/O.
 - Historical work-log versions were checked as prefixes; all prior bytes remain
   unchanged. No composite execution, grounder emission support, state transfer,
   or new registered-check capability was implemented.
+
+
+## 30. 2026-09-28 — Bounded composite execution and nested evidence
+
+### Changes
+
+- run_acceptance now dispatches composite parents. It validates all top-level
+  scenarios/children before side effects, deep-copies the collection, and validates
+  the internal snapshot. Caller mutations during execution cannot change its child
+  set. Concurrent mutation during copying is outside the supported contract.
+- HTTP children use execute_http_scenario and its existing verifier; unsupported
+  children use the existing no-execution verifier normalization. All required
+  children are processed once in declared order, including children after a FAIL.
+  Missing HTTP configuration yields UNVERIFIED safely. No retries or early verdict
+  short-circuiting. Unexpected programming errors still propagate.
+- Parent verdicts delegate to aggregate_composite_results with exact ordered
+  label/verdict records. No HTTP verdict logic or parent precedence is duplicated.
+  The unchanged top-level aggregation consumes only each parent's verdict.
+- Each parent retains one execution/observation/result envelope. Parent observation
+  is None; result preserves name/source/reason/behavior, verdict, empty assertions,
+  child_counts, and ordered children. Each child has its exact label and existing
+  leaf envelope once. Raw JSON is not duplicated at the parent level; no logs or
+  percentage coverage scores are introduced.
+- No workflow/state/output propagation, isolation guarantee, reset, or HTTP lifecycle
+  added. Existing 2–3 child and five-parent bounds remain. Registered/test-command
+  children and nesting remain forbidden. Grounding remains unchanged and has not
+  been taught to emit composites.
+
+### Tests and results
+
+Added 12 tests in tests/test_composite_execution.py using a local controlled HTTP
+fixture: 2/3 children passing, partial and failed evidence, every-child order/count,
+continuation after failure, unsupported/missing-target outcomes, nested evidence,
+nonmutation and caller mutation resistance, all-input prevalidation, top-level
+aggregation, parent-helper delegation, unknown verdict rejection, and exception
+propagation without retries.
+
+- Focused: python3 -B -m unittest discover -s tests -p test_composite_execution.py -v
+  — 12/12 passed.
+- Full: python3 -m unittest discover -s tests -p 'test_*.py' -v
+  — 269/269 passed (257 existing unchanged and 12 new).
+- Approved escalation allowed the local loopback tests to bind.
+- Standalone/registered execution, authorization, HTTP semantics, and grounding
+  files remain unchanged. Frozen Day-5/Day-6/smoke artifacts have no diff and were
+  not rerun. All prior CODEX.md bytes and historical prefixes are preserved.
+
+### Limitations
+
+Sequential independent observations do not prove state isolation or complete
+semantic coverage. The existing per-child HTTP bounds apply, and nested reports
+retain each executor's bounded observation; parsed JSON may contain sensitive data.
+No grounder integration or broader child capabilities were introduced.
