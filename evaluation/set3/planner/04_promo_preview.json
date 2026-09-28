@@ -1,0 +1,45 @@
+{
+  "explicit_requirements": [
+    "Recognize LOCAL10 after trimming whitespace and comparing without regard to case.",
+    "Apply a ten-percent discount with the discount rounded down to integer cents.",
+    "Return canonical code, original subtotal, discount and resulting total.",
+    "Reject non-string, blank and unrecognized codes with a clear error rather than a discounted total.",
+    "Accept only nonnegative integer-cent subtotals, excluding booleans, and reject invalid subtotals with a clear error.",
+    "Previewing must not create an order, charge a payment or consume the promotion.",
+    "Allow the promotion to be previewed again."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [],
+  "scenarios": [
+    {
+      "name": "Return a normalized and correctly calculated promotion preview",
+      "behavior": "Recognize the published promotion despite surrounding whitespace or letter case, and return its canonical code, original subtotal, ten-percent discount rounded down to whole cents, and subtotal minus that discount.",
+      "reason": "The task directly specifies code normalization, discount arithmetic and all preview fields.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject invalid promotion codes",
+      "behavior": "Reject non-string, blank and unrecognized promotion codes with a clear error instead of presenting a discounted total.",
+      "reason": "The task explicitly lists these invalid code cases and their required response behavior.",
+      "source": "explicit"
+    },
+    {
+      "name": "Accept only nonnegative integer subtotals",
+      "behavior": "Accept nonnegative integer-cent subtotals including zero, and reject negative, non-integer or boolean subtotals with a clear error instead of a discounted total.",
+      "reason": "The task defines the subtotal domain and explicitly excludes booleans.",
+      "source": "explicit"
+    },
+    {
+      "name": "Preview without committing a purchase or consuming the promotion",
+      "behavior": "A preview does not create an order, charge payment or consume the promotion.",
+      "reason": "All three prohibited effects are directly stated by the task.",
+      "source": "explicit"
+    },
+    {
+      "name": "Allow repeated promotion previews",
+      "behavior": "The promotion remains available for another preview after a prior preview.",
+      "reason": "The task explicitly permits previewing the promotion again.",
+      "source": "explicit"
+    }
+  ]
+}

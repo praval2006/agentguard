@@ -1,0 +1,43 @@
+{
+  "explicit_requirements": [
+    "Accept one or both of email_enabled and push_enabled as boolean choices.",
+    "Store supplied choices and return the resulting preferences; explicit false is not omission.",
+    "Preserve omitted channel values and daily_digest_hour.",
+    "Reject other primitive types, null, unknown fields and empty updates.",
+    "Validate the entire update before saving so invalid input cannot partially change preferences."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [],
+  "scenarios": [
+    {
+      "name": "Store and return supplied boolean choices",
+      "behavior": "An update containing one or both channel choices stores those boolean values and returns the resulting preferences, treating explicit false as a supplied choice.",
+      "reason": "The task explicitly requires storing choices, returning results and retaining the meaning of false.",
+      "source": "explicit"
+    },
+    {
+      "name": "Preserve omitted and unrelated preferences",
+      "behavior": "Updating channel choices preserves any omitted channel's stored value and leaves daily_digest_hour unchanged in storage and the returned preferences.",
+      "reason": "The task explicitly requires preservation of omitted channels and the unrelated digest setting.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject malformed preference values",
+      "behavior": "Reject supplied channel values that are not booleans, including null and other primitive types.",
+      "reason": "The task restricts accepted values to booleans and explicitly rejects other primitive types and null.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject empty updates and unknown fields",
+      "behavior": "Reject updates with no supplied channel preference and updates containing fields outside the two editable channel choices.",
+      "reason": "The task requires at least one provided channel and explicitly prohibits unknown fields and empty updates.",
+      "source": "explicit"
+    },
+    {
+      "name": "Keep invalid updates atomic",
+      "behavior": "When any part of an update is invalid, none of its proposed changes are saved, including otherwise valid channel choices in that update.",
+      "reason": "The task explicitly requires complete validation before saving to prevent partial changes.",
+      "source": "explicit"
+    }
+  ]
+}

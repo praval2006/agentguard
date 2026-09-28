@@ -1725,3 +1725,31 @@ Only new fixture/evaluation files and this appended entry changed. All frozen Se
 protocol/specification/original manifest bytes, Set 2/postmortem, historical artifacts,
 production architecture and tests remain unchanged. All prior CODEX.md bytes and
 historical prefixes are preserved exactly. No evaluation outcome is claimed.
+
+
+## 41. 2026-09-28 — Evaluation Set 3 planner freeze
+
+Protocol fa4193c, fixtures 58f8ead, architecture 0e50d12. Added evaluation/set3/planner/
+with exact first provider responses, byte-identical validated outputs, stage manifest
+and descriptive summary. Codex supplied one manual injected response per case to the
+unchanged plan_acceptance API. All five valid; none stopped, repaired or retried.
+Input/instruction/response hashes and provenance are recorded.
+
+Per-case scenarios/explicit/inferred/ambiguities:
+01 profile: 4/4/0/0; 02 shipping: 4/4/0/0; 03 catalog: 5/5/0/0;
+04 promotion: 5/5/0/0; 05 preferences: 5/5/0/0.
+Total 23 scenarios, 23 explicit, 0 inferred, 0 ambiguity entries; five provider calls.
+Counts describe outputs, not semantic completeness or quality. No executability or
+future outcome metrics were computed. Exact scenario names appear in the summary.
+
+Reasoning used each frozen task/context and existing instructions only. Existing
+project-conversation methodology is not independently blinded; prior fixture/project
+context exists. No derivation policy, test result or evaluation metadata was passed
+to the provider. No grounding, derived-value request, action schema, registered check,
+HTTP acceptance check or acceptance execution occurred. No fixture repair.
+
+Frozen evaluation bytes match 58f8ead before and after artifact creation, including
+Set-3 specs/context/fixtures/policies/protocol, Set 2 and historical artifacts.
+Production architecture, planner, derivations and existing tests are unchanged.
+No regression rerun; recorded baseline remains 304/304. All prior CODEX.md bytes and
+historical prefixes are preserved exactly. This checkpoint ends before grounding.

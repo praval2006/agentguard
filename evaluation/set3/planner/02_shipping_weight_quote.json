@@ -1,0 +1,37 @@
+{
+  "explicit_requirements": [
+    "Accept whole-gram weights from 100 through 30000 inclusive.",
+    "Reject non-integers including booleans and weights outside the range with a clear validation error, without rounding or clamping.",
+    "Charge 500 cents plus 100 cents per started kilogram.",
+    "Return submitted weight in grams, total charge in integer cents and currency AUD.",
+    "Do not create a shipment or payment when quoting."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [],
+  "scenarios": [
+    {
+      "name": "Accept the inclusive whole-gram range",
+      "behavior": "Accept integer weights throughout the documented range, including its lower and upper limits.",
+      "reason": "The task explicitly states the inclusive range from 100 through 30000 grams.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject invalid weights without coercion",
+      "behavior": "Reject out-of-range weights and non-integers, including booleans, with a clear error rather than rounding or clamping them into an accepted weight.",
+      "reason": "The task explicitly specifies the invalid inputs and prohibits rounding and clamping.",
+      "source": "explicit"
+    },
+    {
+      "name": "Return the correctly priced quote",
+      "behavior": "For valid input, return its submitted gram weight, an integer-cent total calculated as 500 cents plus 100 cents for every started kilogram, and currency AUD.",
+      "reason": "The task supplies both the tariff and the required quote fields.",
+      "source": "explicit"
+    },
+    {
+      "name": "Quote without creating shipments or payments",
+      "behavior": "Producing a quote creates neither a shipment nor a payment.",
+      "reason": "The task explicitly defines a quote as informational and prohibits both effects.",
+      "source": "explicit"
+    }
+  ]
+}

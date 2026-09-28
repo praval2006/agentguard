@@ -1,0 +1,37 @@
+{
+  "explicit_requirements": [
+    "Replace the current profile display name with nonblank text, removing surrounding whitespace before storing it.",
+    "Return the stored normalized display name, and update the caller-owned profile rather than merely echoing input.",
+    "Allow free-form display labels without uniqueness, vocabulary or format restrictions.",
+    "Reject non-string, empty and whitespace-only names without changing the stored name.",
+    "Preserve other profile fields."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [],
+  "scenarios": [
+    {
+      "name": "Store and return the normalized display name",
+      "behavior": "A valid name replaces the current profile name after surrounding whitespace is removed; the returned name matches the stored normalized value.",
+      "reason": "The task explicitly requires normalization before storage, actual record update and returning the stored value.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject invalid names without changing the stored name",
+      "behavior": "Non-string, empty and whitespace-only input is rejected while the previously stored display name remains unchanged.",
+      "reason": "The task explicitly pairs invalid-input rejection with preservation of the stored name.",
+      "source": "explicit"
+    },
+    {
+      "name": "Preserve unrelated profile fields",
+      "behavior": "Changing the display name leaves every other existing profile field unchanged.",
+      "reason": "The task directly requires preservation of the profile's other fields.",
+      "source": "explicit"
+    },
+    {
+      "name": "Accept free-form nonblank display labels",
+      "behavior": "Nonblank display labels are accepted without imposing an account-identity lookup, uniqueness rule, prescribed vocabulary or format.",
+      "reason": "The task explicitly distinguishes free-form display labels from account identifiers and disclaims these restrictions.",
+      "source": "explicit"
+    }
+  ]
+}
