@@ -1,0 +1,40 @@
+{
+  "explicit_requirements": [
+    "Starting an arithmetic practice attempt returns its identifier and question.",
+    "A learner can submit an answer for that attempt and revisit the result using its identifier.",
+    "The revisited result shows the submitted answer and whether it was correct.",
+    "Attempts keep their answers separate.",
+    "An unknown attempt returns not found."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [
+    "Whether an answer may be replaced by a later submission for the same attempt is unspecified; the current update behavior does not establish that policy.",
+    "The learner-visible result before an answer has been submitted is unspecified; current null values are not a stated product requirement."
+  ],
+  "scenarios": [
+    {
+      "name": "Start an identifiable practice attempt",
+      "behavior": "Starting an attempt returns an identifier for that attempt and its arithmetic question.",
+      "reason": "The task explicitly specifies both returned pieces of information.",
+      "source": "explicit"
+    },
+    {
+      "name": "Revisit the submitted answer and correctness",
+      "behavior": "After submitting an answer for an attempt, revisiting that attempt by its returned identifier shows that answer and accurately indicates whether it answers the question correctly.",
+      "reason": "The task explicitly requires submission followed by retrieval of the answer and correctness.",
+      "source": "explicit"
+    },
+    {
+      "name": "Keep attempt answers separate",
+      "behavior": "Submitting an answer for one attempt does not set or replace the answer belonging to a different attempt.",
+      "reason": "The task explicitly requires attempts to keep their answers separate.",
+      "source": "explicit"
+    },
+    {
+      "name": "Report unknown attempts",
+      "behavior": "Accessing an attempt that does not exist reports not found.",
+      "reason": "The task explicitly specifies the unknown-attempt behavior.",
+      "source": "explicit"
+    }
+  ]
+}

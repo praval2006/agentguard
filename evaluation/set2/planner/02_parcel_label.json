@@ -1,0 +1,38 @@
+{
+  "explicit_requirements": [
+    "Return one preview label for a supplied recipient and postal code.",
+    "Trim the recipient, trim and uppercase the postal code, and set service to standard.",
+    "Reject blank recipient or postal code.",
+    "Previewing must not purchase postage."
+  ],
+  "inferred_behaviors": [
+    "Absent or non-text recipient and postal-code values should be rejected rather than treated as valid label text; the supplied context exposes text processing and validates both values."
+  ],
+  "ambiguities": [],
+  "scenarios": [
+    {
+      "name": "Produce one normalized label",
+      "behavior": "Return one label whose recipient has surrounding whitespace removed, whose postal code has surrounding whitespace removed and is uppercase, and whose service is standard.",
+      "reason": "These related properties and the single-label output are directly specified by the task.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject blank label fields",
+      "behavior": "Reject a blank recipient or postal code, including whitespace-only text.",
+      "reason": "The task requires blank-field rejection and describes trimming the supplied values.",
+      "source": "explicit"
+    },
+    {
+      "name": "Preview without purchasing postage",
+      "behavior": "Generating a preview does not purchase postage.",
+      "reason": "The task explicitly separates previewing from purchasing postage.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject absent or non-text label fields",
+      "behavior": "Reject absent or non-text recipient and postal-code values instead of producing a label from them.",
+      "reason": "The supplied context processes text and checks both fields for string values; input validation is directly relevant to preview generation.",
+      "source": "inferred"
+    }
+  ]
+}

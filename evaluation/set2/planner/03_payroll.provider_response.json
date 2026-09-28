@@ -1,0 +1,36 @@
+{
+  "explicit_requirements": [
+    "Calculate weekly gross pay in cents for nonnegative whole hours.",
+    "Pay the first 40 hours at the hourly rate and each additional hour at one and a half times that rate.",
+    "Accept only positive even integer-cent hourly rates and reject other inputs.",
+    "Do not deduct tax."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [],
+  "scenarios": [
+    {
+      "name": "Calculate regular and overtime gross pay",
+      "behavior": "Calculate the first 40 hours at the hourly rate and only additional hours at one and a half times that rate, returning gross pay in cents.",
+      "reason": "The task explicitly specifies the two pay bands and monetary unit.",
+      "source": "explicit"
+    },
+    {
+      "name": "Handle zero hours",
+      "behavior": "For zero hours at an allowed rate, return zero gross pay.",
+      "reason": "Zero belongs to the explicitly permitted nonnegative hours and yields zero under the stated pay formula.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject inputs outside the pay contract",
+      "behavior": "Reject negative or non-integer hours and hourly rates that are not positive even integer numbers of cents.",
+      "reason": "The task explicitly constrains both inputs and requires rejection of other inputs.",
+      "source": "explicit"
+    },
+    {
+      "name": "Preserve gross pay without tax deduction",
+      "behavior": "Return the calculated gross amount without deducting tax.",
+      "reason": "The task explicitly forbids tax deduction.",
+      "source": "explicit"
+    }
+  ]
+}

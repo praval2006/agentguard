@@ -1,0 +1,40 @@
+{
+  "explicit_requirements": [
+    "Show every entrant with their total points.",
+    "Order standings by highest points first.",
+    "Make tied scores fair for players.",
+    "Show an empty standings list for an empty tournament."
+  ],
+  "inferred_behaviors": [
+    "Computing a standings preview should not mutate the supplied entrant records or reorder the caller-owned input list; the context presents a preview and constructs copied sorted records."
+  ],
+  "ambiguities": [
+    "The task does not define fair treatment for tied scores: tie-breaking order, shared placing, or another policy remains unresolved. The current preservation of input order among ties is not a product requirement."
+  ],
+  "scenarios": [
+    {
+      "name": "Include entrants and points",
+      "behavior": "Show every supplied entrant with their total points without dropping entrants who share a score.",
+      "reason": "The task explicitly requires every entrant and their total points.",
+      "source": "explicit"
+    },
+    {
+      "name": "Order by descending points",
+      "behavior": "Place higher-scoring entrants before lower-scoring entrants, without imposing an unspecified tie-breaking rule.",
+      "reason": "Highest points first is explicit; the fair-ties policy remains unresolved.",
+      "source": "explicit"
+    },
+    {
+      "name": "Show empty standings",
+      "behavior": "Show an empty standings list when the tournament has no entrants.",
+      "reason": "The task directly specifies the empty case.",
+      "source": "explicit"
+    },
+    {
+      "name": "Preserve preview input",
+      "behavior": "Computing standings leaves the caller-owned entrant list and its records unchanged.",
+      "reason": "The context describes a preview and constructs copied sorted records, supporting a directly relevant nonmutation expectation.",
+      "source": "inferred"
+    }
+  ]
+}

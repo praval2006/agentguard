@@ -1379,3 +1379,44 @@ execution occurred. No production AgentGuard code, existing tests, sample app,
 frozen protocol, Day-5, Day-6, or registered-check smoke artifacts changed; historical
 evaluation harnesses were not rerun. All previous work-log bytes and historical
 prefixes are preserved exactly. No AgentGuard evaluation result is claimed.
+
+
+## 34. 2026-09-28 — Evaluation Set 2 planner freeze
+
+### Method and artifacts
+
+Created evaluation/set2/planner/ with exact first provider responses, byte-identical
+validated outputs for all five cases, stage_manifest.json, and a planner-only
+qualitative review. Codex acted as the manual injected reasoning provider for the
+unchanged plan_acceptance(). Each callable received only existing instructions and
+the case's frozen task/context. Exactly one response and validation call per case;
+all valid, none stopped, no retries, repairs, or regeneration.
+
+Input paths/hashes and exact instructions/hash are preserved. Existing-conversation
+reasoning is not independently blinded: Codex retains prior project/fixture context.
+No external model API call or independent authorship claim is made.
+
+### Planner metrics and observations
+
+Each case produced four scenarios. Total: 20 scenarios, 18 explicit, 2 inferred,
+4 ambiguity entries. Per-case explicit/inferred/ambiguities:
+01: 4/0/1; 02: 3/1/0; 03: 4/0/0; 04: 3/1/1; 05: 4/0/2.
+
+Outputs retain task behavior including equipment/postage side-effect prohibitions,
+pay calculation, entrant completeness, and answer retrieval/isolation. Integral
+numeric representation, tied-score policy, and repeat/pre-submission answer behavior
+remain unresolved. Tournament has no concrete tied-policy scenario. Inferred label
+input validation and preview-input nonmutation are context-supported proposals,
+not explicit product mandates; the review flags nonmutation's dependence on current
+source behavior. No unsupported decision was identified as an explicit requirement.
+Outputs remain unchanged after review; no numeric quality score was assigned.
+
+### Integrity and boundaries
+
+Frozen fixture/protocol bytes match 7c2ab34 before and after artifact creation.
+Case-3 check/registry and all production code/tests remain unchanged. No Set-2
+grounding, action schemas, acceptance execution, check selection, authorization,
+registered-check execution, or fixture test rerun occurred. Historical Day-5,
+Day-6 and smoke artifacts were untouched and not rerun. Regression tests were not
+rerun; the recorded baseline remains 283/283. All previous work-log bytes and
+historical prefixes are preserved exactly. No acceptance result is claimed.

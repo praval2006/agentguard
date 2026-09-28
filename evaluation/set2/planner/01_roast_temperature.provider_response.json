@@ -1,0 +1,38 @@
+{
+  "explicit_requirements": [
+    "Accept whole-number Celsius temperatures from 160 through 240, including both endpoints.",
+    "Return the accepted temperature and unit C.",
+    "Reject other settings with a clear error.",
+    "Validation must not start a roast or change equipment state."
+  ],
+  "inferred_behaviors": [],
+  "ambiguities": [
+    "Whether numerically integral decimal values such as 200.0 count as whole-number settings is not specified by the task; the current integer-only representation does not settle that product decision."
+  ],
+  "scenarios": [
+    {
+      "name": "Accept the inclusive temperature range",
+      "behavior": "Accept whole-number temperatures throughout 160 to 240, including 160 and 240.",
+      "reason": "The task explicitly includes both endpoints and the whole-number range.",
+      "source": "explicit"
+    },
+    {
+      "name": "Return the accepted temperature and unit",
+      "behavior": "For an accepted setting, return that temperature with unit C.",
+      "reason": "The task explicitly specifies both returned properties.",
+      "source": "explicit"
+    },
+    {
+      "name": "Reject invalid temperature settings",
+      "behavior": "Reject temperatures outside the range and non-whole-number settings with a clear error; do not assume a policy for integral decimal representations.",
+      "reason": "The task requires other settings to be rejected; integral decimal representation remains an ambiguity.",
+      "source": "explicit"
+    },
+    {
+      "name": "Validate without equipment effects",
+      "behavior": "Validation does not start a roast or change equipment state.",
+      "reason": "The task explicitly prohibits these effects.",
+      "source": "explicit"
+    }
+  ]
+}
