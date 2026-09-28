@@ -1328,3 +1328,54 @@ reasoning outputs, or execution results were created. No production code or test
 changed. Day-5, Day-6, and registered-check smoke artifacts remain untouched and
 were not rerun. Regression tests were not rerun for this documentation-only change;
 the recorded baseline remains 283/283. No evaluation result is claimed.
+
+
+## 33. 2026-09-28 — Evaluation Set 2 fixture freeze
+
+### Fixtures and methodology
+
+Created evaluation/set2/ with exactly five fresh case directories, each containing
+separate task/context artifacts, a small Python repository, and ordinary tests:
+1. Coffee roast temperature — inclusive boundary.
+2. Parcel label preview — multiple related observable properties.
+3. Weekly hourly pay — repository-local registered check.
+4. Tournament standings — product ambiguity concerning tied scores.
+5. Arithmetic practice attempts — stateful submission and result retrieval.
+
+Shared http_server.py provides a standard-library loopback JSON adapter for four
+repositories. No dependencies, external services, injected defects, or target
+verdict distribution. fixture_manifest.md records commands, results, bounded
+contexts, file hashes, provenance, and the freeze commit identifier convention.
+
+Case 3 includes acceptance_checks.py and checks.json with check payroll.weekly_gross
+and coverage payroll.weekly_gross.v1. Strict registry validation passed without
+executing the check. Exact scenario authorization remains pending/unavailable;
+no future grounded identity or authorization artifact was invented.
+
+Case 3's trusted registered check and registry metadata were authored by Codex during the explicitly authorized pre-reasoning fixture-construction phase. They were frozen before AgentGuard planner/grounder reasoning. Therefore this evaluates the registered-check trust architecture under role-separated setup; it does not demonstrate independently human-authored acceptance coverage.
+
+The user's clarification is recorded without modifying the protocol. Reasoning
+roles cannot subsequently modify or self-authorize any frozen trusted setup.
+
+### Tests and audit
+
+For each repository, ran once:
+python3 -B -m unittest discover -s . -p 'test_app.py' -v
+Each of the five suites: 3/3 passed, exit 0 (15 total). Exact cwd commands are in
+the manifest. No subsequent implementation/test repairs. The registered check
+was not executed and is not counted as an implementation test.
+
+Separate existing regression:
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+283/283 passed, exit 0. Approved escalation enabled existing loopback tests.
+New Python files parsed; contexts match source and remain below 32,000 characters.
+Keyword search and manual review of comments/test names found no outcome leakage
+in planner-visible materials. Administrative methodology is kept in the manifest.
+
+### Boundaries
+
+No Evaluation Set 2 planner/grounder reasoning, scenario artifacts, or acceptance
+execution occurred. No production AgentGuard code, existing tests, sample app,
+frozen protocol, Day-5, Day-6, or registered-check smoke artifacts changed; historical
+evaluation harnesses were not rerun. All previous work-log bytes and historical
+prefixes are preserved exactly. No AgentGuard evaluation result is claimed.

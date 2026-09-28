@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "checks": [
+    {
+      "id": "payroll.weekly_gross",
+      "runner": "unittest",
+      "cwd": ".",
+      "target": "acceptance_checks.WeeklyPayCheck.test_weekly_gross",
+      "coverage": {
+        "id": "payroll.weekly_gross.v1",
+        "description": "Regular hours and overtime calculation for whole hours at positive even-cent rates, including zero hours and 40-hour transition."
+      }
+    }
+  ]
+}
