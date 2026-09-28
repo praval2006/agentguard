@@ -84,3 +84,30 @@ This is manual opt-in only, never part of automated tests. No application HTTP
 request, command execution, acceptance engine or verdict code is invoked. Unsupported
 scenarios are legitimate when the example lacks sufficient execution evidence; no
 fixtures, sample values or derivation authority are added to force executability.
+
+## Grounding contract compatibility
+
+The first user-run live smoke validated its planner output, then rejected the
+model's grounder output with `ValueError: action has missing or unexpected fields`.
+That means an action's required/allowed key set was violated. The raw response was
+not provided, so the particular missing/extra key and action variant are unknown.
+Examples such as `body` instead of `json`, missing `method`, or assertions nested
+inside action reproduce the class of error; they are not claims about that response.
+The deterministic trust boundary rejected it before any execution.
+
+The provider now appends a grounder-only exact-key reference: required/optional
+fields, sibling assertion placement, forbidden aliases, omission rather than null,
+standalone/composite distinctions, all assertion variants, and compiler-owned versus
+model-requested derivation fields. The original grounding instructions still apply.
+Planner request construction is unchanged. This improves explicitness but is not
+proof of live-model conformance; the smoke has not been rerun for this fix.
+
+Strict API Structured Outputs is **not** enabled. Its closed-object requirements
+(`additionalProperties: false`) do not cleanly preserve arbitrary payload/header/
+variable keys and opaque values in the existing contract. Unions alone are not the
+obstacle. Restricting those objects, enumerating repository-specific keys or encoding
+them into an alternate shape would change the contract or require coercion. We use
+the allowed prompt-strengthening approach instead; JSON mode remains syntax-only.
+See the [official supported-schema restrictions](https://developers.openai.com/api/docs/guides/structured-outputs#supported-schemas).
+Existing ground_scenarios/validate_scenario validation is authoritative and unchanged.
+Malformed output still raises; no retry, stripping fields, coercion or repair occurs.

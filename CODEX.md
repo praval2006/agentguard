@@ -1911,3 +1911,46 @@ e28cb6f before this append, including evaluation/set2, evaluation/set3 and produ
 code. No frozen evaluation was rerun. Historical work-log prefixes checked; every
 previous CODEX byte remains unchanged. Only the new script, its usage documentation
 and this append change. No push or further productization work performed.
+
+
+## 46. 2026-09-28 — OpenAI grounding response contract clarification
+
+The user reported the first live planner succeeded and passed validation, while
+its subsequent grounder response was rejected with ValueError: action has missing
+or unexpected fields in validate_scenario/_shape. This confirms the deterministic
+boundary rejected a malformed action. The raw response was not supplied, so the
+exact extra/missing key and action variant cannot be identified from that message.
+No live rerun or paid call was made to diagnose it.
+
+JSON mode enforced syntax, not nested contract adherence. Existing instructions
+already described shapes but did not consolidate exact keys/placement and common
+invalid aliases. Added a provider-only grounder serialization reference spelling out
+required/optional keys, sibling assertions, omitted rather than null optional fields,
+standalone/composite distinctions, all assertion variants and derivation request vs
+compiler provenance. It does not confer execution or registered coverage authority.
+Planner request text/construction remains byte-for-byte compatible.
+
+Strict API Structured Outputs remains off: the official closed-object restriction
+cannot cleanly preserve arbitrary payload/header/variable mappings and opaque values
+without narrowing or alternate representation/coercion. Unions alone are not the
+obstacle. Used the explicitly permitted stronger-instructions fallback. JSON mode
+and deterministic ground_scenarios/validate_scenario stay authoritative; no schema,
+validator, grounding implementation, retry, repair or fallback changes. Prompt
+clarification does not guarantee live conformance; that remains untested here.
+
+Added four offline tests (20 provider tests total) for extra/missing HTTP fields
+reproducing the reported error class, exact HTTP shape success unchanged, grounder-
+only reference with unchanged planner prompt, and composite/all-assertion shape
+compatibility. Mock responses demonstrate rejection without retry or mutation;
+these are synthetic reproductions, not recovered live output. Existing derivation,
+identity and model-verdict rejection tests pass unchanged. Updated provider docs.
+
+Focused: 20/20 passed. Full AgentGuard regression: 324/324 passed (320 prior plus
+4 new), via python3 -m unittest discover -s tests -p 'test_*.py' -v. Sample-app:
+4/4 passed. Approved escalation supported existing loopback tests. Automated tests
+made no paid API calls; live smoke was not run. No CLI or execution work added.
+
+All other tracked bytes matched c88bfa0 before this append, including frozen Set 2/3,
+all evaluation artifacts, core contracts and the smoke script. No frozen evaluation
+was rerun. Historical work-log prefixes verified; all previous bytes preserved.
+Only provider instructions, offline tests, docs and this append change. No push.
