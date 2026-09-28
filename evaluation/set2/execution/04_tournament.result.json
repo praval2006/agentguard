@@ -1,0 +1,61 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "Entrants and points are returned inside a standings array. Existing assertions cannot compare arrays or traverse their elements to establish inclusion and preservation of every entrant; supplied test-command information does not establish this behavior coverage."
+      },
+      "observation": null,
+      "result": {
+        "name": "Include entrants and points",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Entrants and points are returned inside a standings array. Existing assertions cannot compare arrays or traverse their elements to establish inclusion and preservation of every entrant; supplied test-command information does not establish this behavior coverage."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Descending order requires comparing positions and points within the standings array. Dictionary-only scalar assertions do not express this ordering, and no documented behavior-specific test command is supplied. Do not choose a tied-score policy."
+      },
+      "observation": null,
+      "result": {
+        "name": "Order by descending points",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Descending order requires comparing positions and points within the standings array. Dictionary-only scalar assertions do not express this ordering, and no documented behavior-specific test command is supplied. Do not choose a tied-score policy."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The documented response uses an empty standings array for no entrants, but current assertions cannot assert array equality, array length, or array type. Presence of the standings field alone would weaken the empty-list requirement."
+      },
+      "observation": null,
+      "result": {
+        "name": "Show empty standings",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The documented response uses an empty standings array for no entrants, but current assertions cannot assert array equality, array length, or array type. Presence of the standings field alone would weaken the empty-list requirement."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Caller-owned input nonmutation needs before/after observation of the same in-memory list and records. HTTP responses do not expose that object identity/state, independent children cannot establish it, and no documented behavior-specific test command is supplied."
+      },
+      "observation": null,
+      "result": {
+        "name": "Preserve preview input",
+        "source": "inferred",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Caller-owned input nonmutation needs before/after observation of the same in-memory list and records. HTTP responses do not expose that object identity/state, independent children cannot establish it, and no documented behavior-specific test command is supplied."
+      }
+    }
+  ]
+}

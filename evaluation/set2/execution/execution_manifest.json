@@ -1,0 +1,82 @@
+{
+  "checkpoint": "66b4de6",
+  "command": "python3 -B evaluation/set2/execution/run_execution.py",
+  "inputs_unchanged_after_shutdown": true,
+  "cases": [
+    {
+      "case": "01_roast_temperature",
+      "execution_attempts": 1,
+      "run_acceptance_calls": 1,
+      "input_path": "evaluation/set2/grounding/01_roast_temperature.json",
+      "input_sha256": "2ab28778a9edb97f77f065510b50bc9b3633cd40425b6c20cf973b10ea7a4c96",
+      "base_url": "http://127.0.0.1:50066",
+      "startup_succeeded": true,
+      "shutdown_succeeded": true,
+      "start_method": "evaluation/set2/01_roast_temperature/repository/server.py:application_server()",
+      "infrastructure_notes": [],
+      "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+      "result_sha256": "e0824caa613c023acc66a302874446f8676355ad1239666b3579bacd75bfe3d7",
+      "result_path": "evaluation/set2/execution/01_roast_temperature.result.json"
+    },
+    {
+      "case": "02_parcel_label",
+      "execution_attempts": 1,
+      "run_acceptance_calls": 1,
+      "input_path": "evaluation/set2/grounding/02_parcel_label.json",
+      "input_sha256": "9461fdac8042215a511e8998a582defe59fcf08f17a53863258096ba84dfcb67",
+      "base_url": null,
+      "startup_succeeded": null,
+      "shutdown_succeeded": null,
+      "start_method": "not required",
+      "infrastructure_notes": [],
+      "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+      "result_sha256": "5c6740a2f3b46642dd4db40131d3f380e97ad1aa3dbbd356406d116592f0290e",
+      "result_path": "evaluation/set2/execution/02_parcel_label.result.json"
+    },
+    {
+      "case": "03_payroll",
+      "execution_attempts": 1,
+      "run_acceptance_calls": 1,
+      "input_path": "evaluation/set2/grounding/03_payroll.json",
+      "input_sha256": "985bfa32a1c4f87130a5053a44e04c3b2ca805271be21555f0396ab62080ec3a",
+      "base_url": null,
+      "startup_succeeded": null,
+      "shutdown_succeeded": null,
+      "start_method": "not required",
+      "infrastructure_notes": [],
+      "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+      "result_sha256": "29a27a4dfda3badddc2e25f7ad7322d7574a316cfe854ba9226513ef836624e7",
+      "result_path": "evaluation/set2/execution/03_payroll.result.json"
+    },
+    {
+      "case": "04_tournament",
+      "execution_attempts": 1,
+      "run_acceptance_calls": 1,
+      "input_path": "evaluation/set2/grounding/04_tournament.json",
+      "input_sha256": "f0518bbbddb55db84bfbd05ec8a36f97c4e6372bf27c7bbb03f45d4641f4030e",
+      "base_url": null,
+      "startup_succeeded": null,
+      "shutdown_succeeded": null,
+      "start_method": "not required",
+      "infrastructure_notes": [],
+      "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+      "result_sha256": "46838720a4ef701bacff1711b8a154db4a362b295614faa82fb091a702bb116e",
+      "result_path": "evaluation/set2/execution/04_tournament.result.json"
+    },
+    {
+      "case": "05_quiz_attempt",
+      "execution_attempts": 1,
+      "run_acceptance_calls": 1,
+      "input_path": "evaluation/set2/grounding/05_quiz_attempt.json",
+      "input_sha256": "ed52b4392f2dbdf11c4c90083fcf044233dda474a1c3810914e8def7357f4344",
+      "base_url": "http://127.0.0.1:50070",
+      "startup_succeeded": true,
+      "shutdown_succeeded": true,
+      "start_method": "evaluation/set2/05_quiz_attempt/repository/server.py:application_server()",
+      "infrastructure_notes": [],
+      "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+      "result_sha256": "2be233c9559686ba3613817740410a890919dc597097f07214c47818ee6b88c8",
+      "result_path": "evaluation/set2/execution/05_quiz_attempt.result.json"
+    }
+  ]
+}

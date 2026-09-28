@@ -1,0 +1,61 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "The route and label fields are documented, but no concrete recipient/postal-code input pair and corresponding normalized label are supplied. Creating arbitrary sample text would invent request values; the general test command has no supplied behavior-specific coverage evidence."
+      },
+      "observation": null,
+      "result": {
+        "name": "Produce one normalized label",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The route and label fields are documented, but no concrete recipient/postal-code input pair and corresponding normalized label are supplied. Creating arbitrary sample text would invent request values; the general test command has no supplied behavior-specific coverage evidence."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Faithful rejection checks need a blank or whitespace-only field alongside a supported nonblank counterpart for each field. No concrete nonblank counterpart is supplied, and rejecting a request with both fields blank would not independently establish rejection for either field."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject blank label fields",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Faithful rejection checks need a blank or whitespace-only field alongside a supported nonblank counterpart for each field. No concrete nonblank counterpart is supplied, and rejecting a request with both fields blank would not independently establish rejection for either field."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "No observable postage-purchase state or purchase side-effect check is documented. The preview response alone cannot establish that postage was not purchased."
+      },
+      "observation": null,
+      "result": {
+        "name": "Preview without purchasing postage",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "No observable postage-purchase state or purchase side-effect check is documented. The preview response alone cannot establish that postage was not purchased."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The context supports text validation, but the full absent/non-text behavior for both fields needs independently discriminating inputs with a supported valid counterpart. Such concrete counterpart values and a behavior-specific test command are not supplied; do not replace the whole behavior with a both-absent request."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject absent or non-text label fields",
+        "source": "inferred",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The context supports text validation, but the full absent/non-text behavior for both fields needs independently discriminating inputs with a supported valid counterpart. Such concrete counterpart values and a behavior-specific test command are not supplied; do not replace the whole behavior with a both-absent request."
+      }
+    }
+  ]
+}

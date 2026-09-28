@@ -1,0 +1,61 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": false,
+        "reason": "The context provides a Python callable and registered coverage metadata, but the current grounding instructions do not advertise registered-check selection or direct Python invocation. The general implementation-test command does not establish this scenario coverage. Do not invent a new command from the registered target."
+      },
+      "observation": null,
+      "result": {
+        "name": "Calculate regular and overtime gross pay",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The context provides a Python callable and registered coverage metadata, but the current grounding instructions do not advertise registered-check selection or direct Python invocation. The general implementation-test command does not establish this scenario coverage. Do not invent a new command from the registered target."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Zero-hour coverage is described in registered metadata, but registered-check selection is not part of the current grounding instructions. No supported direct-call action or documented behavior-specific command is supplied."
+      },
+      "observation": null,
+      "result": {
+        "name": "Handle zero hours",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Zero-hour coverage is described in registered metadata, but registered-check selection is not part of the current grounding instructions. No supported direct-call action or documented behavior-specific command is supplied."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Direct callable input validation has no supported invocation action here. The general implementation-test command lacks scenario-specific coverage evidence, and the exposed registered description concerns pay calculation rather than establishing coverage of all rejected inputs."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject inputs outside the pay contract",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Direct callable input validation has no supported invocation action here. The general implementation-test command lacks scenario-specific coverage evidence, and the exposed registered description concerns pay calculation rather than establishing coverage of all rejected inputs."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "No supported direct-call action or documented behavior-specific command establishes the no-tax obligation. Registered metadata is not an executable selection under the current grounding instructions and must not be converted into a newly invented test command."
+      },
+      "observation": null,
+      "result": {
+        "name": "Preserve gross pay without tax deduction",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "No supported direct-call action or documented behavior-specific command establishes the no-tax obligation. Registered metadata is not an executable selection under the current grounding instructions and must not be converted into a newly invented test command."
+      }
+    }
+  ]
+}

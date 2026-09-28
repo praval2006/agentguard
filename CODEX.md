@@ -1470,3 +1470,47 @@ No acceptance execution, fixture server, registered check, test rerun, or histor
 harness ran; no acceptance result artifact was created. Regression was not rerun;
 recorded baseline remains 283/283. All previous CODEX.md bytes and historical
 prefixes are preserved exactly. No runtime acceptance results are claimed.
+
+
+## 36. 2026-09-28 — Evaluation Set 2 execution result freeze
+
+### Execution and preservation
+
+Created evaluation/set2/execution/ with a one-shot harness, exclusive run marker,
+exact complete per-case results, lifecycle records, input/result hashes, manifest,
+mechanical metrics and summary. Each of five cases received exactly one unchanged
+run_acceptance call; all completed, none stopped or retried. Results were serialized
+and hashed before metrics or interpretation. No scenario repair or regeneration.
+
+### Deterministic results
+
+Top-level PASS/FAIL/UNVERIFIED by case:
+01 roast: 1/0/3; 02 label: 0/0/4; 03 payroll: 0/0/4;
+04 tournament: 0/0/4; 05 practice: 1/0/3.
+Total across 20: 2 PASS, 0 FAIL, 18 UNVERIFIED. Every case overall UNVERIFIED.
+Composite children separately: 2 PASS, 0 FAIL, 1 UNVERIFIED; parent UNVERIFIED.
+All required children and original evidence/order/counts are retained.
+Registered-check execution count: zero. No coverage authorization was created.
+
+Roast and practice existing application_server context managers started and shut
+down successfully on numeric loopback ports 50066 and 50070. Other cases needed no
+server. Approved escalation permitted local binding; no infrastructure errors.
+No fixture modifications or generated fixture artifacts required cleanup.
+
+The previously flagged composite issue was not repaired: its unsupported child
+remains and determines parent UNVERIFIED. The frozen practice question assertion
+matched '7 + 5' and did not cause a contradiction. These observations do not settle
+the grounding concerns or establish semantic correctness. Full postmortem deferred.
+
+### Validation and boundaries
+
+After result preservation, the unchanged regression command
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+completed 283/283, OK, exit 0. It is separate from acceptance evidence.
+
+All frozen Set-2/protocol bytes match 66b4de6 before execution and after shutdown.
+Production code/tests, fixtures, planner/grounding artifacts, Case-3 check/registry
+and historical Day-5/Day-6/smoke artifacts are unchanged. No implementation-test or
+historical evaluation rerun occurred. Prior CODEX.md bytes and historical prefixes
+remain preserved exactly. Results are bounded observed evidence, not a benchmark
+accuracy or semantic completeness claim.

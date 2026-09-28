@@ -1,0 +1,60 @@
+{
+  "cases": [
+    {
+      "case": "01_roast_temperature",
+      "counts": {
+        "PASS": 1,
+        "FAIL": 0,
+        "UNVERIFIED": 3
+      },
+      "overall": "UNVERIFIED"
+    },
+    {
+      "case": "02_parcel_label",
+      "counts": {
+        "PASS": 0,
+        "FAIL": 0,
+        "UNVERIFIED": 4
+      },
+      "overall": "UNVERIFIED"
+    },
+    {
+      "case": "03_payroll",
+      "counts": {
+        "PASS": 0,
+        "FAIL": 0,
+        "UNVERIFIED": 4
+      },
+      "overall": "UNVERIFIED"
+    },
+    {
+      "case": "04_tournament",
+      "counts": {
+        "PASS": 0,
+        "FAIL": 0,
+        "UNVERIFIED": 4
+      },
+      "overall": "UNVERIFIED"
+    },
+    {
+      "case": "05_quiz_attempt",
+      "counts": {
+        "PASS": 1,
+        "FAIL": 0,
+        "UNVERIFIED": 3
+      },
+      "overall": "UNVERIFIED"
+    }
+  ],
+  "top_level": {
+    "PASS": 2,
+    "FAIL": 0,
+    "UNVERIFIED": 18
+  },
+  "composite_children": {
+    "PASS": 2,
+    "FAIL": 0,
+    "UNVERIFIED": 1
+  },
+  "registered_check_executions": 0
+}

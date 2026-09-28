@@ -1,0 +1,15 @@
+{
+  "case": "05_quiz_attempt",
+  "execution_attempts": 1,
+  "run_acceptance_calls": 1,
+  "input_path": "evaluation/set2/grounding/05_quiz_attempt.json",
+  "input_sha256": "ed52b4392f2dbdf11c4c90083fcf044233dda474a1c3810914e8def7357f4344",
+  "base_url": "http://127.0.0.1:50070",
+  "startup_succeeded": true,
+  "shutdown_succeeded": true,
+  "start_method": "evaluation/set2/05_quiz_attempt/repository/server.py:application_server()",
+  "infrastructure_notes": [],
+  "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+  "result_sha256": "2be233c9559686ba3613817740410a890919dc597097f07214c47818ee6b88c8",
+  "result_path": "evaluation/set2/execution/05_quiz_attempt.result.json"
+}

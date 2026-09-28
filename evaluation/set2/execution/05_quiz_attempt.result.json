@@ -1,0 +1,118 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "established": true,
+        "reason": null,
+        "method": "POST",
+        "status": 201,
+        "body_truncated": false,
+        "json_available": true
+      },
+      "observation": {
+        "type": "http_response",
+        "status": 201,
+        "json": {
+          "id": "1",
+          "question": "7 + 5"
+        }
+      },
+      "result": {
+        "name": "Start an identifiable practice attempt",
+        "source": "explicit",
+        "verdict": "PASS",
+        "assertions": [
+          {
+            "type": "status",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": 201,
+            "observed": 201
+          },
+          {
+            "type": "json_exists",
+            "verdict": "PASS",
+            "reason": null,
+            "path": "id",
+            "observed": true
+          },
+          {
+            "type": "json_type",
+            "verdict": "PASS",
+            "reason": null,
+            "path": "id",
+            "expected": "string",
+            "observed_type": "string"
+          },
+          {
+            "type": "json_exists",
+            "verdict": "PASS",
+            "reason": null,
+            "path": "question",
+            "observed": true
+          },
+          {
+            "type": "json_type",
+            "verdict": "PASS",
+            "reason": null,
+            "path": "question",
+            "expected": "string",
+            "observed_type": "string"
+          },
+          {
+            "type": "json_field",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": "7 + 5",
+            "path": "question",
+            "observed": "7 + 5"
+          }
+        ],
+        "reason": null
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Submission and later retrieval require using a runtime-created attempt identifier and observing continuous state across requests. Current independent observations do not support identifier extraction, output chaining, or the required workflow."
+      },
+      "observation": null,
+      "result": {
+        "name": "Revisit the submitted answer and correctness",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Submission and later retrieval require using a runtime-created attempt identifier and observing continuous state across requests. Current independent observations do not support identifier extraction, output chaining, or the required workflow."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "Answer isolation requires multiple created attempts and observation of their distinct state before and after submission. This requires runtime identifiers and state continuity, not independent composite children."
+      },
+      "observation": null,
+      "result": {
+        "name": "Keep attempt answers separate",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "Answer isolation requires multiple created attempts and observation of their distinct state before and after submission. This requires runtime identifiers and state continuity, not independent composite children."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The context documents the unknown-attempt response but supplies no concrete identifier guaranteed absent in the running server. Do not assume a fresh server state or invent an absent identifier; no documented behavior-specific test command establishes this behavior."
+      },
+      "observation": null,
+      "result": {
+        "name": "Report unknown attempts",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The context documents the unknown-attempt response but supplies no concrete identifier guaranteed absent in the running server. Do not assume a fresh server state or invent an absent identifier; no documented behavior-specific test command establishes this behavior."
+      }
+    }
+  ]
+}

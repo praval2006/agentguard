@@ -1,0 +1,220 @@
+{
+  "verdict": "UNVERIFIED",
+  "results": [
+    {
+      "execution": {
+        "kind": "composite",
+        "required": 3
+      },
+      "observation": null,
+      "result": {
+        "name": "Accept the inclusive temperature range",
+        "source": "explicit",
+        "reason": "The task explicitly includes both endpoints and the whole-number range.",
+        "behavior": "Accept whole-number temperatures throughout 160 to 240, including 160 and 240.",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "child_counts": {
+          "required": 3,
+          "pass": 2,
+          "fail": 0,
+          "unverified": 1
+        },
+        "children": [
+          {
+            "label": "Lower included endpoint",
+            "execution": {
+              "established": true,
+              "reason": null,
+              "method": "POST",
+              "status": 200,
+              "body_truncated": false,
+              "json_available": true
+            },
+            "observation": {
+              "type": "http_response",
+              "status": 200,
+              "json": {
+                "temperature": 160,
+                "unit": "C"
+              }
+            },
+            "result": {
+              "name": "Lower included endpoint",
+              "source": "explicit",
+              "verdict": "PASS",
+              "assertions": [
+                {
+                  "type": "status",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 200,
+                  "observed": 200
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 160,
+                  "path": "temperature",
+                  "observed": 160
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": "C",
+                  "path": "unit",
+                  "observed": "C"
+                }
+              ],
+              "reason": null
+            }
+          },
+          {
+            "label": "Upper included endpoint",
+            "execution": {
+              "established": true,
+              "reason": null,
+              "method": "POST",
+              "status": 200,
+              "body_truncated": false,
+              "json_available": true
+            },
+            "observation": {
+              "type": "http_response",
+              "status": 200,
+              "json": {
+                "temperature": 240,
+                "unit": "C"
+              }
+            },
+            "result": {
+              "name": "Upper included endpoint",
+              "source": "explicit",
+              "verdict": "PASS",
+              "assertions": [
+                {
+                  "type": "status",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 200,
+                  "observed": 200
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": 240,
+                  "path": "temperature",
+                  "observed": 240
+                },
+                {
+                  "type": "json_field",
+                  "verdict": "PASS",
+                  "reason": null,
+                  "expected": "C",
+                  "path": "unit",
+                  "observed": "C"
+                }
+              ],
+              "reason": null
+            }
+          },
+          {
+            "label": "Remaining whole-number temperatures",
+            "execution": {
+              "established": false,
+              "reason": "The parent requires acceptance throughout the range, not only its endpoints. The remaining whole-number settings cannot all be observed within the three independent-child bound; no documented behavior-specific command establishes that remaining obligation."
+            },
+            "observation": null,
+            "result": {
+              "name": "Remaining whole-number temperatures",
+              "source": "explicit",
+              "verdict": "UNVERIFIED",
+              "assertions": [],
+              "reason": "The parent requires acceptance throughout the range, not only its endpoints. The remaining whole-number settings cannot all be observed within the three independent-child bound; no documented behavior-specific command establishes that remaining obligation."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "execution": {
+        "established": true,
+        "reason": null,
+        "method": "POST",
+        "status": 200,
+        "body_truncated": false,
+        "json_available": true
+      },
+      "observation": {
+        "type": "http_response",
+        "status": 200,
+        "json": {
+          "temperature": 160,
+          "unit": "C"
+        }
+      },
+      "result": {
+        "name": "Return the accepted temperature and unit",
+        "source": "explicit",
+        "verdict": "PASS",
+        "assertions": [
+          {
+            "type": "status",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": 200,
+            "observed": 200
+          },
+          {
+            "type": "json_field",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": 160,
+            "path": "temperature",
+            "observed": 160
+          },
+          {
+            "type": "json_field",
+            "verdict": "PASS",
+            "reason": null,
+            "expected": "C",
+            "path": "unit",
+            "observed": "C"
+          }
+        ],
+        "reason": null
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The behavior includes out-of-range and non-whole-number rejection with clear errors. The supplied context does not document concrete invalid example inputs or a behavior-specific test command, and integral decimal policy remains unresolved. Do not reduce the behavior to one convenient invalid request or invent test inputs."
+      },
+      "observation": null,
+      "result": {
+        "name": "Reject invalid temperature settings",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The behavior includes out-of-range and non-whole-number rejection with clear errors. The supplied context does not document concrete invalid example inputs or a behavior-specific test command, and integral decimal policy remains unresolved. Do not reduce the behavior to one convenient invalid request or invent test inputs."
+      }
+    },
+    {
+      "execution": {
+        "established": false,
+        "reason": "The response reports temperature and unit but exposes no equipment-state or roast-start observation. The documented general test command does not establish coverage of equipment side effects; source inspection alone is not a supported executable observation."
+      },
+      "observation": null,
+      "result": {
+        "name": "Validate without equipment effects",
+        "source": "explicit",
+        "verdict": "UNVERIFIED",
+        "assertions": [],
+        "reason": "The response reports temperature and unit but exposes no equipment-state or roast-start observation. The documented general test command does not establish coverage of equipment side effects; source inspection alone is not a supported executable observation."
+      }
+    }
+  ]
+}

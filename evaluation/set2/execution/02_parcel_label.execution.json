@@ -1,0 +1,15 @@
+{
+  "case": "02_parcel_label",
+  "execution_attempts": 1,
+  "run_acceptance_calls": 1,
+  "input_path": "evaluation/set2/grounding/02_parcel_label.json",
+  "input_sha256": "9461fdac8042215a511e8998a582defe59fcf08f17a53863258096ba84dfcb67",
+  "base_url": null,
+  "startup_succeeded": null,
+  "shutdown_succeeded": null,
+  "start_method": "not required",
+  "infrastructure_notes": [],
+  "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+  "result_sha256": "5c6740a2f3b46642dd4db40131d3f380e97ad1aa3dbbd356406d116592f0290e",
+  "result_path": "evaluation/set2/execution/02_parcel_label.result.json"
+}

@@ -1,0 +1,15 @@
+{
+  "case": "03_payroll",
+  "execution_attempts": 1,
+  "run_acceptance_calls": 1,
+  "input_path": "evaluation/set2/grounding/03_payroll.json",
+  "input_sha256": "985bfa32a1c4f87130a5053a44e04c3b2ca805271be21555f0396ab62080ec3a",
+  "base_url": null,
+  "startup_succeeded": null,
+  "shutdown_succeeded": null,
+  "start_method": "not required",
+  "infrastructure_notes": [],
+  "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+  "result_sha256": "29a27a4dfda3badddc2e25f7ad7322d7574a316cfe854ba9226513ef836624e7",
+  "result_path": "evaluation/set2/execution/03_payroll.result.json"
+}

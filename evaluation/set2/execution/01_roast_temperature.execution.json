@@ -1,0 +1,15 @@
+{
+  "case": "01_roast_temperature",
+  "execution_attempts": 1,
+  "run_acceptance_calls": 1,
+  "input_path": "evaluation/set2/grounding/01_roast_temperature.json",
+  "input_sha256": "2ab28778a9edb97f77f065510b50bc9b3633cd40425b6c20cf973b10ea7a4c96",
+  "base_url": "http://127.0.0.1:50066",
+  "startup_succeeded": true,
+  "shutdown_succeeded": true,
+  "start_method": "evaluation/set2/01_roast_temperature/repository/server.py:application_server()",
+  "infrastructure_notes": [],
+  "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+  "result_sha256": "e0824caa613c023acc66a302874446f8676355ad1239666b3579bacd75bfe3d7",
+  "result_path": "evaluation/set2/execution/01_roast_temperature.result.json"
+}

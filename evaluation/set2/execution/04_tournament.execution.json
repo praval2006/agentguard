@@ -1,0 +1,15 @@
+{
+  "case": "04_tournament",
+  "execution_attempts": 1,
+  "run_acceptance_calls": 1,
+  "input_path": "evaluation/set2/grounding/04_tournament.json",
+  "input_sha256": "f0518bbbddb55db84bfbd05ec8a36f97c4e6372bf27c7bbb03f45d4641f4030e",
+  "base_url": null,
+  "startup_succeeded": null,
+  "shutdown_succeeded": null,
+  "start_method": "not required",
+  "infrastructure_notes": [],
+  "caller_configuration": "Only base_url for HTTP; no registry, authorization, root override or recorder.",
+  "result_sha256": "46838720a4ef701bacff1711b8a154db4a362b295614faa82fb091a702bb116e",
+  "result_path": "evaluation/set2/execution/04_tournament.result.json"
+}
