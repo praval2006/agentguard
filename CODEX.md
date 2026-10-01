@@ -2124,3 +2124,42 @@ trackpad/mobile-device review; no physical-device claim is made.
 All tracked nonfrontend bytes except this append match HEAD, including frozen Set 2/3.
 All prior work-log bytes and historical prefixes are preserved. No commit or push.
 Live integration and CLI work remain outside this frontend checkpoint.
+
+
+## 51. 2026-10-01 — Scenario-level reviewed acceptance primitive
+
+Added agentguard/acceptance_contract.py: frozen PlanningProposal,
+create_proposal(planner_output), and build_contract(proposal, decisions=None).
+Canonical JSON snapshots the complete validated planner output. A version-prefixed
+SHA-256 revision and one-based scenario position determine IDs, not names. Key order
+is irrelevant; scenario text, list order and metadata changes invalidate decisions.
+Returned dictionaries cannot mutate the immutable proposal snapshot.
+
+Explicit scenarios are always included with review_state=None. Inferred scenarios
+default to PENDING; ACCEPTED includes them and DISMISSED excludes them. Decisions
+contain exactly revision/scenario_id/state. Stale, unknown, duplicate, malformed,
+extra-field and explicit-scenario decisions fail closed. Review states are separate
+from verdicts. Accepted inferred scenarios preserve source=inferred and all original
+content. Selection preserves planner order, including interleaved explicit items.
+
+The returned revision/reviews/selected_plan retains original descriptive lists,
+including ambiguities, without fabricating mappings or resolving product questions.
+Each call supplies the complete desired decision set. No provider, grounding,
+execution, verifier or I/O calls occur in the module. No legacy CLI integration or
+schema change. Approval grants product-intent authority only, not execution,
+registered coverage, derivation or verdict authority. Revision binding is not
+reviewer authentication and does not include external task/context snapshots.
+
+Added 18 focused tests covering all review states, mixed order, stale/unknown IDs,
+content and metadata changes, origin/authority tampering, input immutability,
+duplicate names, empty plans, canonical identity, invalid decisions and existing
+planner/grounder compatibility with offline fake providers.
+
+Validation:
+- python3 -B -m unittest discover -s tests -p test_acceptance_contract.py -v: 18/18 passed.
+- python3 -m unittest discover -s tests -p 'test_*.py' -v: 356/356 passed.
+- python3 -m unittest discover -s sample_app/tests -p 'test_*.py' -v: 4/4 passed.
+Existing loopback regression tests used approved escalation. No paid API calls or
+frozen evaluation reruns. Existing code, tests, frontend and evaluations unchanged.
+Historical CODEX prefixes checked; all previous bytes preserved exactly.
+No commit or push.
