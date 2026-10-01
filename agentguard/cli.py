@@ -8,6 +8,9 @@ from .acceptance import run_acceptance
 from .grounding import ground_scenarios
 from .planner import MAX_TEXT_CHARS, plan_acceptance
 from .providers.openai_provider import OpenAIProvider
+from .reviewed_workflow import (prepare_review, resume_reviewed, validate_review,
+                                MAX_ARTIFACT_CHARS)
+from .acceptance_contract import build_contract
 
 EXIT_CODES = {'PASS': 0, 'FAIL': 1, 'UNVERIFIED': 2}
 
@@ -77,6 +80,88 @@ def format_report(task_path, plan, grounded, result, *, show_reasoning=False):
     return '\n'.join(lines)
 
 
+def _read_json(path):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError('Duplicate JSON key')
+            result[key] = value
+        return result
+    def constant(value):
+        raise ValueError('Nonfinite JSON value')
+    with Path(path).open(encoding='utf-8') as stream:
+        text = stream.read(MAX_ARTIFACT_CHARS + 1)
+    if len(text) > MAX_ARTIFACT_CHARS:
+        raise ValueError('Artifact exceeds input bound')
+    return json.loads(text, object_pairs_hook=pairs, parse_constant=constant)
+
+
+def format_review(artifact, contract=None):
+    """Display model interpretation distinctly from human decisions and evidence."""
+    plan = artifact['proposal']
+    reviews = artifact['reviews'] if contract is None else contract['reviews']
+    lines = ['AgentGuard reviewed workflow', 'Proposal: ' + artifact['revision']]
+    for field, title in (('explicit_requirements', 'EXPLICIT'),
+                         ('inferred_behaviors', 'AGENTGUARD SUGGESTION'),
+                         ('ambiguities', 'AMBIGUITY')):
+        lines.append(title + ' (planner interpretation):')
+        lines.extend('  ' + _display(text) for text in plan[field])
+        if not plan[field]:
+            lines.append('  (none)')
+    lines.append('SCENARIO REVIEW (no requirement-list mapping implied):')
+    for item in reviews:
+        label = 'EXPLICIT' if item['source'] == 'explicit' else 'AGENTGUARD SUGGESTION'
+        state = item['review_state'] or 'INCLUDED'
+        lines.extend([f"{label} / {state} / {item['scenario_id']}",
+                      '  Name: ' + _display(item['name']),
+                      '  Behavior: ' + _display(item['behavior']),
+                      '  Model rationale (not verified evidence): ' + _display(item['reason'])])
+    return '\n'.join(lines)
+
+
+def _reviewed_main(args):
+    stage = 'reviewed context input'
+    try:
+        context = _read_text(args.context)
+        if args.command == 'review':
+            stage = 'review task input'
+            task = _read_text(args.task)
+            stage = 'review output path'
+            if Path(args.output).exists():
+                raise ValueError('Refusing to overwrite a review')
+            stage = 'review provider configuration'
+            provider = OpenAIProvider()
+            stage = 'planning or review validation'
+            artifact = prepare_review(task, context, reasoning_provider=provider)
+            stage = 'saving review artifact'
+            with Path(args.output).open('x', encoding='utf-8') as stream:
+                json.dump(artifact, stream, ensure_ascii=True, allow_nan=False, indent=2)
+                stream.write('\n')
+            print(format_review(artifact))
+            print('Review saved. Stopped before grounding or execution.')
+            return 0
+        stage = 'review artifact and human decisions'
+        artifact = _read_json(args.review)
+        decisions = _read_json(args.decisions)
+        proposal = validate_review(artifact, context)
+        if type(decisions) is not list:
+            raise ValueError('Decision file must contain a list')
+        build_contract(proposal, decisions)
+        stage = 'reviewed provider configuration'
+        provider = OpenAIProvider()
+        stage = 'reviewed grounding or acceptance execution'
+        outcome = resume_reviewed(artifact, decisions, context, grounding_provider=provider,
+                                  base_url=args.base_url)
+        print(format_review(artifact, outcome['contract']))
+        print(format_report(args.review, outcome['contract']['selected_plan'],
+                            outcome['grounded'], outcome['verification']))
+        return EXIT_CODES[outcome['verification']['verdict']]
+    except Exception:
+        print(f'AgentGuard error: {stage} failed. No acceptance verdict reported.', file=sys.stderr)
+        return 3
+
+
 def main(argv=None):
     parser = _Parser(prog='agentguard', description='Verify explicitly supplied task and context using existing AgentGuard policies.')
     commands = parser.add_subparsers(dest='command', required=True)
@@ -85,9 +170,20 @@ def main(argv=None):
     verify.add_argument('--context', required=True, help='Explicit UTF-8 context file, nonblank, at most 32000 characters')
     verify.add_argument('--base-url', help='HTTP target; existing executor policy applies')
     verify.add_argument('--show-reasoning', action='store_true', help='Show structured requirements, ambiguities and action types')
+    review = commands.add_parser('review', help='Prepare human review; planner only, no verification.')
+    review.add_argument('--task', required=True)
+    review.add_argument('--context', required=True)
+    review.add_argument('--output', required=True, help='New review JSON file; refuses overwrite')
+    reviewed = commands.add_parser('verify-reviewed', help='Verify explicit and human-accepted scenarios only.')
+    reviewed.add_argument('--review', required=True)
+    reviewed.add_argument('--decisions', required=True, help='JSON list of Phase-1 human decisions; [] is valid')
+    reviewed.add_argument('--context', required=True)
+    reviewed.add_argument('--base-url')
     stage = 'arguments'
     try:
         args = parser.parse_args(argv)
+        if args.command != 'verify':
+            return _reviewed_main(args)
         stage = 'task input (requires readable, nonblank UTF-8 text within 32000 characters)'
         task = _read_text(args.task)
         stage = 'context input (requires readable, nonblank UTF-8 text within 32000 characters)'

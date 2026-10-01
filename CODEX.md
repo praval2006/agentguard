@@ -2163,3 +2163,55 @@ Existing loopback regression tests used approved escalation. No paid API calls o
 frozen evaluation reruns. Existing code, tests, frontend and evaluations unchanged.
 Historical CODEX prefixes checked; all previous bytes preserved exactly.
 No commit or push.
+
+
+## 52. 2026-10-01 — Persisted prepare/resume reviewed workflow
+
+Added agentguard/reviewed_workflow.py with prepare_review, validate_review and
+resume_reviewed. Preparation makes one existing validated planner call, snapshots
+Phase-1 proposal/default reviews and stops before grounding/execution/verdicts.
+Resume reconstructs and validates the proposal, applies Phase-1 human decisions,
+grounds only selected scenarios once, then delegates to existing run_acceptance.
+It never replans, retries, repairs or calculates verdicts. Original proposal,
+contract/reviews, grounded scenarios and unchanged verification result are returned.
+
+The deterministic agentguard.review.v1 artifact has exactly schema, proposal,
+revision, context_sha256 and reviews. Revision/default metadata are recomputed;
+inconsistent edits, stale/unknown decisions and changed context fail before grounding.
+Decision JSON is the unchanged Phase-1 list of revision/scenario_id/state records.
+The context hash adds exact-text resume binding without changing Phase-1 identity.
+Hashes are integrity checks, not signatures or authenticated human approval.
+Callers remain responsible for human decisions and trusted artifact storage.
+
+Added explicit CLI review and verify-reviewed subcommands. Review requires a new
+output file, refuses overwrite, and prints EXPLICIT / AGENTGUARD SUGGESTION /
+AMBIGUITY with model rationale labelled as unverified evidence. Resume validates
+files before provider creation and uses existing verdict exit codes. Operational
+errors remain sanitized exit 3. JSON reads are bounded and reject duplicate keys
+and nonfinite constants. Legacy verify and Phase 1 remain unchanged.
+
+Only selected scenario records reach grounding. Because unlinked inferred_behaviors
+strings have no validated scenario mapping, the reviewed adapter withholds that list
+from the grounder while retaining it in original/contract report metadata. Accepted
+inferred content/source remains exact in selected scenarios. Ambiguities stay separate
+and are forwarded without resolution. Empty selection sends zero scenarios to the
+existing grounder and returns existing overall UNVERIFIED with empty results;
+pending/dismissed scenarios never receive verdicts. Product approval does not grant
+registered coverage, derivation authority, HTTP policy exceptions or verdict authority.
+
+Added tests/test_reviewed_workflow.py with 22 offline tests for prepare boundaries,
+selected-only grounding, no replanning, ordering/source retention, pending/dismissed
+metadata, empty selection, ambiguity preservation, artifact roundtrip/tampering,
+stale/invalid decisions, context mismatch, provider failure without retry, execution
+configuration forwarding, registered/HTTP authority boundaries and CLI persistence,
+resume, exit codes, overwrite protection and bounded reads. Updated docs/cli.md.
+
+Validation:
+- python3 -B -m unittest discover -s tests -p test_reviewed_workflow.py -v: 22/22 passed.
+- python3 -B -m unittest discover -s tests -p test_cli.py -v: 14/14 existing tests passed unchanged.
+- python3 -m unittest discover -s tests -p 'test_*.py' -v: 378/378 passed.
+- python3 -m unittest discover -s sample_app/tests -p 'test_*.py' -v: 4/4 passed.
+Existing loopback regression tests used approved escalation. No paid API calls,
+frozen evaluation reruns, frontend changes or new verification primitives.
+All other tracked bytes match HEAD, including Phase 1, core policies and evaluations.
+Historical work-log prefixes checked; all prior bytes preserved. No commit or push.
