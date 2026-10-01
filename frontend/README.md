@@ -23,17 +23,30 @@ Reduced motion skips playback delays and removes animations. A mobile layout tur
 the branching graph into vertically connected buttons. The site uses system fonts
 and has no font CDN, analytics, authentication or external image requests.
 
-`src/data.ts` is the central **illustrative-controlled-playback** data model. The
-subscription-specific implementation side shows two tests; this is not the total
-sample-app suite. The presentation separates three requirements for inspection;
-it does not imply three separate historical HTTP calls. No server or model is
-called, and displayed verdicts are fixed demo records, not frontend verification.
-The label on the page makes this explicit. Playback lasts about 2.5 seconds and can
-be reset or replayed. Missing supported evidence is shown as UNVERIFIED, not failure.
+`src/data.ts` preserves the historical three-requirement evidence graph. In that
+original task premium revocation was explicit. The graph is labelled independent
+of review choices. `src/reviewData.ts` supplies a **separate illustrative shorter-task
+variant** for the reviewed experience; it is not a historical planner output.
+No original task artifact or frozen result was relabelled.
+
+The reviewed contract always includes subscription status. Premium access is an
+inferred suggestion, initially PENDING. Add to verification or Dismiss is required
+before Run verification; selection alone never starts playback. Accepted suggestions
+keep their inferred origin. Decisions can be changed before running or through Change
+decision after completion, which clears old evidence. Reset returns to PENDING.
+Reloading also resets local state; there is no production persistence.
+
+The accepted fixture contains status PASS and premium-access FAIL (expected false,
+observed true), overall FAIL. The dismissed fixture contains status PASS only,
+overall PASS for that narrower selected sample. No frontend aggregation occurs.
+Repeated cancellation is not part of the shorter contract and receives no result
+there. No ambiguity output is invented. The historical graph retains its independent
+UNVERIFIED explanation. The report explicitly limits claims to represented samples.
+The rationale is labelled illustrative model rationale, not verified repository evidence.
 
 Future API integration should supply actual evidence records to the existing
 `EvidenceInspector` and demo result views, replacing the local playback state in
-`ControlledDemo`. Keep backend-returned verdicts authoritative; do not calculate them
+`ReviewDemo`. Keep backend-returned verdicts authoritative; do not calculate them
 in the browser. No API adapter is implemented in this checkpoint. Run the demo
 links intentionally navigate to the controlled product section. GitHub links point
 to the existing project repository. This is not a fresh evaluation or a claim of
@@ -63,3 +76,19 @@ evidence, reset/replay, graph and stage explorer are reused. Scrolling never sta
 verification. The final payoff exists only after playback completes. Reveal.tsx
 remains for ordinary sections outside the cinematic stage. No animation dependency,
 backend integration or verdict calculation was added.
+
+## Review accessibility and validation
+
+Review state types are separate from verdict types. Excluded review records do not
+carry verdicts. Native buttons expose pressed/disabled states, visible focus and a
+polite status announcement. A disabled verification button explains the pending
+review through aria-describedby. Changing/resetting a completed view restores focus
+to the review heading without moving the scroll position. Reduced motion removes
+playback delays. Short viewports use document flow to prevent clipped controls;
+390×844 and 1440×1000 retain the cinematic stage.
+
+Run `npm test`, `npm run typecheck`, and `npm run build`. The tests cover both
+review branches, initial exclusion, preserved origin, explicit-only inclusion,
+reset/replay, fixed result selection, semantic control access, existing story,
+graph/stage navigation and timeline behaviour. Browser checks supplement unit tests.
+No new dependencies or backend requests are introduced.

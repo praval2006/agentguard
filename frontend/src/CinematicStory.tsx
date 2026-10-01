@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { codingStory, demo } from "./data";
+import { codingStory } from "./data";
+import { reviewExample } from "./reviewData";
 import { clamp, range, pose, type Scene } from "./scrollTimeline";
 
 /** Native scroll sampled once per frame; only this stage's DOM styles update. */
@@ -25,7 +26,11 @@ function useScrollStage(ref: React.RefObject<HTMLElement | null>) {
     };
     const update = () => {
       frame = 0;
-      if (media?.matches) {
+      if (
+        media?.matches ||
+        window.innerHeight <= 740 ||
+        (window.innerWidth <= 800 && window.innerHeight <= 820)
+      ) {
         reset();
         return;
       }
@@ -94,8 +99,8 @@ export function CinematicStory({
         Story overview: a coding agent receives a subscription cancellation
         task, implements it and reports two passing implementation tests.
         AgentGuard independently checks the acceptance claim. Use Run the demo
-        to reach the explicit verification control. Results appear only after
-        local playback.
+        to review the suggestion before the explicit verification control.
+        Results appear only after local playback.
       </p>
       <div className="cinema-entry" id="product" />
       <a className="cinema-skip" href="#product">
@@ -107,15 +112,15 @@ export function CinematicStory({
         </div>
         <div className="cinema-scene scene-task" data-scene="task">
           <div className="eyebrow">01 / THE TASK · CODING AGENT</div>
-          <h2>{codingStory.task}</h2>
+          <h2>{reviewExample.task}</h2>
           <div className="cinema-task-requirements">
             <p>{codingStory.introduction}</p>
             <ul>
-              {codingStory.requirements.map((r) => (
-                <li key={r}>○ {r}</li>
-              ))}
+              <li>○ {reviewExample.explicit.behavior}</li>
             </ul>
-            <small>Task requirements, not verified outcomes.</small>
+            <small>
+              Illustrative shorter task. Additional behaviours need your review.
+            </small>
           </div>
         </div>
         <div className="cinema-scene scene-work" data-scene="work">
@@ -191,9 +196,8 @@ export function CinematicStory({
               VERIFICATION
             </p>
             <div className="handoff-claims">
-              {demo.evidence.map((e) => (
-                <div key={e.id}>○ {e.title}</div>
-              ))}
+              <div>○ Your request → included</div>
+              <div>○ AgentGuard suggestion → your decision</div>
             </div>
           </div>
         </div>
@@ -211,24 +215,25 @@ export function CinematicStory({
           {complete ? (
             <>
               <div className="eyebrow">
-                CONTROLLED RESULT · 2 / 2 IMPLEMENTATION TESTS PASSING /
-                AGENTGUARD OVERALL FAIL
+                HUMAN INTENT · CONTROLLED EVIDENCE · SELECTED BEHAVIOURS ONLY
               </div>
               <h2 className="payoff-tests">
-                TESTS
+                PROMPT
                 <br />
-                PASSED.
+                DONE.
               </h2>
               <h2 className="payoff-requirement">
-                THE REQUIREMENT
+                REQUIREMENTS
                 <br />
-                <em>DIDN’T.</em>
+                <em>REVIEWED.</em>
               </h2>
               <p>
-                The implementation satisfied its tests.
+                Your coding agent completed the prompt.
                 <br />
-                This controlled acceptance example exposed the missed
-                requirement.
+                AgentGuard helped you complete the requirement.
+                <br />
+                Only selected behaviours participated in this illustrative
+                playback.
               </p>
             </>
           ) : (

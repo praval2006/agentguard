@@ -1,9 +1,9 @@
 import { Reveal } from "./Reveal";
+import { ReviewDemo } from "./ReviewDemo";
 import { CinematicStory } from "./CinematicStory";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   demo,
-  phases,
   stages,
   meanings,
   github,
@@ -20,20 +20,6 @@ function Badge({ value }: { value: Verdict }) {
       {value}
     </span>
   );
-}
-function useReducedMotion() {
-  const [reduced, setReduced] = useState(
-    () =>
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false,
-  );
-  useEffect(() => {
-    const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    if (!media) return;
-    const update = () => setReduced(media.matches);
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-  return reduced;
 }
 function MarketingHeader() {
   return (
@@ -122,7 +108,9 @@ function EvidenceGraph() {
       </div>
       <EvidenceInspector item={demo.evidence[selected]} />
       <p className="graph-caption">
-        Select a node to inspect its evidence. No live request is made.
+        Historical full-task example: all three behaviours were explicitly
+        requested. Independent of your choices in the reviewed demo below. No
+        live request is made.
       </p>
     </div>
   );
@@ -146,8 +134,8 @@ function Hero() {
           </em>
         </h1>
         <p className="hero-description">
-          AgentGuard independently derives what should work, executes the checks
-          it can support, and reports PASS, FAIL, or UNVERIFIED — with evidence.
+          AgentGuard proposes acceptance intent. You approve the suggestions.
+          Supported checks produce PASS, FAIL, or UNVERIFIED — with evidence.
         </p>
         <div className="hero-actions">
           <a className="button" href="#product">
@@ -161,7 +149,7 @@ function Hero() {
           <span className="crosshair" aria-hidden="true">
             ＋
           </span>{" "}
-          AI reasons. Evidence decides.
+          AI suggests. You decide intent. Evidence decides results.
         </div>
       </div>
       <EvidenceGraph />
@@ -194,169 +182,13 @@ function ProblemSection() {
     </section>
   );
 }
-function ControlledDemo({
-  onComplete,
-}: {
-  onComplete: (value: boolean) => void;
-}) {
-  const [step, setStep] = useState(-1);
-  const reduced = useReducedMotion();
-  const complete = step >= phases.length + demo.evidence.length;
-  const running = step >= 0 && !complete;
-  useEffect(() => {
-    onComplete(complete);
-  }, [complete, onComplete]);
-  useEffect(() => {
-    if (!running) return;
-    const timer = setTimeout(
-      () => setStep((s) => s + 1),
-      reduced ? 0 : step < phases.length ? 360 : 240,
-    );
-    return () => clearTimeout(timer);
-  }, [step, running, reduced]);
-  function run() {
-    setStep(reduced ? phases.length + demo.evidence.length : 0);
-  }
-  const count = Math.max(0, step - phases.length + 1);
-  return (
-    <section className="demo-section" aria-label="Controlled verification">
-      <div className="section demo-inner">
-        <div className="demo-heading">
-          <div>
-            <div className="eyebrow">
-              05 / INDEPENDENT ACCEPTANCE VERIFICATION
-            </div>
-            <h2>
-              The agent is done.
-              <br />
-              <em>Now check the claim.</em>
-            </h2>
-          </div>
-          <p>
-            A green test suite can tell one story.
-            <br />
-            Independent acceptance evidence can tell another.
-          </p>
-        </div>
-        <div className="demo-notice">
-          <span aria-hidden="true">◈</span> Illustrative local playback of the
-          existing controlled subscription demo. Not a live verification or a
-          fresh benchmark.
-        </div>
-        <div className="demo-comparison">
-          <aside
-            className="acceptance-queue"
-            aria-label="Acceptance requirements"
-          >
-            <div className="panel-label">
-              ACCEPTANCE REQUIREMENTS <span>UNRESOLVED CLAIMS</span>
-            </div>
-            <div className="queue-intro">
-              Independently derived from the task.
-              <br />
-              Evidence still required.
-            </div>
-            {demo.evidence.map((item, i) => (
-              <div className="queue-item" key={item.id}>
-                <span aria-hidden="true">○</span>
-                <div>
-                  <small>REQUIREMENT 0{i + 1}</small>
-                  <h3>{item.title}</h3>
-                </div>
-              </div>
-            ))}
-            <p className="queue-note">
-              Only the explicit button starts this local verification playback.
-            </p>
-          </aside>
-          <article className="guard-panel">
-            <div className="panel-label">
-              AGENTGUARD <span>ACCEPTANCE VIEW</span>
-            </div>
-            <div className="playback-controls">
-              <button className="button cyan" onClick={run} disabled={running}>
-                {complete ? "Replay verification" : "Run verification"}{" "}
-                <span>↗</span>
-              </button>
-              {step >= 0 && (
-                <button className="reset" onClick={() => setStep(-1)}>
-                  Reset
-                </button>
-              )}
-            </div>
-            <div className="progress" role="status" aria-live="polite">
-              {step < 0
-                ? "Ready to inspect the claim."
-                : complete
-                  ? "Playback complete — evidence collected."
-                  : step < phases.length
-                    ? phases[step]
-                    : "Revealing acceptance evidence…"}
-            </div>
-            <div className="progress-track" aria-hidden="true">
-              <span
-                style={{
-                  width:
-                    step < 0
-                      ? "0%"
-                      : `${Math.min(100, ((step + 1) / (phases.length + demo.evidence.length)) * 100)}%`,
-                }}
-              />
-            </div>
-            {step < 0 && (
-              <div className="empty-evidence">
-                <span>↳</span>
-                <p>Ready when you are.</p>
-                <small>No observations collected in this playback yet.</small>
-              </div>
-            )}
-            <div className="demo-results">
-              {demo.evidence.slice(0, count).map((item) => (
-                <div className="demo-result" key={item.id}>
-                  <div>
-                    <Badge value={item.verdict} />
-                    <h3>{item.title}</h3>
-                  </div>
-                  {item.verdict === "FAIL" ? (
-                    <>
-                      <div className="demo-diff">
-                        <code>Expected: {item.expected}</code>
-                        <code>Observed: {item.observed}</code>
-                      </div>
-                      <small>Evidence: {demo.endpoint} · HTTP 200</small>
-                    </>
-                  ) : (
-                    <p>
-                      {item.verdict === "PASS"
-                        ? `Expected: ${item.expected}. Observed: ${item.observed}. ${item.observation}`
-                        : item.reason}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-            {complete && (
-              <div className="overall">
-                Overall <Badge value={demo.overall} />
-              </div>
-            )}
-          </article>
-        </div>
-        <div className="demo-footer">
-          <span>NO EVIDENCE. NO GREEN CHECK.</span>
-          <span>Assertions, not assurances. ↗</span>
-        </div>
-      </div>
-    </section>
-  );
-}
 function HowItWorks() {
   const [active, setActive] = useState(0);
   return (
     <section className="section how" id="how">
       <div className="section-number">06 / HOW IT WORKS</div>
       <h2>
-        Plan. Ground. Execute.
+        Plan. Review. Verify.
         <br />
         <em>Evidence decides.</em>
       </h2>
@@ -408,13 +240,18 @@ function TrustBoundary() {
           award itself <strong>PASS.</strong>
         </p>
       </div>
+      <p className="human-boundary">
+        HUMAN / PRODUCT INTENT · Explicit requirements are included. Suggested
+        behaviours require your acceptance; approval never grants execution or
+        verdict authority.
+      </p>
       <div className="boundary-grid">
         <div>
           <span className="eyebrow">LLM / REASONING SIDE</span>
           <h3>Propose the claim.</h3>
           <ul>
             <li>Extracts requirements</li>
-            <li>Proposes acceptance scenarios</li>
+            <li>Proposes acceptance scenarios for human review</li>
             <li>Grounds supported checks</li>
           </ul>
         </div>
@@ -505,9 +342,7 @@ export default function App() {
           <ProblemSection />
         </Reveal>
         <CinematicStory
-          verification={(onComplete) => (
-            <ControlledDemo onComplete={onComplete} />
-          )}
+          verification={(onComplete) => <ReviewDemo onComplete={onComplete} />}
         />
         <Reveal variant="stagger-children">
           <HowItWorks />

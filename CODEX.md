@@ -2215,3 +2215,58 @@ Existing loopback regression tests used approved escalation. No paid API calls,
 frozen evaluation reruns, frontend changes or new verification primitives.
 All other tracked bytes match HEAD, including Phase 1, core policies and evaluations.
 Historical work-log prefixes checked; all prior bytes preserved. No commit or push.
+
+
+## 53. 2026-10-01 — Frontend human acceptance review
+
+Added frontend/src/ReviewDemo.tsx and reviewData.ts, replacing the cinematic
+verification panel with explicit human review followed by selected local playback.
+Updated App.tsx, CinematicStory.tsx, data.ts, styles.css, frontend README and tests.
+The historical evidence graph retains its original three explicit requirements and
+is labelled independent of review choices. The new review is a separately labelled
+illustrative shorter-task variant, not a relabelled historical planner output or a
+new backend/evaluation run. Its illustrative rationale is not repository evidence.
+
+Subscription status is explicit and INCLUDED without approval. Premium revocation
+is inferred, defaults PENDING and retains its AgentGuard-suggestion origin after
+ACCEPTED or DISMISSED decisions. Native Add to verification/Dismiss controls update
+the contract summary. Main verification is disabled until a decision; selection or
+scrolling never starts playback. Dismissed items remain visible in the summary but
+receive no verdict. Change decision clears prior results; Reset returns to PENDING.
+No production persistence or live provider/backend integration was introduced.
+
+Explicit result fixtures select accepted => status PASS / premium FAIL (expected
+false, observed true), overall FAIL; dismissed => status PASS only, overall PASS
+for the narrower selected sample. React does not aggregate verdicts or evaluate
+assertions. Repeated cancellation is outside this shorter contract, not converted
+into a pending/dismissed UNVERIFIED result. No unsupported ambiguity was invented.
+The report-like view shows origin, human acceptance, behaviour, selected counts,
+expected/observed evidence and narrow verdict meanings. The cinematic payoff now
+emphasizes completing acceptance intent without falsely claiming a dismissed check
+failed. Existing historical graph evidence remains unchanged.
+
+Review and verdict types remain distinct. Controls have native button semantics,
+pressed/disabled states, focus styles, status announcements and a pending explanation.
+Change/reset restores heading focus without scrolling. Desktop cards use a two-column
+grid; mobile stacks them. Short viewports fall back to document flow to avoid clipped
+controls. Reduced motion preserves readable content and immediate explicit playback.
+No new dependencies, authentication, report export or frontend API adapter.
+
+Added 9 focused ReviewDemo tests; updated 8 existing App interactions for the required
+review decision and shorter selected playback; 2 timeline tests remain unchanged.
+- npm test --prefix frontend: 19/19 passed.
+- npm run typecheck --prefix frontend: passed.
+- npm run build --prefix frontend: passed.
+- python3 -m unittest discover -s tests -p 'test_*.py' -v: 378/378 passed.
+- python3 -m unittest discover -s sample_app/tests -p 'test_*.py' -v: 4/4 passed.
+A formatter-moved TypeScript expected-error annotation was corrected before final
+build/typecheck. Approved escalation supported local Vite/Chrome and loopback tests.
+Headless Chrome reviewed 1440x1000 and 390x844: keyboard acceptance/run, accepted and
+dismissed fixtures, decision changes, and reduced-motion overflow checks passed.
+A completed-payoff mobile overflow was corrected. No page errors; final normal and
+reduced mobile layouts have no horizontal overflow. No physical-device claim.
+
+All tracked nonfrontend bytes matched HEAD before this append, including all backend
+contracts, original tasks and frozen evaluations. Historical log prefixes checked;
+all previous bytes preserved. No paid API calls, frozen evaluation reruns, commit
+or push. Human intent approval remains distinct from backend execution authority.

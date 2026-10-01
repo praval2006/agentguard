@@ -22,9 +22,12 @@ describe("AgentGuard local presentation", () => {
   it("plays all phases, reveals controlled results and resets", () => {
     vi.useFakeTimers();
     render(<App />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Add to verification" }),
+    );
     fireEvent.click(screen.getByRole("button", { name: /Run verification/ }));
     expect(screen.getByRole("status")).toHaveTextContent(
-      "Reading requirements",
+      "Reading accepted contract",
     );
     for (let i = 0; i < 8; i++)
       act(() => {
@@ -35,7 +38,7 @@ describe("AgentGuard local presentation", () => {
       screen.getByRole("button", { name: /Replay verification/ }),
     ).toBeEnabled();
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
-    expect(screen.getByRole("status")).toHaveTextContent("Ready");
+    expect(screen.getByRole("status")).toHaveTextContent("Review incomplete");
     expect(
       screen.queryByText("Expected: premium_access = false"),
     ).not.toBeInTheDocument();
@@ -54,6 +57,9 @@ describe("AgentGuard local presentation", () => {
       removeEventListener: vi.fn(),
     }));
     render(<App />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Add to verification" }),
+    );
     fireEvent.click(screen.getByRole("button", { name: /Run verification/ }));
     expect(screen.getByRole("status")).toHaveTextContent("Playback complete");
   });
@@ -102,11 +108,11 @@ describe("AgentGuard local presentation", () => {
         ),
       ),
     );
-    expect(screen.getByRole("status")).toHaveTextContent("Ready");
+    expect(screen.getByRole("status")).toHaveTextContent("Review incomplete");
     expect(screen.queryByTestId("story-payoff")).not.toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Acceptance requirements"),
-    ).not.toHaveTextContent("PASS");
+    expect(screen.getByLabelText("Acceptance contract")).not.toHaveTextContent(
+      "PASS",
+    );
     expect(screen.getAllByRole("link", { name: /Run the demo/ })).toHaveLength(
       4,
     );
@@ -118,24 +124,27 @@ describe("AgentGuard local presentation", () => {
   it("reveals evidence progressively and removes payoff on replay/reset", () => {
     vi.useFakeTimers();
     render(<App />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Add to verification" }),
+    );
     fireEvent.click(screen.getByRole("button", { name: /Run verification/ }));
     expect(screen.queryByTestId("story-payoff")).not.toBeInTheDocument();
-    for (let i = 0; i < 5; i++)
+    for (let i = 0; i < 3; i++)
       act(() => {
-        vi.advanceTimersByTime(360);
+        vi.advanceTimersByTime(320);
       });
     expect(
       screen.queryByText("Expected: premium_access = false"),
     ).not.toBeInTheDocument();
     act(() => {
-      vi.advanceTimersByTime(240);
+      vi.advanceTimersByTime(320);
     });
     expect(
       screen.getByText("Expected: premium_access = false"),
     ).toBeInTheDocument();
     for (let i = 0; i < 2; i++)
       act(() => {
-        vi.advanceTimersByTime(240);
+        vi.advanceTimersByTime(320);
       });
     expect(screen.getByTestId("story-payoff")).toBeInTheDocument();
     fireEvent.click(
@@ -143,7 +152,7 @@ describe("AgentGuard local presentation", () => {
     );
     expect(screen.queryByTestId("story-payoff")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
-    expect(screen.getByRole("status")).toHaveTextContent("Ready");
+    expect(screen.getByRole("status")).toHaveTextContent("Review incomplete");
   });
   it("keeps narrative readable if reveal initialization fails", () => {
     vi.stubGlobal(
@@ -157,7 +166,7 @@ describe("AgentGuard local presentation", () => {
     render(<App />);
     expect(screen.getByText(/TASK\s*COMPLETE\./)).toBeVisible();
     expect(
-      screen.getByRole("button", { name: /Run verification/ }),
+      screen.getByRole("button", { name: "Add to verification" }),
     ).toBeEnabled();
   });
 });

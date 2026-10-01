@@ -56,14 +56,14 @@ export const stages = [
   {
     name: "PLAN",
     description:
-      "AgentGuard derives acceptance behaviors from the task and bounded repository context.",
+      "AgentGuard proposes explicit and inferred behaviours. You review suggestions before grounding.",
     label: "INPUT → ACCEPTANCE INTENT",
-    code: "task: subscription cancellation\ncontext: selected repository facts\n\nexplicit requirement:\n  Cancelled users lose premium access.\n\nsource: explicit",
+    code: "task: subscription cancellation\ncontext: selected repository facts\n\nexplicit: cancellation changes status\nsuggestion: revoke premium access\nreview: PENDING → human decision",
   },
   {
     name: "GROUND",
     description:
-      "It maps supported behaviors onto concrete observations without inventing missing repository facts.",
+      "After human selection, it maps accepted behaviours to supported observations without inventing repository facts.",
     label: "INTENT → SUPPORTED CHECK",
     code: "action:\n  type: http_request\n  method: POST\n  path: /subscriptions/1/cancel\nassertion:\n  premium_access equals false",
   },
