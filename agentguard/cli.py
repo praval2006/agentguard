@@ -11,6 +11,7 @@ from .providers.openai_provider import OpenAIProvider
 from .reviewed_workflow import (prepare_review, resume_reviewed, validate_review,
                                 MAX_ARTIFACT_CHARS)
 from .acceptance_contract import build_contract
+from .acceptance_report import build_acceptance_report, format_acceptance_report, report_json
 
 EXIT_CODES = {'PASS': 0, 'FAIL': 1, 'UNVERIFIED': 2}
 
@@ -148,14 +149,24 @@ def _reviewed_main(args):
         if type(decisions) is not list:
             raise ValueError('Decision file must contain a list')
         build_contract(proposal, decisions)
+        stage = 'report configuration'
+        task_text = _read_text(args.task) if args.task else None
+        if args.report_json and Path(args.report_json).exists():
+            raise ValueError('Refusing to overwrite a report')
         stage = 'reviewed provider configuration'
         provider = OpenAIProvider()
         stage = 'reviewed grounding or acceptance execution'
         outcome = resume_reviewed(artifact, decisions, context, grounding_provider=provider,
                                   base_url=args.base_url)
-        print(format_review(artifact, outcome['contract']))
-        print(format_report(args.review, outcome['contract']['selected_plan'],
-                            outcome['grounded'], outcome['verification']))
+        stage = 'acceptance report construction'
+        report = build_acceptance_report(outcome, task_text=task_text)
+        rendered = format_acceptance_report(report)
+        if args.report_json:
+            stage = 'saving acceptance report'
+            serialized = report_json(report)
+            with Path(args.report_json).open('x', encoding='utf-8') as stream:
+                stream.write(serialized)
+        print(rendered)
         return EXIT_CODES[outcome['verification']['verdict']]
     except Exception:
         print(f'AgentGuard error: {stage} failed. No acceptance verdict reported.', file=sys.stderr)
@@ -179,6 +190,8 @@ def main(argv=None):
     reviewed.add_argument('--decisions', required=True, help='JSON list of Phase-1 human decisions; [] is valid')
     reviewed.add_argument('--context', required=True)
     reviewed.add_argument('--base-url')
+    reviewed.add_argument('--report-json', help='New bounded acceptance report JSON file; refuses overwrite')
+    reviewed.add_argument('--task', help='Optional original task text for reporting; not revision-bound')
     stage = 'arguments'
     try:
         args = parser.parse_args(argv)

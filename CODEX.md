@@ -2338,3 +2338,67 @@ authentication/session propagation, returned-ID chaining, hidden-state or collec
 verification is provided. Earlier mutations can remain after stopping; separate
 scenarios can interfere. Structural validation does not prove semantic coverage or
 observation authenticity. Real-model sequence grounding quality remains unevaluated.
+
+
+## 55. 2026-10-02 — Acceptance Verification Report
+
+Added agentguard/acceptance_report.py as a deterministic projection of the completed
+resume_reviewed return. Public functions: build_acceptance_report(outcome,
+task_text=None), report_json(report), format_acceptance_report(report). The versioned
+agentguard.acceptance-report.v1 representation contains revision, task provenance,
+discovery, requirement_mapping, reviews, selected contract, summary, verification
+and boundary metadata. No planning, grounding, execution, verification, verdict
+aggregation, requirement inference or model invocation occurs during reporting.
+
+Proposal/review integrity is checked through existing contract validation. Selected
+review order is joined positionally to grounding and execution order, as guaranteed
+by the reviewed workflow. Counts and exact identities are checked, including nested
+labels and sequence execution names. Inconsistent joins fail instead of fuzzy matching.
+Results do not carry a full grounded identity fingerprint: coherent same-name/source
+substitution is not authenticated by these checks. Inputs must be the trusted complete
+workflow return. A bounded JSON roundtrip detaches report content from caller inputs.
+
+Explicit/inferred/ambiguity lists remain separate and unchanged. Included explicit
+and ACCEPTED inferred scenarios form the ordered contract. Inferred origin remains
+inferred; PENDING/DISMISSED reviews remain visible with no fake verification result.
+No requirement/scenario mapping is invented. All requirement-list items stay visible
+with an explicit unlinked-coverage limitation, including items lacking scenarios;
+none are assigned UNVERIFIED merely for being list items. The workflow does not
+retain original task text; it is either marked unavailable or supplied separately
+with caller_supplied_unbound provenance, never claimed to be revision-bound.
+
+Overall and individual verdicts are copied from authoritative outputs. Summary
+counts only existing top-level labels and never derives overall verdict. Composite
+children, sequence step/cross-comparison evidence, truncation flags and registered
+coverage/count evidence are preserved. Raw observations, response bodies, request
+payloads, headers, variables and logs are omitted. Selected verifier evidence may
+still contain sensitive values; the caller controls storage. Boundary metadata
+explains verdict meanings and limits without claiming complete software correctness.
+
+verify-reviewed now prints the acceptance report and accepts --report-json for a
+new artifact, plus optional --task for original text. Existing report paths fail
+before provider creation; exclusive creation prevents silent overwrite at write
+time. Stable sorted finite JSON is bounded to 1048576 bytes; no timestamps or silent
+truncation. Construction/write failures use existing sanitized operational exit 3.
+A write failure after execution cannot undo execution and may leave a partial new
+file. Legacy verify and the reviewed workflow implementation remain unchanged.
+No additional model calls are added. docs/acceptance_report.md documents the exact
+schema, authoritative joins, CLI, evidence policy and limitations.
+
+Added 9 focused offline tests in tests/test_acceptance_report.py for review categories,
+unlinked requirements, unchanged authoritative verdicts, deterministic nonmutation,
+no provider/verifier execution, composite/sequence evidence, registered provenance,
+empty contracts, malformed joins, escaped terminal output, finite/size bounds and
+CLI creation/overwrite refusal before provider invocation.
+
+Validation:
+- python3 -B -m unittest discover -s tests -p test_acceptance_report.py -v: 9/9 passed.
+- python3 -B -m unittest discover -s tests -p test_reviewed_workflow.py -v: 22/22 passed unchanged.
+- python3 -m unittest discover -s tests -p 'test_*.py' -v: 399/399 passed
+  (390 existing unchanged and 9 new).
+- python3 -m unittest discover -s sample_app/tests -p 'test_*.py' -v: 4/4 passed.
+Approved escalation allowed existing local loopback regression fixtures. No paid
+API calls, frozen evaluation reruns, frontend edits or new verification capability.
+All other tracked bytes match HEAD, including reviewed workflow, verifier, planner,
+grounding and frozen evaluations. Historical work-log prefixes checked; every prior
+byte preserved. No commit or push.
