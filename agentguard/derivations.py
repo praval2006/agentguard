@@ -245,6 +245,19 @@ def materialize(candidate, *, policy, context):
             for child in children:
                 if isinstance(child, dict):
                     leaf(child)
+    elif isinstance(action, dict) and action.get('type') == 'http_sequence':
+        steps = action.get('steps')
+        if isinstance(steps, list):
+            for step in steps:
+                if isinstance(step, dict):
+                    original = step.get('action')
+                    leaf(step)
+                    if original is not step.get('action'):
+                        # A required step cannot be dropped or replaced by an
+                        # independent observation; preserve the entire intent.
+                        result['action'] = step['action']
+                        result.pop('assertions', None)
+                        break
     else:
         leaf(result)
     return result

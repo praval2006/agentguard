@@ -87,7 +87,8 @@ Composites are NOT workflows: no output -> input chaining, create -> fetch-by-re
 login -> cookie/session workflow, mutate -> later inspect continuous state, variables
 between children, retries, branches, loops, conditionals, optional checks, setup/teardown,
 state resets, or speculative/nice-to-have checks. Sequential requests do not prove
-state isolation. Unsupported is required when these capabilities are needed.
+state isolation. Unsupported is required when these capabilities are needed,
+except for the bounded HTTP sequence specified below.
 Bounded input derivation exception: only when caller-reviewed derivation_facts are
 supplied, an HTTP action may include derive, a list of at most 8 requests. Each is
 exactly {field, rule, fact_id}; wrong_primitive_type additionally requires
@@ -105,6 +106,34 @@ resource references, filenames, secrets, users, state, workflows or business pol
 Only request a rule whose fact and behavior justify that test input. Planner ambiguity
 and complete-observation obligations remain unchanged. Without reviewed facts the
 existing evidence restriction applies. Do not manufacture or alter fact authority.
+
+Bounded stateful HTTP sequence exception (one standalone top-level scenario):
+Exact parent keys: name, source, reason, action, assertions. No behavior or variables.
+Exact action: {type: http_sequence, steps: list of 2–4 required HTTP steps}.
+Each step has exactly name, action, assertions. Names are unique ASCII identifiers
+matching [A-Za-z][A-Za-z0-9_]{0,63}. Every step action uses the existing http_request
+shape; no nesting, unsupported steps, test commands, or registered checks.
+Each step has 1–8 existing HTTP assertions, including at least one status assertion.
+Literal equality/status/existence/type checks stay in that step's assertions.
+Parent assertions is a list of 0–8 cross-observation assertions, each exactly:
+{type: json_equal, left: {observation: step name, path: dotted JSON path},
+ right: {observation: step name, path: dotted JSON path}}.
+References must name declared steps. Every assertion/reference path in a sequence
+has 1–8 nonblank dictionary-only segments and at most 256 characters. Cross equality
+compares JSON scalars only, never arrays/objects. Compact sequence JSON <=32000 UTF-8 bytes.
+Steps execute once in declared order against the same target, stopping at the first
+non-PASS required step. No resets, isolation, rollback, or persistence guarantees.
+Comparisons use actual captured observations; missing evidence stays unverified.
+Do not produce observations or verdicts. Ground every endpoint, fixed request value,
+identifier, status expectation, field path and comparison relationship from supplied
+evidence (or existing caller-reviewed input derivation rules). Do not invent state
+relationships. Preserve the complete intended behavior; do not truncate to fit bounds.
+If a required step or assertion lacks evidence/capability, make the whole scenario
+unsupported. Do not use independent composites for stateful observations.
+No output-to-input substitution, returned-ID chaining, cookies/session propagation,
+loops, retries, arbitrary branching, optional steps, custom expressions or collection
+operators. An ordered HTTP observation does not by itself prove durable persistence.
+
 No database queries, browser actions, filesystem assertions, arbitrary Python,
 shell expressions, regex evaluators, callbacks, or custom execution mechanisms.
 """

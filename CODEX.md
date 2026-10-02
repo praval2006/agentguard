@@ -2270,3 +2270,71 @@ All tracked nonfrontend bytes matched HEAD before this append, including all bac
 contracts, original tasks and frozen evaluations. Historical log prefixes checked;
 all previous bytes preserved. No paid API calls, frozen evaluation reruns, commit
 or push. Human intent approval remains distinct from backend execution authority.
+
+
+## 54. 2026-10-02 — Bounded stateful HTTP observation sequences
+
+Added the standalone http_sequence capability through the existing schema,
+HTTP executor, verifier and acceptance dispatcher. New sequence_execution.py
+performs ordered requests against the same configured target without resetting
+application state. It snapshots validated inputs, stops after the first non-PASS
+required step, and delegates final verification to verify_observation. No retries,
+parallel execution, output-to-input substitution or model execution involvement.
+Existing standalone schemas and independent composite behavior remain unchanged.
+
+Exact sequence parent fields: name/source/reason/action/assertions. Action contains
+only type=http_sequence and steps. Each step has name/action/assertions, uses an
+existing HTTP action, and requires at least one expected status. Existing literal,
+existence and type assertions operate within steps. Parent json_equal assertions
+contain left/right references, each with observation/path. Unique ASCII observation
+names are bounded to 64 characters; unknown references fail structural validation.
+Bounds: 2–4 steps, 1–8 assertions per step, 0–8 cross assertions, 256-character paths
+with at most 8 dictionary segments, and 32000 compact UTF-8 scenario bytes. Existing
+HTTP request/response, JSON, evidence and 2-second per-request deadlines apply.
+
+The verifier consumes an ordered observation prefix and computes every verdict
+from actual observations. Successful required steps expose scalar JSON values.
+Cross equality preserves JSON number/boolean distinctions and null versus missing;
+containers are unavailable rather than introducing collection comparison. Selected
+string evidence remains bounded to 512 characters, with full-value comparison.
+Contradictions yield FAIL; otherwise unavailable required evidence yields UNVERIFIED;
+only all required checks passing yields PASS. Later unexecuted steps are UNVERIFIED.
+The parent stores selected child/cross evidence; parsed responses occur only in
+its observation envelope, with no raw-body duplication in child results.
+
+Grounding instructions and the provider serialization reference describe the exact
+new shape and require evidence for all actions, values, fields and relationships.
+Insufficient evidence makes the entire scenario unsupported. Existing reviewed
+input derivations compile in sequence steps; an unjustified derivation makes the
+whole sequence unsupported without dropping a required operation. No new authority,
+derivation rules, planner behavior, review policy or execution policy was added.
+Documented the schema, bounds, execution/evidence contracts and limits in
+docs/http_sequences.md.
+
+Added 12 focused tests in tests/test_http_sequence.py. The same local HTTP fixture
+and primitive demonstrate scalar preservation PASS/FAIL, transition, deletion
+readback and repeated operations. Tests also cover real declared request order,
+failed-precondition stopping, unavailable observations, scalar/null/type semantics,
+bounded evidence, malformed references/bounds/nesting, validation before effects,
+nonmutation, defensive snapshotting, derivation trust and compilation, conservative
+grounding without retries, existing HTTP checks and accepted inferred scenarios
+through the unchanged reviewed workflow.
+
+Validation:
+- python3 -B -m unittest discover -s tests -p test_http_sequence.py -v: 12/12 passed.
+- python3 -m unittest discover -s tests -p 'test_*.py' -v: 390/390 passed
+  (378 existing unchanged and 12 new).
+- python3 -m unittest discover -s sample_app/tests -p 'test_*.py' -v: 4/4 passed.
+The sandbox initially blocked loopback binding; approved escalation allowed local
+HTTP test servers. No paid API calls or frozen evaluation reruns occurred.
+All evaluation and frontend tracked bytes match HEAD; prior work-log bytes and
+historical prefixes are preserved exactly. No commit or push.
+
+This can potentially represent evidenced scalar before/after preservation, rejection
+without scalar mutation, state transitions, deletion readback and repeated fixed
+operations. Frozen Set 3 remains 4 PASS / 0 FAIL / 19 UNVERIFIED; no measured coverage
+improvement is claimed. No isolation, rollback, cleanup, durable persistence,
+authentication/session propagation, returned-ID chaining, hidden-state or collection
+verification is provided. Earlier mutations can remain after stopping; separate
+scenarios can interfere. Structural validation does not prove semantic coverage or
+observation authenticity. Real-model sequence grounding quality remains unevaluated.

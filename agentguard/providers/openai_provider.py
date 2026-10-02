@@ -52,6 +52,21 @@ Composite parent EXACT keys: name, source, reason, behavior, action
   no nesting, test_command or registered_check children; no parent assertions
   compact composite JSON must fit 32000 UTF-8 bytes
 
+Standalone HTTP sequence EXACT parent keys: name, source, reason, action, assertions
+  action EXACT keys: type, steps; type is "http_sequence"
+  steps is a list of 2–4 required HTTP steps, each EXACTLY name, action, assertions
+  step action is http_request as above; step assertions are 1–8 existing HTTP
+  assertions including at least one status assertion
+  names match [A-Za-z][A-Za-z0-9_]{0,63} and are unique
+  parent assertions is a list of 0–8 entries, each EXACTLY:
+  {"type":"json_equal", "left":{"observation":step name,"path":dotted path},
+                        "right":{"observation":step name,"path":dotted path}}
+  references name declared steps; all sequence assertion paths <=256 characters,
+  1–8 nonblank dictionary segments; cross equality compares scalars only
+  compact sequence JSON <=32000 UTF-8 bytes; no behavior/variables/nesting
+  literal/status checks belong to steps; cross comparisons belong to the parent
+  use only the conservative stateful-sequence exception in the role instructions
+
 Assertion shapes (each has EXACTLY these keys):
   {"type": "status", "equals": integer from 100 through 599, not boolean}
   {"type": "json_field", "path": dotted dictionary path, "equals": JSON scalar}

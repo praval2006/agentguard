@@ -1,12 +1,14 @@
 """Strict MVP scenario dictionaries. Validation only; no execution or substitution.
 
 Common keys: name, source, reason, action; optional variables.
-HTTP actions require a nonempty assertions list. Other actions forbid assertions.
+HTTP leaves require a nonempty assertions list. Sequences carry cross assertions;
+commands and unsupported actions forbid assertions.
 Unsupported actions are descriptive records, never executable actions or verdicts.
 """
 
 from math import isfinite
 import json
+import re
 
 from .derivations import validate_provenance
 
@@ -16,6 +18,11 @@ MAX_COMPOSITE_BYTES = 32000
 MAX_COMPOSITE_CHILDREN = 3
 MAX_CHILD_ASSERTIONS = 8
 MAX_CHILD_LABEL_CHARS = 64
+MAX_SEQUENCE_STEPS = 4
+MAX_SEQUENCE_ASSERTIONS = 8
+MAX_SEQUENCE_BYTES = 32000
+MAX_SEQUENCE_PATH_CHARS = 256
+MAX_SEQUENCE_PATH_DEPTH = 8
 
 
 def _shape(value, required, optional, location):
@@ -48,6 +55,14 @@ def validate_scenario(scenario: dict) -> None:
             and scenario["action"].get("type") == "composite"):
         _validate_composite(scenario)
         return
+    if (isinstance(scenario, dict) and isinstance(scenario.get("action"), dict)
+            and scenario["action"].get("type") == "http_sequence"):
+        _validate_sequence(scenario)
+        return
+    _validate_leaf(scenario)
+
+
+def _validate_leaf(scenario):
     _shape(scenario, {"name", "source", "reason", "action"},
            {"assertions", "variables"}, "scenario")
     for field in ("name", "reason"):
@@ -195,3 +210,69 @@ def unsupported_scenario(*, name: str, source: str, reason: str,
                 "action": {"type": "unsupported", "explanation": explanation}}
     validate_scenario(scenario)
     return scenario
+
+
+def sequence_leaf(scenario, step):
+    """Internal HTTP leaf view; no substitution or execution."""
+    return dict(name=step['name'], source=scenario['source'], reason=scenario['reason'],
+                action=step['action'], assertions=step['assertions'])
+
+
+def _sequence_path(path):
+    _text(path, 'sequence path')
+    segments = path.split('.')
+    if (len(path) > MAX_SEQUENCE_PATH_CHARS or len(segments) > MAX_SEQUENCE_PATH_DEPTH
+            or any(not part.strip() for part in segments)):
+        raise ValueError('sequence paths require 1–8 nonblank segments and at most 256 characters')
+
+
+def _validate_sequence(scenario):
+    _shape(scenario, {'name', 'source', 'reason', 'action', 'assertions'}, set(), 'sequence')
+    for field in ('name', 'reason'):
+        _text(scenario[field], field)
+    if scenario['source'] not in ('explicit', 'inferred'):
+        raise ValueError('source must be explicit or inferred')
+    action = scenario['action']
+    _shape(action, {'type', 'steps'}, set(), 'sequence action')
+    steps = action['steps']
+    if not isinstance(steps, list) or not 2 <= len(steps) <= MAX_SEQUENCE_STEPS:
+        raise ValueError('sequence requires 2–4 HTTP steps')
+    names = set()
+    for step in steps:
+        _shape(step, {'name', 'action', 'assertions'}, set(), 'sequence step')
+        name = step['name']
+        if (type(name) is not str or re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,63}', name) is None
+                or name in names):
+            raise ValueError('observation names must be unique ASCII identifiers of at most 64 characters')
+        names.add(name)
+        if not isinstance(step['action'], dict) or step['action'].get('type') != 'http_request':
+            raise ValueError('sequence steps must be HTTP requests; nesting is forbidden')
+        assertions = step['assertions']
+        if not isinstance(assertions, list) or not 1 <= len(assertions) <= MAX_SEQUENCE_ASSERTIONS:
+            raise ValueError('sequence step requires 1–8 assertions')
+        _validate_leaf(sequence_leaf(scenario, step))
+        if not any(a['type'] == 'status' for a in assertions):
+            raise ValueError('sequence step requires an expected status')
+        for assertion in assertions:
+            if 'path' in assertion:
+                _sequence_path(assertion['path'])
+    assertions = scenario['assertions']
+    if not isinstance(assertions, list) or len(assertions) > MAX_SEQUENCE_ASSERTIONS:
+        raise ValueError('sequence cross assertions must be a list of at most 8 entries')
+    for assertion in assertions:
+        _shape(assertion, {'type', 'left', 'right'}, set(), 'cross assertion')
+        if assertion['type'] != 'json_equal':
+            raise ValueError('sequence cross assertion must be json_equal')
+        for side in ('left', 'right'):
+            ref = assertion[side]
+            _shape(ref, {'observation', 'path'}, set(), 'observation reference')
+            if type(ref['observation']) is not str or ref['observation'] not in names:
+                raise ValueError('unknown observation reference')
+            _sequence_path(ref['path'])
+    try:
+        size = len(json.dumps(scenario, ensure_ascii=False, allow_nan=False,
+                              separators=(',', ':')).encode('utf-8'))
+    except (TypeError, ValueError, RecursionError) as error:
+        raise ValueError('sequence must be finite serializable JSON') from error
+    if size > MAX_SEQUENCE_BYTES:
+        raise ValueError('serialized sequence exceeds 32000 UTF-8 bytes')

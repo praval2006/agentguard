@@ -2,7 +2,7 @@
 
 from math import isfinite
 
-from .scenarios import validate_scenario
+from .scenarios import validate_scenario, sequence_leaf
 
 MAX_EVIDENCE_CHARS = 512
 MAX_JSON_NODES = 10_000
@@ -116,6 +116,12 @@ def verify_observation(scenario: dict, observation=None, *, registry=None,
     Comparisons use complete values before evidence truncation. Input is unchanged.
     """
     validate_scenario(scenario)
+    if scenario['action']['type'] == 'http_sequence':
+        return _verify_sequence(scenario, observation)
+    return _verify_leaf(scenario, observation, registry, coverage_authorizations)
+
+
+def _verify_leaf(scenario, observation, registry=None, coverage_authorizations=None):
     result = {"name": scenario["name"], "source": scenario["source"],
               "verdict": "UNVERIFIED", "assertions": [], "reason": None}
     kind = scenario["action"]["type"]
@@ -271,3 +277,63 @@ def _verify_registered(scenario, observation, result, registry, authorizations):
     elif observation['status'] == 'assertion_failure' and observation['failures'] > 0:
         result.update(verdict='FAIL', reason='Authorized check observed an assertion failure')
     return result
+
+
+def _verify_sequence(scenario, observation):
+    """Verify an ordered observation prefix, never model-supplied verdicts."""
+    steps = scenario['action']['steps']
+    valid = (type(observation) is dict and set(observation) == {'type', 'steps'}
+             and observation['type'] == 'http_sequence_result'
+             and type(observation['steps']) is list
+             and len(observation['steps']) <= len(steps))
+    records = observation['steps'] if valid else []
+    if any(type(record) is not dict or set(record) != {'name', 'observation'}
+           or record['name'] != step['name'] for record, step in zip(records, steps)):
+        records = []
+    captured = {}
+    children = []
+    continuing = True
+    for index, step in enumerate(steps):
+        observed = records[index]['observation'] if continuing and index < len(records) else None
+        result = _verify_leaf(sequence_leaf(scenario, step), observed)
+        # Only successful required steps expose scalar values to later comparisons.
+        if result['verdict'] == 'PASS':
+            captured[step['name']] = observed
+        else:
+            continuing = False
+        children.append(dict(label=step['name'], result=result))
+    assertions = []
+    for assertion in scenario['assertions']:
+        item = dict(type='json_equal', left=dict(assertion['left']), right=dict(assertion['right']),
+                    verdict='UNVERIFIED', reason=None)
+        left_ok, left = _sequence_value(captured, assertion['left'])
+        right_ok, right = _sequence_value(captured, assertion['right'])
+        if right_ok:
+            _evidence(item, 'expected', right)
+        if left_ok:
+            _evidence(item, 'observed', left)
+        if left_ok and right_ok:
+            item['verdict'] = 'PASS' if _equal(right, left) else 'FAIL'
+        else:
+            item['reason'] = 'Required named observation or scalar JSON path is unavailable'
+        assertions.append(item)
+    verdicts = [c['result']['verdict'] for c in children] + [a['verdict'] for a in assertions]
+    verdict = ('FAIL' if 'FAIL' in verdicts else
+               'UNVERIFIED' if 'UNVERIFIED' in verdicts else 'PASS')
+    return dict(name=scenario['name'], source=scenario['source'], verdict=verdict,
+                assertions=assertions, children=children,
+                reason='Required sequence evidence is unavailable' if verdict == 'UNVERIFIED' else None)
+
+
+def _sequence_value(captured, reference):
+    observation = captured.get(reference['observation'])
+    if (observation is None or 'json' not in observation
+            or not _json_available(observation['json'])):
+        return False, None
+    value = observation['json']
+    for segment in reference['path'].split('.'):
+        if type(value) is not dict or segment not in value:
+            return False, None
+        value = value[segment]
+    # Collection comparison is deliberately not part of this primitive.
+    return (False, None) if type(value) in (dict, list) else (True, value)

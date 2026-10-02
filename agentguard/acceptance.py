@@ -6,6 +6,7 @@ from .execution import execute_test_scenario
 from .registered_execution import execute_registered_check
 from .coverage_authorization import authorized_registration
 from .http_execution import execute_http_scenario
+from .sequence_execution import execute_http_sequence
 from .planner import MAX_SCENARIOS
 from .scenarios import validate_scenario
 from .verifier import MAX_EVIDENCE_CHARS, verify_observation, aggregate_composite_results
@@ -49,6 +50,8 @@ def run_acceptance(scenarios, *, base_url=None, recorder=None, repository_root=N
         kind = scenario["action"]["type"]
         if kind == "composite":
             envelope = _execute_composite(scenario, base_url)
+        elif kind == "http_sequence":
+            envelope = execute_http_sequence(scenario, base_url=base_url)
         elif kind == "http_request":
             if not isinstance(base_url, str) or not base_url.strip():
                 envelope = _unobserved(scenario, "HTTP target configuration is unavailable")
