@@ -1,7 +1,6 @@
-# AgentGuard product frontend
+# AgentGuard presentation frontend
 
-Independent React + TypeScript + Vite app, with plain CSS and no backend coupling.
-Node 20.19+ or 22.12+ is recommended. From the repository root:
+React + TypeScript + Vite, with plain CSS and no runtime dependencies beyond React.
 
 ```sh
 cd frontend
@@ -9,86 +8,90 @@ npm ci
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. The server uses loopback by default.
+Open the local URL printed by Vite (normally http://127.0.0.1:5173).
+
+- `/`: twelve-section presentation, from the acceptance gap to an evidence-backed report.
+- `/demo`: interactive account-deletion acceptance review and controlled playback.
 
 ```sh
-npm run typecheck
 npm test
+npm run typecheck
 npm run build
 ```
 
-The landing page includes a keyboard-operable evidence graph and inspector, controlled
-verification playback, a stage explorer and explicit trust/verdict explanations.
-Reduced motion skips playback delays and removes animations. A mobile layout turns
-the branching graph into vertically connected buttons. The site uses system fonts
-and has no font CDN, analytics, authentication or external image requests.
+## Presentation and navigation
 
-`src/data.ts` preserves the historical three-requirement evidence graph. In that
-original task premium revocation was explicit. The graph is labelled independent
-of review choices. `src/reviewData.ts` supplies a **separate illustrative shorter-task
-variant** for the reviewed experience; it is not a historical planner output.
-No original task artifact or frozen result was relabelled.
+`App.tsx` selects the two views using the History API and `popstate`; native links
+retain modifier-click/new-tab behavior. `navigation.tsx` handles in-app navigation.
+A static production host must serve `index.html` for `/demo` (SPA fallback).
+Direct entry, back navigation and returning to `/#trust` are supported. No router,
+animation, image, font, analytics or API dependency was added.
 
-The reviewed contract always includes subscription status. Premium access is an
-inferred suggestion, initially PENDING. Add to verification or Dismiss is required
-before Run verification; selection alone never starts playback. Accepted suggestions
-keep their inferred origin. Decisions can be changed before running or through Change
-decision after completion, which clears old evidence. Reset returns to PENDING.
-Reloading also resets local state; there is no production persistence.
+`PresentationPage.tsx` contains the centered narrative: hero, problem, acceptance
+gap, independent boundary, human authority, demo launch, trust architecture,
+generalization, verdict boundary, report, future vision and closing. Shared Scene
+and Flow compositions keep the small presentation component tree understandable.
+The references inform the midnight/navy surfaces and restrained violet illumination;
+no reference assets, branding or product layouts are copied.
 
-The accepted fixture contains status PASS and premium-access FAIL (expected false,
-observed true), overall FAIL. The dismissed fixture contains status PASS only,
-overall PASS for that narrower selected sample. No frontend aggregation occurs.
-Repeated cancellation is not part of the shorter contract and receives no result
-there. No ambiguity output is invented. The historical graph retains its independent
-UNVERIFIED explanation. The report explicitly limits claims to represented samples.
-The rationale is labelled illustrative model rationale, not verified repository evidence.
+`Reveal.tsx` reuses the existing IntersectionObserver approach but supports repeated
+entry. Below-view elements rise gently into place; elements above the viewport stay
+visible when returning upward. No sticky stacking, scroll capture or one-way hidden
+state. Flow connections and staggered steps communicate progression. Observer failure
+leaves content visible. Reduced motion disables transitions and playback delays.
 
-Future API integration should supply actual evidence records to the existing
-`EvidenceInspector` and demo result views, replacing the local playback state in
-`ReviewDemo`. Keep backend-returned verdicts authoritative; do not calculate them
-in the browser. No API adapter is implemented in this checkpoint. Run the demo
-links intentionally navigate to the controlled product section. GitHub links point
-to the existing project repository. This is not a fresh evaluation or a claim of
-universal correctness.
+## Controlled demo and trust boundary
 
-Interaction tests use Vitest/Testing Library with local records only. Backend tests
-and frozen evaluations remain separate. `dist/`, dependencies and TypeScript build
-metadata are ignored. The lockfile freezes frontend dependencies.
+`ReviewDemo.tsx` extends the previous local human-review/timer pattern into:
+INTRO → ANALYZING → REVIEW → CONTRACT → VERIFYING → RESULTS → REPORT.
+The earlier subscription narrative and data files remain historical source material;
+they are no longer mounted by the presentation. The old timeline unit tests remain.
 
+`accountDemoData.ts` supplies a separate, explicitly authored account-deletion
+presentation fixture. It is not a frozen evaluation, real repository analysis or
+backend report. No browser HTTP request, planner, grounder or verifier is invoked.
+The analyzing display contains only input categories, not fabricated reasoning.
 
-## Cinematic scroll narrative
+The explicit deletion requirement is always included. Both session/profile
+suggestions begin PENDING. Each must be accepted or dismissed before the contract
+can proceed. Accepted suggestions retain inferred origin. Dismissed suggestions
+remain in review history and have no result. User-created content is an ambiguity,
+not a suggestion to approve or a verification verdict.
 
-`CinematicStory.tsx` replaces the main reveal-once story with a 560svh native-scroll
-section and a sticky viewport stage. `scrollTimeline.ts` defines overlapping scene
-windows. A passive scroll listener samples normalized progress once per animation
-frame and updates only stage transforms, opacity and visibility. Scrolling backward
-reverses the composition; there is no scroll interception or snapping.
+All four completed decision combinations select explicitly authored fixtures:
 
-Large responsive serif title cards contrast with compact technical evidence. Mobile
-uses vertical layering and shorter travel. Reduced motion presents the same content
-as a readable stacked sequence, with immediate explicit verification playback.
-Inactive layers are inert and hidden from assistive technology; DOM reading order,
-a story overview and a skip-to-verification link provide context and navigation.
+| Session   | Profile   | Selected | PASS | FAIL | UNVERIFIED | Overall |
+| --------- | --------- | -------: | ---: | ---: | ---------: | ------- |
+| Accepted  | Accepted  |        3 |    1 |    2 |          0 | FAIL    |
+| Accepted  | Dismissed |        2 |    1 |    1 |          0 | FAIL    |
+| Dismissed | Accepted  |        2 |    1 |    1 |          0 | FAIL    |
+| Dismissed | Dismissed |        1 |    1 |    0 |          0 | PASS    |
 
-The existing controlled records, explicit Run verification button, phases, progressive
-evidence, reset/replay, graph and stage explorer are reused. Scrolling never starts
-verification. The final payoff exists only after playback completes. Reveal.tsx
-remains for ordinary sections outside the cinematic stage. No animation dependency,
-backend integration or verdict calculation was added.
+React selects a fixture; it does not compare responses or aggregate verdicts.
+Normal playback reveals observed evidence before each fixture verdict. Reduced
+motion exposes the same evidence immediately on explicit run. Completion reveals
+the payoff; a separate action assembles the report view from the same fixed fixture.
+Ambiguity stays outside counts. Narrower selection means a narrower conclusion.
+Changing decisions clears playback/results before review; reset cancels timers,
+restores pending decisions and returns to intro. Replay does not change decisions.
+Reloading or leaving the demo resets local state. There is no persistence.
 
-## Review accessibility and validation
+The report mirrors Phase 5 concepts (origin, decisions, contract, evidence, result,
+ambiguity and limits). It does not dynamically consume backend JSON or calculate
+backend results. A future adapter must preserve backend verdict authority.
 
-Review state types are separate from verdict types. Excluded review records do not
-carry verdicts. Native buttons expose pressed/disabled states, visible focus and a
-polite status announcement. A disabled verification button explains the pending
-review through aria-describedby. Changing/resetting a completed view restores focus
-to the review heading without moving the scroll position. Reduced motion removes
-playback delays. Short viewports use document flow to prevent clipped controls;
-390×844 and 1440×1000 retain the cinematic stage.
+## Accessibility and presentation use
 
-Run `npm test`, `npm run typecheck`, and `npm run build`. The tests cover both
-review branches, initial exclusion, preserved origin, explicit-only inclusion,
-reset/replay, fixed result selection, semantic control access, existing story,
-graph/stage navigation and timeline behaviour. Browser checks supplement unit tests.
-No new dependencies or backend requests are introduced.
+Native links/buttons, pressed and disabled states, visible keyboard focus, a skip
+link, heading focus on stage changes and polite status announcements are retained.
+Verdicts have symbols and text as well as color. Controls never trigger execution
+from scrolling. Stage changes bring the next heading into view; long review/report
+views use normal document scrolling rather than clipping a fixed-height viewport.
+
+Large clamp-based headings and central compositions target 16:9 projection; tablet
+and mobile stack technical panels. Headless Chrome checks at 1440×810 and 390×844
+cover the narrative, reverse scrolling, review, contract, evidence, results and report.
+Unit tests cover navigation, reveal fallback/reentry, reduced motion, all review
+branches, pending gates, fixture identity, evidence-before-verdict, reset/replay,
+stale-result clearing and ambiguity separation. Backend and frozen evaluations are
+not run by frontend tests. No paid API calls occur.

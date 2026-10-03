@@ -2402,3 +2402,87 @@ API calls, frozen evaluation reruns, frontend edits or new verification capabili
 All other tracked bytes match HEAD, including reviewed workflow, verifier, planner,
 grounding and frozen evaluations. Historical work-log prefixes checked; every prior
 byte preserved. No commit or push.
+
+
+## 56. 2026-10-03 — Final presentation frontend and interactive demonstration
+
+Reworked the frontend into two deliberate views: / for the twelve-section product
+presentation and /demo for a focused account-deletion acceptance workspace.
+App.tsx uses a small History API/popstate view switch with native link fallbacks,
+modifier-click behavior and hash return to the trust section. No routing or animation
+dependency was added. PresentationPage.tsx supplies shared scene/flow compositions;
+ReviewDemo.tsx extends the existing explicit-decision, timer-cleanup and reduced-motion
+patterns into INTRO / ANALYZING / REVIEW / CONTRACT / VERIFYING / RESULTS / REPORT.
+Historical subscription data, story source and timeline tests remain unchanged but
+are no longer mounted in the primary experience.
+
+The visual system uses a midnight canvas, deep navy surfaces, restrained violet
+illumination, large clamp-based typography, serif emphasis and precise technical
+labels. Central compositions and generous spacing target 16:9 presentation. The
+supplied visual references informed direction only; no branding/assets were copied.
+The narrative covers the incomplete-prompt problem, requested/expected/observed gaps,
+independent acceptance, human authority, demo handoff, trust architecture, generalized
+observations, verification boundaries, backend report concepts, future vision and
+closing. No dashboard, embedded subscription demo or slide-control system was added.
+
+Reveal.tsx now supports repeated scroll entry: gentle rises and opacity changes,
+progressive flow lines and staggered diagram steps. Below-view content can re-enter;
+above-view content remains visible when scrolling upward. No scroll capture or
+sticky overlap. Observer failure leaves readable content. Reduced motion removes
+transforms/transitions and playback delays without hiding information. Review approval
+changes card/contract state; controlled evidence appears before each fixture verdict;
+the report view appears only after completed results and an explicit action.
+
+New accountDemoData.ts defines the original deletion request, explicit account
+behavior, two initially PENDING inferred session/profile suggestions, a separate
+user-content ambiguity, and four fixed report fixtures for completed decisions.
+Both suggestions require a human decision before the contract can proceed. Accepted
+items retain inferred origin; dismissed items remain visible in history, excluded
+from verification and without verdicts. Ambiguity has no verdict and is outside
+counts. React selects fixed fixture records; it does not compare responses or
+aggregate verdicts. Accepted-both displays account PASS, session FAIL, profile FAIL,
+with fixed overall FAIL and counts 3 selected / 1 PASS / 2 FAIL / 0 UNVERIFIED.
+Dismissed-both displays only the narrower explicit PASS. Change decision removes
+stale results; reset cancels timers and restores intro/PENDING; replay keeps decisions.
+
+The report presentation preserves origin, decisions, selected evidence, expected and
+observed values, fixture verdicts, ambiguity and limitations. It mirrors Phase-5
+concepts but explicitly does not consume a live backend report. Analysis shows input
+categories, not fabricated chain-of-thought. The entire demo is labelled controlled
+local playback, with no live repository/model/backend requests or new evaluation.
+Trust content separates model proposals, human intent authority, bounded observation
+and deterministic verification; no complete-correctness or automatic authority claim.
+Generalization illustrates transitions, scalar preservation, deletion/readback and
+repeated operations through shared observation concepts, without internal bound lists.
+
+Accessibility includes native links/buttons, visible keyboard focus, a keyboard
+skip link, pressed/disabled states, polite status, heading focus/stage positioning,
+symbol-plus-text verdicts and reduced motion. Long review/report views remain normally
+scrollable; mobile stacks evidence and controls. Updated frontend README and page
+metadata describe routes, state/fixture boundaries, checks and SPA hosting fallback.
+
+Validation:
+- npm test --prefix frontend: 20/20 passed (8 updated App tests, 10 review/demo tests,
+  2 preserved timeline tests). Covers routing, scroll reentry/fallback, reduced motion,
+  pending gates, all four fixture selections, origins, dismissal/ambiguity separation,
+  evidence-before-verdict, report counts, reset/replay and stale-result clearing.
+- npm run typecheck --prefix frontend: passed.
+- npm run build --prefix frontend: passed.
+- git diff --check: passed.
+Headless Chrome inspected 1440x810 and 390x844: hero, problem, authority, trust,
+generalization, closing, intro, review, contract, observation playback, results and
+report. Tightened projector composition spacing and corrected stage focus/scroll and
+skip-link presentation during review. Reverse-scroll opacity remained visible, return
+to trust worked, no browser page errors or mobile horizontal overflow were observed.
+A final keyboard/dismissed-path check confirmed focusable skip/navigation controls,
+explicit-only report counts and zero stale result views after decision changes.
+Temporary browser tooling/screenshots stayed under /tmp; installation and Chrome used
+approved escalation. No physical-projector or physical-device validation is claimed.
+
+All tracked nonfrontend bytes matched HEAD before this append, including backend,
+original tasks and frozen evaluations. Backend tests were not rerun because backend
+files were untouched. Frozen evaluations were neither modified nor rerun. No paid
+API calls, commit or push occurred. All previous CODEX bytes and historical prefixes
+are preserved exactly. Remaining limits: local ephemeral fixture state, no backend
+adapter, no saved decisions/report download, and production hosting needs an index
+fallback for /demo. The presentation is ready for local review, not deployed.

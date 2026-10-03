@@ -1,6 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
-
-/** Reveal once; content is visible by default, even if observation fails. */
+/** Visible fallback. Reversible entry, no scroll interception or one-way state. */
 export function Reveal({
   children,
   variant = "fade-rise",
@@ -14,34 +13,38 @@ export function Reveal({
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const node = ref.current;
-    if (!node || !("IntersectionObserver" in window)) return;
+    if (!node) return;
     const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    if (media?.matches) return;
     let observer: IntersectionObserver | undefined;
-    try {
-      observer = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((e) => e.isIntersecting)) {
-            node.classList.add("reveal-entered");
-            observer?.disconnect();
-          }
-        },
-        { threshold: 0.12 },
-      );
-      observer.observe(node);
-    } catch {
+    function setup() {
       observer?.disconnect();
-    }
-    const stop = () => {
-      if (media?.matches) {
-        observer?.disconnect();
-        node.classList.remove("reveal-entered");
+      node!.classList.remove("reveal-ready", "reveal-entered");
+      if (media?.matches || !("IntersectionObserver" in window)) return;
+      try {
+        observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              // Exit only below the viewport; scrolling back down replays naturally.
+              // Above-view content stays visible for backwards navigation and focus.
+              node!.classList.toggle(
+                "reveal-entered",
+                entry.isIntersecting || entry.boundingClientRect.top < 0,
+              );
+            }
+          },
+          { threshold: 0, rootMargin: "0px 0px -30px 0px" },
+        );
+        observer.observe(node!);
+        node!.classList.add("reveal-ready");
+      } catch {
+        node!.classList.remove("reveal-ready");
       }
-    };
-    media?.addEventListener("change", stop);
+    }
+    setup();
+    media?.addEventListener("change", setup);
     return () => {
       observer?.disconnect();
-      media?.removeEventListener("change", stop);
+      media?.removeEventListener("change", setup);
     };
   }, []);
   return (

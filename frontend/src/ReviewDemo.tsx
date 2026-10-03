@@ -1,40 +1,130 @@
 import { useEffect, useRef, useState } from "react";
-import { demo, type Verdict } from "./data";
+import { PageLink } from "./navigation";
 import {
-  reviewExample,
-  reviewedReports,
-  type ReviewItem,
-  type ReviewState,
-} from "./reviewData";
+  accountTask,
+  ambiguity,
+  suggestions,
+  selectedFixture,
+  type Decision,
+  type SuggestionId,
+  type AccountReport,
+} from "./accountDemoData";
+import type { Verdict } from "./data";
 
-const phases = [
-  "Reading accepted contract",
-  "Grounding selected behaviours",
-  "Playing controlled observations",
+type Stage =
+  | "INTRO"
+  | "ANALYZING"
+  | "REVIEW"
+  | "CONTRACT"
+  | "VERIFYING"
+  | "RESULTS"
+  | "REPORT";
+const stages: Stage[] = [
+  "INTRO",
+  "ANALYZING",
+  "REVIEW",
+  "CONTRACT",
+  "VERIFYING",
+  "RESULTS",
+  "REPORT",
 ];
 function Badge({ value }: { value: Verdict }) {
-  return <span className={`badge ${value.toLowerCase()}`}>{value}</span>;
+  return (
+    <span className={`badge ${value.toLowerCase()}`}>
+      {value === "PASS" ? "✓" : value === "FAIL" ? "×" : "—"} {value}
+    </span>
+  );
+}
+function Ambiguity() {
+  return (
+    <aside className="ambiguity-note" aria-label="Unresolved ambiguity">
+      <span className="eyebrow">? / AMBIGUITY · REQUIRES CLARIFICATION</span>
+      <p>{ambiguity}</p>
+      <small>No verdict. This remains a product decision.</small>
+    </aside>
+  );
+}
+function Evidence({
+  report,
+  tick,
+  complete,
+}: {
+  report: AccountReport;
+  tick: number;
+  complete: boolean;
+}) {
+  return (
+    <div className="evidence-flow" aria-label="Selected verification results">
+      <div className="action-origin">
+        <span className="signal-dot" /> DELETE ACCOUNT{" "}
+        <span>→ controlled observation</span>
+      </div>
+      {report.results.map((result, i) => {
+        const observed = complete || tick >= i * 2 + 1;
+        const graded = complete || tick >= i * 2 + 2;
+        return (
+          <article
+            key={result.id}
+            className={`evidence-row ${observed ? "observed" : ""}`}
+            aria-label={result.title}
+          >
+            <span className="evidence-number">0{i + 1}</span>
+            <div>
+              <div className="eyebrow">{result.operation}</div>
+              <h3>{result.title}</h3>
+              <small>
+                {result.source === "explicit"
+                  ? "YOUR REQUEST · EXPLICIT"
+                  : "AGENTGUARD SUGGESTION · ACCEPTED BY YOU"}
+              </small>
+              {observed ? (
+                <div className="evidence-values">
+                  <p>
+                    <span>EXPECTED</span>
+                    {result.expected}
+                  </p>
+                  <p>
+                    <span>OBSERVED / {result.response}</span>
+                    {result.observed}
+                  </p>
+                </div>
+              ) : (
+                <p className="waiting">Awaiting controlled evidence…</p>
+              )}
+            </div>
+            <div className="verdict-slot">
+              {graded ? (
+                <Badge value={result.verdict} />
+              ) : (
+                <span className="waiting">
+                  {observed ? "Evidence recorded" : "—"}
+                </span>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
 }
 export function ReviewDemo({
   onComplete,
 }: {
-  onComplete: (value: boolean) => void;
+  onComplete?: (value: boolean) => void;
 }) {
-  const [decision, setDecision] = useState<ReviewState>("PENDING");
-  const [step, setStep] = useState(-1);
+  const [stage, setStage] = useState<Stage>("INTRO");
+  const [decisions, setDecisions] = useState<Record<SuggestionId, Decision>>({
+    session: "PENDING",
+    profile: "PENDING",
+  });
+  const [tick, setTick] = useState(0);
   const [reduced, setReduced] = useState(
     () =>
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false,
   );
-  const reviewHeading = useRef<HTMLHeadingElement>(null);
-  const item: ReviewItem =
-    decision === "ACCEPTED"
-      ? { origin: "inferred", state: decision, included: true }
-      : { origin: "inferred", state: decision, included: false };
-  const report = decision === "PENDING" ? null : reviewedReports[decision];
-  const complete =
-    report !== null && step >= phases.length + report.results.length;
-  const running = step >= 0 && !complete;
+  const heading = useRef<HTMLHeadingElement>(null);
+  const report = selectedFixture(decisions);
+  const complete = stage === "RESULTS" || stage === "REPORT";
   useEffect(() => {
     const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (!media) return;
@@ -42,211 +132,382 @@ export function ReviewDemo({
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
-  useEffect(() => onComplete(complete), [complete, onComplete]);
   useEffect(() => {
-    if (!running) return;
-    const timer = setTimeout(() => setStep((s) => s + 1), reduced ? 0 : 320);
+    onComplete?.(complete);
+  }, [complete, onComplete]);
+  useEffect(() => {
+    if (stage !== "ANALYZING") return;
+    const timer = setTimeout(() => setStage("REVIEW"), reduced ? 0 : 1600);
     return () => clearTimeout(timer);
-  }, [step, running, reduced]);
-  function run() {
-    if (!report || running) return;
-    setStep(reduced ? phases.length + report.results.length : 0);
-  }
-  function reset() {
-    setStep(-1);
-    setDecision("PENDING");
-    requestAnimationFrame(() =>
-      reviewHeading.current?.focus({ preventScroll: true }),
+  }, [stage, reduced]);
+  useEffect(() => {
+    if (stage !== "VERIFYING" || !report) return;
+    const timer = setTimeout(
+      () => {
+        if (reduced || tick >= report.results.length * 2) setStage("RESULTS");
+        else setTick((t) => t + 1);
+      },
+      reduced ? 0 : 800,
     );
+    return () => clearTimeout(timer);
+  }, [stage, tick, reduced, report]);
+  useEffect(() => {
+    heading.current?.focus({ preventScroll: true });
+    if (stage !== "INTRO")
+      heading.current?.scrollIntoView?.({
+        block: "start",
+        behavior: "instant",
+      });
+    else window.scrollTo?.({ top: 0, behavior: "instant" });
+  }, [stage]);
+  function analyze() {
+    setStage(reduced ? "REVIEW" : "ANALYZING");
+  }
+  function run() {
+    if (!report) return;
+    setTick(0);
+    setStage(reduced ? "RESULTS" : "VERIFYING");
   }
   function change() {
-    setStep(-1);
-    requestAnimationFrame(() =>
-      reviewHeading.current?.focus({ preventScroll: true }),
-    );
+    setTick(0);
+    setStage("REVIEW");
   }
-  const notice =
-    decision === "PENDING"
-      ? "Review incomplete. Add or dismiss the suggestion before verification."
-      : decision === "ACCEPTED"
-        ? "Added to acceptance contract. Ready for verification."
-        : "Dismissed — not included in verification. Ready for verification.";
+  function reset() {
+    setDecisions({ session: "PENDING", profile: "PENDING" });
+    setTick(0);
+    setStage("INTRO");
+  }
+  const title = {
+    INTRO: "What does “done” mean?",
+    ANALYZING: "Looking beyond the prompt.",
+    REVIEW: "You decide what matters.",
+    CONTRACT: "This is the acceptance contract.",
+    VERIFYING: "Observe first. Then verify.",
+    RESULTS: "The evidence changes the story.",
+    REPORT: "Acceptance Verification Report",
+  }[stage];
+  const status =
+    stage === "REVIEW"
+      ? report
+        ? "Decisions recorded. Your contract is ready."
+        : "Review incomplete. Add or dismiss both suggestions to continue."
+      : stage === "VERIFYING"
+        ? tick === 0
+          ? "Playing controlled deletion observation."
+          : tick % 2
+            ? "Observed evidence revealed. Verdict follows."
+            : "Fixture verdict revealed after evidence."
+        : stage === "RESULTS"
+          ? "Playback complete. Only selected behaviors have results."
+          : stage === "ANALYZING"
+            ? "Reviewing controlled task and context."
+            : `${stage.toLowerCase()} stage`;
   return (
-    <section className="review-demo" aria-label="Reviewed acceptance demo">
-      <p className="review-disclosure">
-        ILLUSTRATIVE LOCAL DEMO · NO LIVE MODEL OR BACKEND
-        <br />
-        Shorter task variant; not a new run of the historical subscription
-        evaluation.
-      </p>
-      {step < 0 ? (
-        <>
-          <header className="review-heading">
-            <span className="eyebrow">HUMAN / ACCEPTANCE REVIEW</span>
-            <h2 ref={reviewHeading} tabIndex={-1}>
-              You decide what matters.
-            </h2>
-          </header>
-          <div className="review-cards">
-            <article className="review-card" aria-label="Explicit requirement">
-              <div className="review-meta">
-                EXPLICIT REQUIREMENT <span>INCLUDED</span>
-              </div>
-              <h3>{reviewExample.explicit.title}</h3>
-              <small>ORIGIN · YOUR REQUEST</small>
-              <p>{reviewExample.explicit.behavior}</p>
-              <span className="review-note">
-                Included automatically. No approval needed.
-              </span>
-            </article>
-            <article
-              className="review-card suggestion"
-              aria-label="AgentGuard suggestion"
+    <div className="demo-page">
+      <header className="demo-header">
+        <PageLink to="/" className="back-link">
+          ← Back to presentation
+        </PageLink>
+        <span className="wordmark">AGENTGUARD</span>
+        <span className="demo-label">CONTROLLED DEMONSTRATION</span>
+      </header>
+      <main id="main" className="demo-main">
+        <div className="demo-topline">
+          <span>ACCEPTANCE WORKSPACE / ACCOUNT DELETION</span>
+          <button className="quiet-button" onClick={reset}>
+            Reset demo ↺
+          </button>
+        </div>
+        <ol className="demo-progress" aria-label="Demo progression">
+          {["Review", "Contract", "Observe", "Report"].map((label, i) => (
+            <li
+              key={label}
+              className={
+                stages.indexOf(stage) >= [2, 3, 4, 6][i] ? "active" : ""
+              }
             >
-              <div className="review-meta">
-                AGENTGUARD SUGGESTION <span>{item.state}</span>
-              </div>
-              <h3>{reviewExample.suggestion.title}</h3>
-              <small>ORIGIN · AGENTGUARD SUGGESTION</small>
-              <p>{reviewExample.suggestion.behavior}</p>
-              <strong className="review-note">
-                This was not explicitly requested.
-              </strong>
-              <p className="review-rationale">
-                <b>Why suggested</b> · {reviewExample.suggestion.rationale}
-                <br />
-                <small>
-                  Illustrative model rationale, not verified repository
-                  evidence.
-                </small>
-              </p>
-              <div className="review-actions">
-                <button
-                  className="review-choice"
-                  aria-pressed={decision === "ACCEPTED"}
-                  onClick={() => setDecision("ACCEPTED")}
-                >
-                  Add to verification
-                </button>
-                <button
-                  className="review-choice"
-                  aria-pressed={decision === "DISMISSED"}
-                  onClick={() => setDecision("DISMISSED")}
-                >
-                  Dismiss
-                </button>
-              </div>
-            </article>
-          </div>
-        </>
-      ) : (
-        <header className="review-heading">
-          <span className="eyebrow">AGENTGUARD</span>
-          <h2>Acceptance Verification</h2>
-        </header>
-      )}
-      <aside className="review-contract" aria-label="Acceptance contract">
-        <div className="eyebrow">
-          ACCEPTANCE CONTRACT · {item.included ? "2 behaviours" : "1 behaviour"}{" "}
-          selected for verification
+              {String(i + 1).padStart(2, "0")} <span>{label}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="demo-heading">
+          <span className="eyebrow">
+            {stage === "INTRO" ? "AGENTGUARD / ACCEPTANCE REVIEW" : stage}
+          </span>
+          <h1 ref={heading} tabIndex={-1}>
+            {title}
+          </h1>
         </div>
-        <p>
-          ✓ {reviewExample.explicit.title} <small>— Your request</small>
-        </p>
-        {item.included ? (
-          <p>
-            ✓ {reviewExample.suggestion.title}{" "}
-            <small>— AgentGuard suggestion · Accepted by you</small>
-          </p>
-        ) : (
-          <p className="excluded">
-            {reviewExample.suggestion.title}{" "}
-            <small>
-              — {decision === "PENDING" ? "Pending" : "Dismissed"} · not
-              included
-            </small>
-          </p>
-        )}
-      </aside>
-      <div className="review-controls">
-        <button
-          className="button cyan"
-          onClick={run}
-          disabled={decision === "PENDING" || running}
-          aria-describedby="review-progress"
-        >
-          {complete ? "Replay verification" : "Run verification"} ↗
-        </button>
-        {step >= 0 && (
-          <button className="review-choice" disabled={running} onClick={change}>
-            Change decision
-          </button>
-        )}
-        {step >= 0 && (
-          <button className="review-choice" onClick={reset}>
-            Reset
-          </button>
-        )}
-      </div>
-      <p
-        id="review-progress"
-        className="review-progress"
-        role="status"
-        aria-live="polite"
-      >
-        {step < 0
-          ? notice
-          : complete
-            ? "Playback complete — selected evidence shown."
-            : (phases[step] ?? "Revealing selected evidence…")}
-      </p>
-      {step >= 0 && report && (
-        <div
-          className="review-report"
-          aria-label="Selected verification results"
-        >
-          {complete && (
-            <div className="review-overall">
-              Overall result <Badge value={report.overall} />
-              <small>{report.counts}</small>
+        {stage === "INTRO" && (
+          <div className="intro-composition">
+            <div className="task-sheet">
+              <span className="eyebrow">THE ORIGINAL REQUEST</span>
+              <blockquote>“{accountTask}”</blockquote>
+              <div className="agent-stamp">
+                <span>CODING AGENT</span>
+                <p>✓ Implementation complete</p>
+                <p>✓ Tests passing</p>
+                <p>✓ Task complete</p>
+              </div>
             </div>
-          )}
-          {report.results
-            .slice(0, Math.max(0, step - phases.length + 1))
-            .map((result) => (
-              <article className="review-result" key={result.id}>
-                <div>
-                  <h3>{result.title}</h3>
-                  <Badge value={result.verdict} />
-                </div>
-                <small>
-                  ORIGIN ·{" "}
-                  {result.origin === "explicit"
-                    ? "YOUR REQUEST"
-                    : "AGENTGUARD SUGGESTION · ACCEPTED BY YOU"}
-                </small>
-                <p>{result.behavior}</p>
-                <div className="review-values">
-                  <code>Expected: {result.expected}</code>
-                  <code>Observed: {result.observed}</code>
-                </div>
-                <small>
-                  Controlled evidence: {demo.endpoint} · {result.observation}
-                </small>
-              </article>
-            ))}
-          {complete && (
-            <p className="review-boundary">
-              PASS: observed evidence matched the accepted behaviour. FAIL:
-              observed evidence contradicted it. UNVERIFIED: supported
-              observations could not establish it.
+            <div className="intro-action">
+              <p>
+                The implementation is done.
+                <br />
+                <strong>Is the acceptance complete?</strong>
+              </p>
+              <button className="button" onClick={analyze}>
+                Analyze acceptance →
+              </button>
+            </div>
+          </div>
+        )}
+        {stage === "ANALYZING" && (
+          <div className="analysis-composition">
+            <div className="analysis-orbit" aria-hidden="true">
+              <span className="brand-mark">A</span>
+            </div>
+            <div className="analysis-inputs">
+              <span>TASK</span>
+              <span>REPOSITORY CONTEXT</span>
+              <span>FINISHED CHANGE</span>
+            </div>
+            <p>
+              A controlled review of acceptance intent.
               <br />
-              These fixed samples do not establish complete correctness or
-              verify excluded behaviours.
+              No live model or repository is being queried.
             </p>
-          )}
-        </div>
-      )}
-    </section>
+          </div>
+        )}
+        {stage === "REVIEW" && (
+          <>
+            <div className="review-request">
+              Original request <q>{accountTask}</q>
+            </div>
+            <div className="review-layout">
+              <article
+                className="explicit-review"
+                aria-label="Explicit requirement"
+              >
+                <div className="review-meta">
+                  YOUR REQUIREMENT <span>EXPLICIT · INCLUDED</span>
+                </div>
+                <h2>Account is permanently deleted.</h2>
+                <p>Automatically included. No approval needed.</p>
+              </article>
+              {suggestions.map((item) => (
+                <article
+                  key={item.id}
+                  className={`suggestion-review ${decisions[item.id].toLowerCase()}`}
+                  aria-label={item.title}
+                >
+                  <div className="review-meta">
+                    AGENTGUARD SUGGESTION{" "}
+                    <span>
+                      {decisions[item.id] === "ACCEPTED"
+                        ? "ACCEPTED BY YOU"
+                        : decisions[item.id]}
+                    </span>
+                  </div>
+                  <h2>{item.behavior}</h2>
+                  <p className="rationale">Context · {item.rationale}</p>
+                  <div className="review-bottom">
+                    <small>
+                      INFERRED · illustrative context, not verified provenance
+                    </small>
+                    <div className="choice-actions">
+                      <button
+                        className="quiet-button"
+                        aria-pressed={decisions[item.id] === "DISMISSED"}
+                        onClick={() =>
+                          setDecisions((d) => ({
+                            ...d,
+                            [item.id]: "DISMISSED",
+                          }))
+                        }
+                      >
+                        Dismiss
+                      </button>
+                      <button
+                        className="choice-button"
+                        aria-pressed={decisions[item.id] === "ACCEPTED"}
+                        onClick={() =>
+                          setDecisions((d) => ({ ...d, [item.id]: "ACCEPTED" }))
+                        }
+                      >
+                        {decisions[item.id] === "ACCEPTED"
+                          ? "✓ Added to contract"
+                          : "+ Add to verification"}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <Ambiguity />
+            <div className="demo-actions">
+              <span>Suggestions stay inferred, even after approval.</span>
+              <button
+                className="button"
+                disabled={!report}
+                aria-describedby="demo-status"
+                onClick={() => setStage("CONTRACT")}
+              >
+                Review acceptance contract →
+              </button>
+            </div>
+          </>
+        )}
+        {stage === "CONTRACT" && report && (
+          <>
+            <div
+              className="contract-surface product-surface"
+              aria-label="Acceptance contract"
+            >
+              <div className="surface-bar">
+                <span>ACCEPTANCE CONTRACT / FROZEN FOR THIS PLAYBACK</span>
+                <span>{report.selected} SELECTED</span>
+              </div>
+              {report.results.map((item, i) => (
+                <article className="contract-entry" key={item.id}>
+                  <span>0{i + 1}</span>
+                  <div>
+                    <h2>{item.title}</h2>
+                    <p>
+                      {item.source === "explicit"
+                        ? "YOUR REQUEST · EXPLICIT · AUTOMATICALLY INCLUDED"
+                        : "AGENTGUARD SUGGESTION · INFERRED · ACCEPTED BY YOU"}
+                    </p>
+                  </div>
+                  <span aria-hidden="true">↳</span>
+                </article>
+              ))}
+            </div>
+            <div className="review-history" aria-label="Review history">
+              {suggestions.map((s) => (
+                <p key={s.id}>
+                  {s.title}: <strong>{decisions[s.id]}</strong>
+                  {decisions[s.id] === "DISMISSED" &&
+                    " · not included · no verdict"}
+                </p>
+              ))}
+            </div>
+            <div className="demo-actions">
+              <button className="quiet-button" onClick={change}>
+                Change decision
+              </button>
+              <button className="button" onClick={run}>
+                Run independent verification →
+              </button>
+            </div>
+          </>
+        )}
+        {(stage === "VERIFYING" || stage === "RESULTS") && report && (
+          <>
+            <Evidence report={report} tick={tick} complete={complete} />
+            {stage === "RESULTS" && (
+              <>
+                <div className="demo-payoff" data-testid="story-payoff">
+                  <p>The coding agent completed the prompt.</p>
+                  <h2>
+                    AgentGuard helped
+                    <br />
+                    <em>complete the requirement.</em>
+                  </h2>
+                  <small>
+                    For the behaviors you selected. A narrower contract supports
+                    a narrower conclusion.
+                  </small>
+                </div>
+                <div className="demo-actions">
+                  <button className="quiet-button" onClick={change}>
+                    Change decision
+                  </button>
+                  <button className="quiet-button" onClick={run}>
+                    Replay verification ↺
+                  </button>
+                  <button className="button" onClick={() => setStage("REPORT")}>
+                    Assemble verification report →
+                  </button>
+                </div>
+              </>
+            )}
+          </>
+        )}
+        {stage === "REPORT" && report && (
+          <>
+            <div className="final-report product-surface">
+              <div className="surface-bar">
+                <span>ACCOUNT DELETION</span>
+                <span>CONTROLLED REPORT FIXTURE</span>
+              </div>
+              <div className="report-summary" aria-label="Verification summary">
+                <div>
+                  <span>OVERALL</span>
+                  <Badge value={report.overall} />
+                </div>
+                <div>
+                  <strong>{report.selected}</strong>
+                  <span>SELECTED</span>
+                </div>
+                <div>
+                  <strong>{report.pass}</strong>
+                  <span>PASS</span>
+                </div>
+                <div>
+                  <strong>{report.fail}</strong>
+                  <span>FAIL</span>
+                </div>
+                <div>
+                  <strong>{report.unverified}</strong>
+                  <span>UNVERIFIED</span>
+                </div>
+              </div>
+              <Evidence report={report} tick={tick} complete />
+              <div className="report-review-history">
+                <h3>Human decisions</h3>
+                {suggestions.map((s) => (
+                  <p key={s.id}>
+                    {s.title} <strong>{decisions[s.id]}</strong>
+                    {decisions[s.id] === "DISMISSED"
+                      ? " · not verified"
+                      : " · origin remains inferred"}
+                  </p>
+                ))}
+              </div>
+              <Ambiguity />
+              <p className="report-limit">
+                These fixed presentation records mirror backend report concepts.
+                They are not a dynamically generated backend report. No
+                complete-correctness claim.
+              </p>
+            </div>
+            <div className="demo-actions">
+              <button className="quiet-button" onClick={change}>
+                Change decision
+              </button>
+              <button className="quiet-button" onClick={run}>
+                Replay verification ↺
+              </button>
+              <PageLink to="/#trust" className="button">
+                Explore the trust architecture →
+              </PageLink>
+            </div>
+          </>
+        )}
+        <p
+          id="demo-status"
+          className="demo-status"
+          role="status"
+          aria-live="polite"
+        >
+          {status}
+        </p>
+        <p className="demo-disclosure">
+          Controlled AgentGuard demonstration · local fixture playback · no live
+          requests
+        </p>
+      </main>
+    </div>
   );
 }

@@ -1,172 +1,150 @@
-import { fireEvent, render, screen, act, within } from "@testing-library/react";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+beforeEach(() => {
+  window.history.replaceState({}, "", "/");
+  vi.stubGlobal("scrollTo", vi.fn());
+});
 afterEach(() => {
-  vi.useRealTimers();
   vi.unstubAllGlobals();
 });
-describe("AgentGuard local presentation", () => {
-  it("selects graph evidence and preserves the unsupported explanation", () => {
+describe("AgentGuard presentation navigation", () => {
+  it("centers the thesis and separate demo entry", () => {
     render(<App />);
-    const button = screen.getByRole("button", {
-      name: /03 Repeated cancellation/,
-    });
-    fireEvent.click(button);
-    expect(button).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByRole("heading", {
+        name: "Build with AI. Verify with evidence.",
+      }),
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "The available controlled HTTP interface does not preserve the same subscription across requests.",
+        "An independent acceptance layer for AI-generated code.",
       ),
     ).toBeInTheDocument();
-  });
-  it("plays all phases, reveals controlled results and resets", () => {
-    vi.useFakeTimers();
-    render(<App />);
-    fireEvent.click(
-      screen.getByRole("button", { name: "Add to verification" }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: /Run verification/ }));
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Reading accepted contract",
-    );
-    for (let i = 0; i < 8; i++)
-      act(() => {
-        vi.advanceTimersByTime(400);
-      });
-    expect(screen.getByRole("status")).toHaveTextContent("Playback complete");
     expect(
-      screen.getByRole("button", { name: /Replay verification/ }),
-    ).toBeEnabled();
-    fireEvent.click(screen.getByRole("button", { name: "Reset" }));
-    expect(screen.getByRole("status")).toHaveTextContent("Review incomplete");
-    expect(
-      screen.queryByText("Expected: premium_access = false"),
+      screen.queryByRole("button", { name: /Analyze acceptance/ }),
     ).not.toBeInTheDocument();
   });
-  it("switches stage detail without execution", () => {
+  it("navigates to demo and back through native links", () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: /03 EXECUTE/ }));
+    const link = screen.getAllByRole("link", {
+      name: /Launch interactive demo/,
+    })[0];
+    expect(link).toHaveAttribute("href", "/demo");
+    link.focus();
+    expect(link).toHaveFocus();
+    fireEvent.click(link);
+    expect(window.location.pathname).toBe("/demo");
     expect(
-      screen.getByText(/target: controlled loopback interface/),
+      screen.getByRole("button", { name: /Analyze acceptance/ }),
+    ).toBeEnabled();
+    fireEvent.click(screen.getByRole("link", { name: /Back to presentation/ }));
+    expect(
+      screen.getByRole("heading", {
+        name: "Build with AI. Verify with evidence.",
+      }),
     ).toBeInTheDocument();
   });
-  it("finishes immediately with reduced motion", () => {
+  it("supports direct demo entry and browser history events", () => {
+    window.history.replaceState({}, "", "/demo");
+    render(<App />);
+    expect(
+      screen.getByText(/Add a feature that lets users permanently delete/),
+    ).toBeInTheDocument();
+    act(() => {
+      window.history.replaceState({}, "", "/");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(
+      screen.queryByRole("button", { name: /Analyze acceptance/ }),
+    ).toBeNull();
+  });
+  it("keeps explicit authority, trust and verdict limits visible", () => {
+    render(<App />);
+    expect(screen.getByText(/The model doesn’t grade/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Approval changes authority, not history/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/The behavior could not be established/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Machine-readable JSON reporting exists/),
+    ).toBeInTheDocument();
+  });
+  it("covers unrelated behaviors without starting a demo", () => {
+    render(<App />);
+    for (const label of [
+      "STATE TRANSITION",
+      "PRESERVATION",
+      "DELETION",
+      "REPEATED OPERATION",
+    ])
+      expect(screen.getByText(label)).toBeInTheDocument();
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+  it("re-enters naturally on down/up scrolling and never starts playback", () => {
+    const callbacks: IntersectionObserverCallback[] = [];
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        constructor(cb: IntersectionObserverCallback) {
+          callbacks.push(cb);
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    const { container } = render(<App />);
+    const change = (isIntersecting: boolean, top: number) =>
+      act(() =>
+        callbacks.forEach((cb) =>
+          cb(
+            [
+              {
+                isIntersecting,
+                boundingClientRect: { top },
+              } as IntersectionObserverEntry,
+            ],
+            {} as IntersectionObserver,
+          ),
+        ),
+      );
+    change(true, 100);
+    expect(container.querySelector(".reveal")).toHaveClass("reveal-entered");
+    change(false, 1000);
+    expect(container.querySelector(".reveal")).not.toHaveClass(
+      "reveal-entered",
+    );
+    change(true, 50);
+    expect(container.querySelector(".reveal")).toHaveClass("reveal-entered");
+    change(false, -1000);
+    expect(container.querySelector(".reveal")).toHaveClass("reveal-entered");
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+  it("falls back to readable content when observer initialization fails", () => {
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        constructor() {
+          throw Error("Unavailable");
+        }
+      },
+    );
+    const { container } = render(<App />);
+    expect(container.querySelector(".reveal")).not.toHaveClass("reveal-ready");
+    expect(
+      screen.getByText(/Your coding agent can perfectly implement/),
+    ).toBeVisible();
+  });
+  it("reduced motion leaves narrative visible without reveal transforms", () => {
     vi.stubGlobal("matchMedia", () => ({
       matches: true,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
     }));
-    render(<App />);
-    fireEvent.click(
-      screen.getByRole("button", { name: "Add to verification" }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: /Run verification/ }));
-    expect(screen.getByRole("status")).toHaveTextContent("Playback complete");
-  });
-  it("keeps task, implementation and agent success ordered before the handoff", () => {
-    render(<App />);
-    const story = screen.getByLabelText("Controlled coding-agent story");
-    expect(
-      within(story).getByText("Add subscription cancellation."),
-    ).toBeInTheDocument();
-    expect(
-      within(story).getByText(/subscription\["status"\]/),
-    ).toBeInTheDocument();
-    expect(
-      within(story).getByText(/test_returns_same_subscription_object/),
-    ).toBeInTheDocument();
-    expect(within(story).getByText(/TASK\s*COMPLETE\./)).toBeInTheDocument();
-    expect(story.textContent!.indexOf("THE TASK")).toBeLessThan(
-      story.textContent!.indexOf("CONTROLLED IMPLEMENTATION"),
-    );
-    expect(story.textContent!.indexOf("COMPLETION CLAIM")).toBeLessThan(
-      story.textContent!.indexOf("THE INDEPENDENT QUESTION"),
-    );
-    expect(
-      within(story).queryByText("premium_access = true"),
-    ).not.toBeInTheDocument();
-  });
-  it("scroll reveals never start verification and navigation points to the demo", () => {
-    const callbacks: IntersectionObserverCallback[] = [];
-    vi.stubGlobal(
-      "IntersectionObserver",
-      class {
-        constructor(callback: IntersectionObserverCallback) {
-          callbacks.push(callback);
-        }
-        observe() {}
-        disconnect() {}
-        unobserve() {}
-      },
-    );
-    render(<App />);
-    act(() =>
-      callbacks.forEach((callback) =>
-        callback(
-          [{ isIntersecting: true } as IntersectionObserverEntry],
-          {} as IntersectionObserver,
-        ),
-      ),
-    );
-    expect(screen.getByRole("status")).toHaveTextContent("Review incomplete");
-    expect(screen.queryByTestId("story-payoff")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Acceptance contract")).not.toHaveTextContent(
-      "PASS",
-    );
-    expect(screen.getAllByRole("link", { name: /Run the demo/ })).toHaveLength(
-      4,
-    );
-    screen
-      .getAllByRole("link", { name: /Run the demo/ })
-      .forEach((link) => expect(link).toHaveAttribute("href", "#product"));
-    expect(screen.queryByText("Launch AgentGuard")).not.toBeInTheDocument();
-  });
-  it("reveals evidence progressively and removes payoff on replay/reset", () => {
-    vi.useFakeTimers();
-    render(<App />);
-    fireEvent.click(
-      screen.getByRole("button", { name: "Add to verification" }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: /Run verification/ }));
-    expect(screen.queryByTestId("story-payoff")).not.toBeInTheDocument();
-    for (let i = 0; i < 3; i++)
-      act(() => {
-        vi.advanceTimersByTime(320);
-      });
-    expect(
-      screen.queryByText("Expected: premium_access = false"),
-    ).not.toBeInTheDocument();
-    act(() => {
-      vi.advanceTimersByTime(320);
-    });
-    expect(
-      screen.getByText("Expected: premium_access = false"),
-    ).toBeInTheDocument();
-    for (let i = 0; i < 2; i++)
-      act(() => {
-        vi.advanceTimersByTime(320);
-      });
-    expect(screen.getByTestId("story-payoff")).toBeInTheDocument();
-    fireEvent.click(
-      screen.getByRole("button", { name: /Replay verification/ }),
-    );
-    expect(screen.queryByTestId("story-payoff")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Reset" }));
-    expect(screen.getByRole("status")).toHaveTextContent("Review incomplete");
-  });
-  it("keeps narrative readable if reveal initialization fails", () => {
-    vi.stubGlobal(
-      "IntersectionObserver",
-      class {
-        constructor() {
-          throw new Error("Unavailable");
-        }
-      },
-    );
-    render(<App />);
-    expect(screen.getByText(/TASK\s*COMPLETE\./)).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: "Add to verification" }),
-    ).toBeEnabled();
+    const { container } = render(<App />);
+    expect(container.querySelector(".reveal")).not.toHaveClass("reveal-ready");
+    expect(screen.getByText(/Who checks/)).toBeVisible();
   });
 });

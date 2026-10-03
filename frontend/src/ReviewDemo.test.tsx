@@ -1,31 +1,49 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ReviewDemo } from "./ReviewDemo";
-import { reviewedReports, type ReviewItem } from "./reviewData";
-
+import { accountReports, selectedFixture } from "./accountDemoData";
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
 });
-function mount(reduced = false) {
+function mount(reduced = true) {
+  vi.stubGlobal("scrollTo", vi.fn());
   vi.stubGlobal("matchMedia", () => ({
     matches: reduced,
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
   }));
-  const complete = vi.fn();
-  render(<ReviewDemo onComplete={complete} />);
-  return complete;
+  render(<ReviewDemo />);
 }
-function choose(name = "Add to verification") {
+function click(name: RegExp | string) {
   fireEvent.click(screen.getByRole("button", { name }));
 }
-function run() {
-  fireEvent.click(screen.getByRole("button", { name: /Run verification/ }));
+function review() {
+  click(/Analyze acceptance/);
 }
-describe("human acceptance boundary", () => {
-  it("starts pending, includes only explicit intent and disables execution", () => {
-    const complete = mount();
+function decide(id: "session" | "profile", accept = true) {
+  const card = screen.getByLabelText(
+    id === "session"
+      ? "Existing sessions invalidated"
+      : "Profile inaccessible after deletion",
+  );
+  fireEvent.click(
+    within(card).getByRole("button", {
+      name: accept ? /Add to verification/ : /^Dismiss$/,
+    }),
+  );
+}
+function contract() {
+  click(/Review acceptance contract/);
+}
+function run() {
+  click(/Run independent verification/);
+}
+describe("account deletion reviewed demo", () => {
+  it("starts at intro then includes explicit and holds both suggestions pending", () => {
+    mount();
+    expect(screen.getByText(/permanently delete their account/)).toBeVisible();
+    review();
     expect(screen.getByLabelText("Explicit requirement")).toHaveTextContent(
       "INCLUDED",
     );
@@ -34,139 +52,185 @@ describe("human acceptance boundary", () => {
         "button",
       ),
     ).toBeNull();
-    expect(screen.getByLabelText("AgentGuard suggestion")).toHaveTextContent(
-      "PENDING",
-    );
-    expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
-      "1 behaviour selected",
-    );
-    expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
-      "Pending · not included",
-    );
+    expect(screen.getAllByText("PENDING")).toHaveLength(2);
     expect(
-      screen.getByRole("button", { name: /Run verification/ }),
+      screen.getByRole("button", { name: /Review acceptance contract/ }),
     ).toBeDisabled();
-    run();
     expect(screen.queryByLabelText("Selected verification results")).toBeNull();
-    expect(complete).not.toHaveBeenCalledWith(true);
   });
-  it("accepts without changing origin or starting playback", () => {
+  it("requires both decisions and accepts without changing origin or running", () => {
     mount();
-    choose();
-    const card = screen.getByLabelText("AgentGuard suggestion");
-    expect(card).toHaveTextContent("ACCEPTED");
-    expect(card).toHaveTextContent("ORIGIN · AGENTGUARD SUGGESTION");
-    expect(card).toHaveTextContent("This was not explicitly requested.");
+    review();
+    decide("session");
     expect(
-      screen.getByRole("button", { name: "Add to verification" }),
-    ).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
-      "2 behaviours selected",
-    );
-    expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
-      "Accepted by you",
-    );
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Added to acceptance contract",
-    );
+      screen.getByRole("button", { name: /Review acceptance contract/ }),
+    ).toBeDisabled();
+    decide("profile");
+    expect(screen.getAllByText("ACCEPTED BY YOU")).toHaveLength(2);
+    contract();
+    const c = screen.getByLabelText("Acceptance contract");
+    expect(c).toHaveTextContent("3 SELECTED");
+    expect(c).toHaveTextContent("INFERRED · ACCEPTED BY YOU");
     expect(screen.queryByLabelText("Selected verification results")).toBeNull();
   });
-  it("dismisses visibly without inventing a verdict and allows reconsideration", () => {
+  it("dismisses visibly without assigning verdicts and supports reconsideration", () => {
     mount();
-    choose("Dismiss");
-    const card = screen.getByLabelText("AgentGuard suggestion");
+    review();
+    decide("session", false);
+    const card = screen.getByLabelText("Existing sessions invalidated");
     expect(card).toHaveTextContent("DISMISSED");
     expect(card).not.toHaveTextContent(/PASS|FAIL|UNVERIFIED/);
-    expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
-      "Dismissed · not included",
-    );
-    expect(screen.queryByLabelText("Selected verification results")).toBeNull();
-    choose();
-    expect(card).toHaveTextContent("ACCEPTED");
-    choose("Dismiss");
-    expect(card).toHaveTextContent("DISMISSED");
+    decide("session");
+    expect(card).toHaveTextContent("ACCEPTED BY YOU");
   });
-  it("plays the accepted fixture only on explicit run", () => {
-    mount(true);
-    choose();
-    run();
-    const report = screen.getByLabelText("Selected verification results");
-    expect(report).toHaveTextContent("2 selected · 1 PASS · 1 FAIL");
-    expect(report).toHaveTextContent("Expected: premium_access = false");
-    expect(report).toHaveTextContent("Observed: premium_access = true");
-    expect(report).toHaveTextContent("AGENTGUARD SUGGESTION · ACCEPTED BY YOU");
-    expect(report).not.toHaveTextContent("Repeated cancellation");
-  });
-  it("dismissed fixture has no premium result or false failure payoff", () => {
-    mount(true);
-    choose("Dismiss");
-    run();
-    const report = screen.getByLabelText("Selected verification results");
-    expect(report).toHaveTextContent("1 selected · 1 PASS · 0 FAIL");
-    expect(report).not.toHaveTextContent("Premium access revocation");
-    expect(report).not.toHaveTextContent("premium_access");
-    expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
-      "Dismissed · not included",
-    );
-  });
-  it("changing a completed decision removes old evidence before a new run", () => {
-    mount(true);
-    choose();
-    run();
-    choose("Change decision");
-    expect(screen.queryByLabelText("Selected verification results")).toBeNull();
-    choose("Dismiss");
-    run();
-    expect(
-      screen.getByLabelText("Selected verification results"),
-    ).not.toHaveTextContent("premium_access");
-  });
-  it("reset cancels playback and restores pending rather than silently retaining approval", () => {
-    vi.useFakeTimers();
-    const complete = mount();
-    choose();
-    run();
-    choose("Reset");
-    act(() => vi.advanceTimersByTime(10000));
-    expect(screen.getByRole("status")).toHaveTextContent("Review incomplete");
-    expect(
-      screen.getByRole("button", { name: /Run verification/ }),
-    ).toBeDisabled();
-    expect(screen.queryByLabelText("Selected verification results")).toBeNull();
-    expect(complete).not.toHaveBeenCalledWith(true);
-  });
-  it("provides native focusable review controls and meaningful announcements", () => {
+  it("plays accepted-both fixed evidence and assembles the selected report", () => {
     mount();
-    const accept = screen.getByRole("button", { name: "Add to verification" });
+    review();
+    decide("session");
+    decide("profile");
+    contract();
+    run();
+    const results = screen.getByLabelText("Selected verification results");
+    expect(
+      within(results).getByLabelText("Account permanently deleted"),
+    ).toHaveTextContent("✓ PASS");
+    expect(
+      within(results).getByLabelText("Existing sessions invalidated"),
+    ).toHaveTextContent("× FAIL");
+    expect(
+      within(results).getByLabelText("Profile inaccessible after deletion"),
+    ).toHaveTextContent("× FAIL");
+    expect(screen.getByTestId("story-payoff")).toBeInTheDocument();
+    click(/Assemble verification report/);
+    const summary = screen.getByLabelText("Verification summary");
+    expect(summary).toHaveTextContent(
+      "OVERALL× FAIL3SELECTED1PASS2FAIL0UNVERIFIED",
+    );
+    expect(screen.getByLabelText("Unresolved ambiguity")).toHaveTextContent(
+      "No verdict",
+    );
+  });
+  it("both dismissed results contain only explicit behavior and narrower PASS", () => {
+    mount();
+    review();
+    decide("session", false);
+    decide("profile", false);
+    contract();
+    expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
+      "1 SELECTED",
+    );
+    expect(screen.getByLabelText("Review history")).toHaveTextContent(
+      "DISMISSED · not included · no verdict",
+    );
+    run();
+    const results = screen.getByLabelText("Selected verification results");
+    expect(
+      within(results).queryByLabelText("Existing sessions invalidated"),
+    ).toBeNull();
+    expect(
+      within(results).queryByLabelText("Profile inaccessible after deletion"),
+    ).toBeNull();
+    click(/Assemble verification report/);
+    expect(screen.getByLabelText("Verification summary")).toHaveTextContent(
+      "OVERALL✓ PASS1SELECTED1PASS0FAIL0UNVERIFIED",
+    );
+  });
+  it("decision changes clear stale results before another run", () => {
+    mount();
+    review();
+    decide("session");
+    decide("profile");
+    contract();
+    run();
+    click("Change decision");
+    expect(screen.queryByLabelText("Selected verification results")).toBeNull();
+    expect(screen.queryByTestId("story-payoff")).toBeNull();
+    decide("session", false);
+    contract();
+    run();
+    expect(
+      within(
+        screen.getByLabelText("Selected verification results"),
+      ).queryByLabelText("Existing sessions invalidated"),
+    ).toBeNull();
+  });
+  it("reset cancels playback and restores all pending decisions", () => {
+    vi.useFakeTimers();
+    mount(false);
+    review();
+    act(() => vi.advanceTimersByTime(1600));
+    decide("session");
+    decide("profile");
+    contract();
+    run();
+    click(/Reset demo/);
+    act(() => vi.advanceTimersByTime(10000));
+    expect(
+      screen.getByRole("button", { name: /Analyze acceptance/ }),
+    ).toBeEnabled();
+    review();
+    act(() => vi.advanceTimersByTime(1600));
+    expect(screen.getAllByText("PENDING")).toHaveLength(2);
+    expect(screen.queryByLabelText("Selected verification results")).toBeNull();
+  });
+  it("shows evidence before verdict and replay removes completed payoff", () => {
+    vi.useFakeTimers();
+    mount(false);
+    review();
+    act(() => vi.advanceTimersByTime(1600));
+    decide("session");
+    decide("profile");
+    contract();
+    run();
+    expect(screen.queryByText("Account unavailable")).toBeNull();
+    act(() => vi.advanceTimersByTime(800));
+    expect(screen.getByText("Account unavailable")).toBeVisible();
+    expect(screen.queryByText("✓ PASS")).toBeNull();
+    act(() => vi.advanceTimersByTime(800));
+    expect(screen.getByText("✓ PASS")).toBeVisible();
+    for (let i = 0; i < 5; i++) act(() => vi.advanceTimersByTime(800));
+    expect(screen.getByTestId("story-payoff")).toBeInTheDocument();
+    click(/Replay verification/);
+    expect(screen.queryByTestId("story-payoff")).toBeNull();
+    expect(screen.queryByText("Account unavailable")).toBeNull();
+  });
+  it("provides focusable controls, status and ambiguity outside verification", () => {
+    mount();
+    review();
+    const card = screen.getByLabelText("Existing sessions invalidated");
+    const accept = within(card).getByRole("button", {
+      name: /Add to verification/,
+    });
     accept.focus();
     expect(accept).toHaveFocus();
-    expect(accept.tagName).toBe("BUTTON");
+    expect(accept).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(accept);
+    expect(accept).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("status")).toHaveAttribute("aria-live", "polite");
-    expect(
-      screen.getByRole("button", { name: /Run verification/ }),
-    ).toHaveAttribute("aria-describedby", "review-progress");
+    const ambiguity = screen.getByLabelText("Unresolved ambiguity");
+    expect(within(ambiguity).queryByRole("button")).toBeNull();
+    expect(ambiguity).not.toHaveTextContent(/PASS|FAIL|UNVERIFIED/);
   });
-  it("keeps excluded review data structurally separate from fixed result fixtures", () => {
-    const excluded: ReviewItem = {
-      origin: "inferred",
-      state: "DISMISSED",
-      included: false,
-    };
-    const invalid: ReviewItem = {
-      origin: "inferred",
-      state: "PENDING",
-      included: false,
-      // @ts-expect-error Excluded review items cannot carry a verification verdict.
-      verdict: "UNVERIFIED",
-    };
-    void invalid;
-    expect(excluded).not.toHaveProperty("verdict");
-    expect(reviewedReports.DISMISSED.results.map((r) => r.id)).toEqual([
-      "state",
-    ]);
-    expect(reviewedReports.ACCEPTED.results.map((r) => r.id)).toEqual([
-      "state",
-      "access",
+  it("selects explicit fixtures for every decision combination without inferring verdicts", () => {
+    expect(
+      selectedFixture({ session: "PENDING", profile: "ACCEPTED" }),
+    ).toBeNull();
+    expect(selectedFixture({ session: "ACCEPTED", profile: "ACCEPTED" })).toBe(
+      accountReports.AA,
+    );
+    expect(selectedFixture({ session: "ACCEPTED", profile: "DISMISSED" })).toBe(
+      accountReports.AD,
+    );
+    expect(selectedFixture({ session: "DISMISSED", profile: "ACCEPTED" })).toBe(
+      accountReports.DA,
+    );
+    expect(
+      selectedFixture({ session: "DISMISSED", profile: "DISMISSED" }),
+    ).toBe(accountReports.DD);
+    expect(accountReports.AA.results.map((r) => r.verdict)).toEqual([
+      "PASS",
+      "FAIL",
+      "FAIL",
     ]);
   });
 });
