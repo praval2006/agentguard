@@ -12,3 +12,4 @@ agentguard/events.jsonl
 
 # Editable-install metadata
 *.egg-info/
+CODEX.md
