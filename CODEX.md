@@ -2486,3 +2486,42 @@ API calls, commit or push occurred. All previous CODEX bytes and historical pref
 are preserved exactly. Remaining limits: local ephemeral fixture state, no backend
 adapter, no saved decisions/report download, and production hosting needs an index
 fallback for /demo. The presentation is ready for local review, not deployed.
+
+
+## 57. 2026-10-03 — Restrained frontend atmosphere and SPA hosting fallback
+
+Added AmbientBackground.tsx: a single decorative canvas with muted violet, blue,
+lavender and occasional off-white points over diffused midnight illumination.
+Sparse points drift slowly with subtle depth; desktop fine pointers cause gentle
+repulsion, slight brightening and broad faint illumination. Smoothed scroll position
+adds restrained parallax. Existing presentation content, typography, reveals,
+navigation, account-deletion fixtures and demo state machine remain unchanged.
+
+Density adapts to viewport area, capped at 18 presentation / 8 demo points (16/8
+at 1440x810), and 6/4 on narrow or coarse-pointer devices. Touch input has no cursor
+physics/light. Reduced motion renders static decoration without a frame loop,
+parallax or pointer effects. Canvas drawing is capped at 30 fps, DPR at 1.5;
+hidden tabs pause; frames and listeners are cleaned up. No per-frame React state,
+particle library, WebGL, dependency or dust trail was added. Pointer-transparent,
+aria-hidden layers preserve content and controls. The demo uses calmer lighting.
+
+Added frontend/vercel.json with Vercel's documented Vite SPA fallback to index.html
+inside the configured frontend root. Added .vite/ to frontend/.gitignore and
+updated frontend/README.md. Production routing still requires redeployment and
+hosted verification; local refresh checks do not prove Vercel deployment behavior.
+
+Validation:
+- npm test --prefix frontend: 23/23 passed (20 existing, 3 ambient tests).
+- npm run typecheck --prefix frontend: passed.
+- npm run build --prefix frontend: passed.
+- git diff --check: passed.
+- Headless Chrome inspected 1440x810 presentation sections, reverse scrolling,
+  demo review/contract/evidence/results/report, and 390x844 mobile views.
+  No browser errors or horizontal overflow. Local direct /demo and refresh worked.
+  Canvas pointer-events is none; reduced-motion canvas pixels remained identical
+  after pointer movement, scrolling and waiting. Screenshots show sparse decoration
+  behind dominant text/evidence. Browser checks are not a hardware performance benchmark.
+
+Backend and frozen evaluation bytes match HEAD; no paid API calls or evaluation
+reruns occurred. Historical log prefixes checked; every previous byte preserved.
+Temporary browser tooling/screenshots remain outside the repository. No commit or push.

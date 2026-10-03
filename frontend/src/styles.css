@@ -1812,3 +1812,30 @@ code {
     margin-bottom: 26px;
   }
 }
+
+/* Decorative environmental layer. Content keeps its existing surfaces and hierarchy. */
+#root {
+  isolation: isolate;
+}
+.ambient-environment {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 25% 25%, #20274320, transparent 65%), #080b15;
+}
+.ambient-environment canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.ambient-demo {
+  background:
+    radial-gradient(ellipse at 50% 0%, #1e274430, transparent 65%), #080b15;
+}
+.demo-page {
+  background: transparent;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PresentationPage } from "./PresentationPage";
+import { AmbientBackground } from "./AmbientBackground";
 import { ReviewDemo } from "./ReviewDemo";
 export default function App() {
   const [path, setPath] = useState(window.location.pathname);
@@ -28,6 +29,7 @@ export default function App() {
   }, [path]);
   return (
     <>
+      <AmbientBackground demo={path === "/demo"} />
       <a className="skip-link" href="#main">
         Skip to content
       </a>

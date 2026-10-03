@@ -95,3 +95,20 @@ Unit tests cover navigation, reveal fallback/reentry, reduced motion, all review
 branches, pending gates, fixture identity, evidence-before-verdict, reset/replay,
 stale-result clearing and ambiguity separation. Backend and frozen evaluations are
 not run by frontend tests. No paid API calls occur.
+
+## Ambient environment and hosting
+
+`AmbientBackground.tsx` renders one decorative, pointer-transparent canvas behind
+both views. Muted navy/violet illumination and tiny drifting points respond gently
+to scroll depth. Desktop fine pointers add slight particle repulsion and a broad,
+faint light; touch and narrow screens omit pointer effects. Density is capped at
+18 points on the presentation and 8 in the demo, reduced to 6/4 on coarse or narrow
+screens. Reduced motion draws a static composition. Canvas drawing is capped at
+30 fps and device pixel ratio at 1.5; hidden tabs pause and unmount removes listeners
+and animation frames. No animation dependency or per-frame React state is used.
+
+With Vercel Root Directory set to `frontend`, `vercel.json` supplies the
+[recommended Vite SPA fallback](https://vercel.com/docs/frameworks/frontend/vite)
+so direct `/demo` navigation and refresh resolve to `index.html`. Redeploy to apply
+this hosting configuration; verify `/demo` refresh and static assets on that deployment.
+The local browser checks do not establish the deployed Vercel configuration.
