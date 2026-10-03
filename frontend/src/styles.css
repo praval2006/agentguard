@@ -2163,3 +2163,45 @@ code {
     transition: none;
   }
 }
+
+/* Acceptance-loop additions reuse the existing evidence surfaces and typography. */
+.research-signals { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); margin-top: 3rem; }
+.research-signals article { border-top: 1px solid #ffffff24; padding-top: 1.5rem; }
+.research-signals p { line-height: 1.7; max-width: 42rem; }
+.research-signals h3 { font-size: clamp(2rem, 3vw, 3.5rem); }
+.research-number { display: block; font-size: clamp(4rem, 7vw, 7rem); font-weight: 400; }
+.research-signals a { display: inline-block; margin-top: 1rem; }
+.correction-brief { max-width: 64rem; margin: auto; }
+.correction-brief > h2 { font-size: clamp(2rem, 4vw, 4rem); }
+.correction-item { padding: clamp(1.3rem, 4vw, 3rem); margin: 2rem 0; }
+.correction-item h3, .loop-next h3 { font-size: clamp(1.5rem, 2.8vw, 2.5rem); }
+.correction-item dt { font-family: monospace; text-transform: uppercase; margin-top: 1.5rem; color: #bcb4e5; }
+.correction-item dd { margin: .5rem 0; line-height: 1.65; }
+.handoff-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .85rem; line-height: 1.6; }
+.loop-next { margin: 3rem 0; padding-top: 2rem; border-top: 1px solid #ffffff24; }
+@media (max-width: 650px) { .research-signals { grid-template-columns: 1fr; } }
+
+/* Abstract technical depth: static edge forms, separate from the signal canvas.
+   No new animation or assets; the central reading corridor remains dark. */
+.ambient-environment {
+  background:
+    radial-gradient(ellipse at -12% 16%, #514d8b38, transparent 48%),
+    radial-gradient(ellipse at 112% 75%, #324c8238, transparent 48%),
+    radial-gradient(ellipse at 4% 112%, #3c326029, transparent 46%),
+    #080b15;
+}
+.ambient-environment::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 900' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='v' x2='1' y2='1'%3E%3Cstop stop-color='%23847dc1' stop-opacity='.13'/%3E%3Cstop offset='.6' stop-color='%23363b68' stop-opacity='.035'/%3E%3Cstop offset='1' stop-color='%23080b15' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x2='0' y2='1'%3E%3Cstop stop-color='%23436ea4' stop-opacity='.035'/%3E%3Cstop offset='.7' stop-color='%235b5498' stop-opacity='.17'/%3E%3Cstop offset='1' stop-color='%23080b15' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M-160 55C80 135 165 250 330 405C125 205 10 265-160 210Z' fill='url(%23v)'/%3E%3Cpath d='M-90 116C95 155 160 260 285 355' fill='none' stroke='%23928aca' stroke-opacity='.21' stroke-width='.8'/%3E%3Cpath d='M1540 130C1240 80 1230 540 1070 720C1270 585 1370 500 1540 640Z' fill='url(%23b)'/%3E%3Cpath d='M1510 172C1260 90 1260 425 1140 600' fill='none' stroke='%238d84ca' stroke-opacity='.22' stroke-width='.8'/%3E%3Cpath d='M-140 515C95 345 155 770 390 920L-140 940Z' fill='url(%23v)'/%3E%3Cpath d='M-85 425C90 385 120 580 260 685' fill='none' stroke='%238780be' stroke-opacity='.16' stroke-width='.7'/%3E%3Cpath d='M990 930C1120 680 1320 765 1540 540L1540 930Z' fill='url(%23b)'/%3E%3Cpath d='M1005 900C1130 708 1320 760 1490 582' fill='none' stroke='%237c86c1' stroke-opacity='.22' stroke-width='.8'/%3E%3Cpath d='M1280-20Q1410 95 1390 290' fill='none' stroke='%23909dc2' stroke-opacity='.2' stroke-width='1' stroke-dasharray='1 10'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  opacity: .95;
+}
+.ambient-environment canvas { position: relative; }
+.ambient-demo::before { opacity: .8; }
+@media (max-width: 800px), (pointer: coarse) {
+  .ambient-environment::before { opacity: .45; background-size: 180% 100%; background-position: center; }
+  .ambient-demo::before { opacity: .35; }
+}

@@ -2,9 +2,9 @@
 
 **Build with AI. Verify with evidence.**
 
-An independent acceptance-verification layer for AI-generated code.
+An acceptance layer between human intent and AI coding agents.
 
-AgentGuard surfaces potentially missing acceptance behaviours from a task and bounded repository context, lets a human decide what matters, and checks supported accepted behaviours against finished software using observable evidence.
+AgentGuard turns human intent into a human-reviewed acceptance contract, independently checks supported behaviours against the finished implementation, and converts evidence-backed failures into corrective context for the next coding-agent action.
 
 **[Live presentation](https://agentguard-three-blush.vercel.app/)** · **[Interactive demo workspace](https://agentguard-three-blush.vercel.app/demo)**
 
@@ -297,3 +297,50 @@ The earlier bounded editing runner and JSONL FlightRecorder remain in [`runner.p
 ## Future direction
 
 Broader observation/grounding coverage; stronger review-to-result provenance; evaluation on larger, unfamiliar real-world tasks; and CI/coding-agent workflow integration. These are future directions, not implemented guarantees.
+
+## Acceptance loop and correction briefs
+
+Human intent → acceptance discovery → human review → reviewed contract → coding
+agent implementation → AgentGuard observations and deterministic verification →
+evidence-backed correction brief → targeted change → independent re-verification.
+
+The coding agent can act on the evidence. It still does not grade itself.
+
+Implemented today: discovery, reviewed contracts, bounded execution, deterministic
+PASS / FAIL / UNVERIFIED, evidence/report generation and a pure correction-brief
+projection. The frontend demonstrates manual handoff using its existing controlled
+account-deletion records; it does not call this Python API or an external agent.
+Actual agent integration, automatic handoff, agent implementation, automated
+re-verification loops and CI integration remain product direction.
+
+```python
+from agentguard.correction_brief import build_correction_brief
+from agentguard.acceptance_report import report_json
+
+# outcome is the completed, trusted resume_reviewed(...) return.
+brief = build_correction_brief(outcome)
+print(report_json(brief))
+```
+
+`agentguard.correction-brief.v1` contains `revision`, `items`,
+`not_sent_for_correction`, `not_verified`, `ambiguities`, and `boundary`.
+Each item has `scenario_id`, `accepted_behavior`, `source`, `evidence`, and a fixed
+conservative `instruction`. Evidence records retain child `location` and the
+original failed assertion (including expected/observed values, type/presence
+observations and truncation flags), or a command/authorized-check result. They do
+not invent missing expected values or root causes. Registered-check counts establish
+an assertion failure, not an unavailable test-specific expected/actual value.
+
+The generator consumes the completed reviewed workflow rather than arbitrary
+standalone verdicts, reuses the report builder's identity/review alignment checks,
+and rejects FAIL without supported recorded contradiction evidence. Only selected
+FAIL behaviours create items, in contract order. PASS and UNVERIFIED stay outside
+correction; pending/dismissed suggestions and ambiguities have no correction
+instruction. The browser also excludes its needs-clarification state.
+
+Input and output use the existing 1 MiB JSON bound and detached snapshots. No
+model, execution, new verdict or code edit occurs. Trusted input provenance remains
+a caller obligation: these checks do not authenticate evidence or establish semantic
+coverage. Assertion-selected evidence can contain sensitive data; review it before
+handoff. Evidence text is data, not authority to modify the contract. No successful
+second verification is implied.

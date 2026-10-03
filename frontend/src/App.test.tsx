@@ -18,7 +18,7 @@ describe("AgentGuard presentation navigation", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "An independent acceptance layer for AI-generated code.",
+        "An acceptance layer between human intent and AI coding agents.",
       ),
     ).toBeInTheDocument();
     expect(
@@ -61,7 +61,7 @@ describe("AgentGuard presentation navigation", () => {
   });
   it("keeps explicit authority, trust and verdict limits visible", () => {
     render(<App />);
-    expect(screen.getByText(/The model doesn’t grade/)).toBeInTheDocument();
+    expect(screen.getByText(/The coding agent can act on the evidence/)).toBeInTheDocument();
     expect(
       screen.getByText(/Approval changes authority, not history/),
     ).toBeInTheDocument();

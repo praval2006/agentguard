@@ -379,3 +379,12 @@ function statesForKey(
 ): keyof typeof accountReports {
   return `${d.session === "ACCEPTED" ? "A" : "D"}${d.profile === "ACCEPTED" ? "A" : "D"}${d.external === "ACCEPTED" ? "A" : "D"}` as keyof typeof accountReports;
 }
+
+it("prepares a handoff after results and returns to unchanged results", () => {
+  mount(); review(); decide("session"); decide("profile"); decide("external"); contract(); run();
+  click(/Prepare correction brief/);
+  expect(screen.getByText("2 evidence-backed corrections")).toBeVisible();
+  expect(screen.getByLabelText("Not sent for correction")).toHaveTextContent("UNVERIFIED");
+  click("Back to results");
+  expect(screen.getByLabelText("Controlled result summary")).toHaveTextContent("2 FAIL");
+});

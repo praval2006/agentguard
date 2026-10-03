@@ -75,16 +75,16 @@ it("bounds density, calms demo and cancels animation/listeners on unmount", () =
   const { media } = setup(false);
   const { container, rerender, unmount } = render(<AmbientBackground />);
   const count = Number(container.querySelector("canvas")!.dataset.particles);
-  expect(count).toBe(212);
+  expect(count).toBe(254);
   expect(container.querySelector("canvas")).toHaveAttribute(
     "data-secondary-particles",
-    "432",
+    "496",
   );
   rerender(<AmbientBackground demo />);
-  expect(Number(container.querySelector("canvas")!.dataset.particles)).toBe(86);
+  expect(Number(container.querySelector("canvas")!.dataset.particles)).toBe(104);
   expect(container.querySelector("canvas")).toHaveAttribute(
     "data-secondary-particles",
-    "179",
+    "208",
   );
   expect(requestAnimationFrame).toHaveBeenCalled();
   unmount();

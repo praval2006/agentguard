@@ -1,3 +1,4 @@
+import { CorrectionBrief } from "./CorrectionBrief";
 import { EvidenceDetail } from "./EvidenceDetail";
 import { BrandMark } from "./BrandMark";
 import { useEffect, useRef, useState } from "react";
@@ -20,7 +21,8 @@ type Stage =
   | "CONTRACT"
   | "VERIFYING"
   | "RESULTS"
-  | "REPORT";
+  | "REPORT"
+  | "CORRECTION";
 const stages: Stage[] = [
   "INTRO",
   "ANALYZING",
@@ -29,6 +31,7 @@ const stages: Stage[] = [
   "VERIFYING",
   "RESULTS",
   "REPORT",
+  "CORRECTION",
 ];
 const reviewLabels: Record<Decision, string> = {
   PENDING: "○ PENDING",
@@ -134,7 +137,7 @@ export function ReviewDemo({
   );
   const heading = useRef<HTMLHeadingElement>(null);
   const report = selectedFixture(decisions);
-  const complete = stage === "RESULTS" || stage === "REPORT";
+  const complete = stage === "RESULTS" || stage === "REPORT" || stage === "CORRECTION";
   useEffect(() => {
     const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (!media) return;
@@ -199,6 +202,7 @@ export function ReviewDemo({
     VERIFYING: "Observe first. Then verify.",
     RESULTS: "The evidence changes the story.",
     REPORT: "Acceptance Verification Report",
+    CORRECTION: "From evidence to the next action.",
   }[stage];
   const status =
     stage === "REVIEW"
@@ -482,6 +486,11 @@ export function ReviewDemo({
             )}
           </>
         )}
+        {stage === "CORRECTION" && report && <>
+          <CorrectionBrief report={report} />
+          <div className="demo-actions"><button className="quiet-button" onClick={() => setStage("RESULTS")}>Back to results</button><button className="quiet-button" onClick={change}>Change decision</button></div>
+        </>}
+        {(stage === "RESULTS" || stage === "REPORT") && report && <div className="demo-actions"><span>{report.fail} behaviours need correction</span><button className="button" onClick={() => setStage("CORRECTION")}>Prepare correction brief →</button></div>}
         {stage === "REPORT" && report && (
           <>
             <div className="final-report product-surface">

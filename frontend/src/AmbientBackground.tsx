@@ -62,8 +62,8 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
       node!.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       const count = Math.min(
-        pointer.matches && width > 800 ? (demo ? 110 : 260) : demo ? 24 : 55,
-        Math.max(12, Math.round((width * height) / (demo ? 13500 : 5500))),
+        pointer.matches && width > 800 ? (demo ? 130 : 300) : demo ? 24 : 55,
+        Math.max(12, Math.round((width * height) / (demo ? 11200 : 4600))),
       );
       // Repeatable pseudo-random positions avoid a visible lattice; O(n), no pairs.
       let seed = 91827;
@@ -77,24 +77,24 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
           x: random() * width,
           y: random() * height,
           depth,
-          radius: 0.35 + depth * 0.8,
+          radius: i % 20 === 0 ? 1.45 : i % 5 === 0 ? 1 : 0.55 + depth * 0.4,
           ox: 0,
           oy: 0,
         };
       });
       const secondaryCount = Math.min(
-        pointer.matches && width > 800 ? (demo ? 220 : 550) : demo ? 35 : 80,
-        Math.max(18, Math.round((width * height) / (demo ? 6500 : 2700))),
+        pointer.matches && width > 800 ? (demo ? 250 : 620) : demo ? 35 : 80,
+        Math.max(18, Math.round((width * height) / (demo ? 5600 : 2350))),
       );
       dust = Array.from({ length: secondaryCount }, (_, i) => ({
         x: random() * width,
         y: random() * height,
-        radius: 0.44 + random() * 0.34,
+        radius: 0.5 + random() * 0.25,
         vx: 0.8 + (i % 3) * 0.55,
         vy: -0.25 - (i % 3) * 0.3,
         ox: 0,
         oy: 0,
-        color: `rgba(${colors[i % colors.length]},${(0.14 + random() * 0.1) * (demo ? 0.78 : 1)})`,
+        color: `rgba(${colors[i % colors.length]},${(0.18 + random() * 0.12) * (demo ? 0.78 : 1)})`,
       }));
       // Stable trace geometry/gradient created only on resize, not per particle/frame.
       traces = [];
@@ -128,10 +128,10 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
       traces.push(parallel);
       lineGradient = context.createLinearGradient(0, 0, width, height);
       lineGradient.addColorStop(0, "rgba(117,142,211,0)");
-      lineGradient.addColorStop(0.12, "rgba(117,142,211,.12)");
+      lineGradient.addColorStop(0.12, "rgba(117,142,211,.18)");
       lineGradient.addColorStop(0.42, "rgba(117,142,211,0)");
       lineGradient.addColorStop(0.68, "rgba(155,133,204,0)");
-      lineGradient.addColorStop(0.88, "rgba(155,133,204,.12)");
+      lineGradient.addColorStop(0.88, "rgba(155,133,204,.18)");
       lineGradient.addColorStop(1, "rgba(155,133,204,0)");
       node!.dataset.particles = String(count);
       node!.dataset.secondaryParticles = String(secondaryCount);
@@ -199,7 +199,7 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
       context.restore();
       // Only two faded edge fragments, never a viewport-wide grid.
       context.lineWidth = 0.6;
-      const trace = (demo ? 0.023 : 0.048) * atmosphere;
+      const trace = (demo ? 0.04 : 0.065) * atmosphere;
       for (let j = 0; j < 2; j++) {
         const left = j === 0 ? width * 0.03 : width * 0.86;
         const top = height * (j === 0 ? 0.24 : 0.62) - depth * 0.22;
@@ -255,7 +255,7 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
         const influence = t * t * (3 - 2 * t);
         p.ox += ((dx / Math.max(1, distance)) * influence * 4 - p.ox) * 0.06;
         p.oy += ((dy / Math.max(1, distance)) * influence * 4 - p.oy) * 0.06;
-        context.globalAlpha = Math.min(
+        context.globalAlpha = (0.35 + 0.65 * Math.pow(Math.abs(p.x / width - 0.5) * 2, 0.7)) * Math.min(
           1,
           p.x / 35,
           (width - p.x) / 35,
@@ -285,8 +285,9 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
         const force = proximity * (3 + p.depth * 44);
         p.ox += ((dx / Math.max(distance, 1)) * force - p.ox) * 0.09;
         p.oy += ((dy / Math.max(distance, 1)) * force - p.oy) * 0.09;
-        const edge = Math.min(1, py / 55, (height - py) / 55);
-        context.fillStyle = `rgba(${colors[i % colors.length]},${(0.1 + p.depth * 0.24 + proximity * p.depth * 0.12) * edge * (demo ? 0.8 : 1)})`;
+        const edge = Math.min(1, py / 55, (height - py) / 55) *
+          (0.35 + 0.65 * Math.pow(Math.abs(px / width - 0.5) * 2, 0.7));
+        context.fillStyle = `rgba(${colors[i % colors.length]},${(0.18 + p.depth * 0.26 + proximity * p.depth * 0.12) * edge * (demo ? 0.8 : 1)})`;
         context.beginPath();
         context.arc(px + p.ox, py + p.oy, p.radius, 0, Math.PI * 2);
         context.fill();

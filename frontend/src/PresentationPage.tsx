@@ -70,12 +70,12 @@ export function PresentationPage() {
               <em>Verify with evidence.</em>
             </h2>
             <p className="hero-definition">
-              An independent acceptance layer for AI-generated code.
+              An acceptance layer between human intent and AI coding agents.
             </p>
             <p className="hero-explanation">
               Uncover acceptance requirements you may have missed.
               <br className="desktop-break" /> Decide what matters. Verify the
-              finished software against that contract.
+              finished software against that contract. Turn established failures into corrective context.
             </p>
             <div className="hero-actions">
               <a className="button" href="#problem">
@@ -94,10 +94,17 @@ export function PresentationPage() {
             </div>
           </div>
           <div className="page-cue">
-            01 — 12 <span>SCROLL TO EXPLORE ↓</span>
+            01 — 15 <span>SCROLL TO EXPLORE ↓</span>
           </div>
         </section>
-        <Scene id="problem" number="02" label="THE PROBLEM">
+        <Scene id="research" number="02" label="WHY THIS MATTERS">
+          <h2 className="statement">Building faster.<br /><em>Verifying deliberately.</em></h2>
+          <div className="research-signals">
+            <article><span className="eyebrow">SONAR · 2026 STATE OF CODE DEVELOPER SURVEY</span><strong className="research-number">96%</strong><p>of surveyed professional developers did not fully trust AI-generated code to be functionally correct.</p><p>Survey of 1,149 professional developers. Sonar describes verification as a bottleneck.</p><a href="https://www.sonarsource.com/blog/state-of-code-developer-survey-report-the-current-reality-of-ai-coding/" target="_blank" rel="noopener noreferrer" aria-label="View Sonar survey source in a new tab">View source ↗</a></article>
+            <article><span className="eyebrow">SWE-RPG · UNIFIED ISSUE RESOLUTION BENCHMARK</span><h3>Requirement recovery</h3><p>Repository-level coding-agent work involves recovering explicit and implicit requirements, planning and implementation. Final patch pass/fail alone does not explain where a trajectory diverged.</p><a href="https://www.alphaxiv.org/abs/2608.09072" target="_blank" rel="noopener noreferrer" aria-label="View SWE-RPG research source in a new tab">View source ↗</a></article>
+          </div><p className="section-note">Research context, not an evaluation of AgentGuard.</p>
+        </Scene>
+        <Scene id="problem" number="03" label="THE PROBLEM">
           <h2 className="statement">
             Your coding agent can perfectly implement
             <br />
@@ -127,16 +134,17 @@ export function PresentationPage() {
               <b>BUT…</b>
               <p>Existing sessions?</p>
               <p>The profile?</p>
+              <p>External personal data?</p>
               <p>User-created content?</p>
             </div>
           </div>
           <p className="section-payoff">
             The coding agent didn’t necessarily fail.
             <br />
-            <em>The acceptance criteria were incomplete.</em>
+            <em>The acceptance boundary was incomplete.</em>
           </p>
         </Scene>
-        <Scene id="gap" number="03" label="THE ACCEPTANCE GAP">
+        <Scene id="gap" number="04" label="THE ACCEPTANCE GAP">
           <h2 className="statement">
             Requested. Expected.
             <br />
@@ -165,7 +173,7 @@ export function PresentationPage() {
             </div>
           </div>
         </Scene>
-        <Scene id="agentguard" number="04" label="THE INDEPENDENT LAYER">
+        <Scene id="agentguard" number="05" label="THE INDEPENDENT LAYER">
           <h2 className="statement">
             A second boundary.
             <br />
@@ -173,7 +181,7 @@ export function PresentationPage() {
           </h2>
           <div className="guard-diagram">
             <div>
-              AI CODING AGENT<small>“The implementation is complete.”</small>
+              HUMAN INTENT<small>“Add permanent account deletion.”</small>
             </div>
             <span className="connector" aria-hidden="true" />
             <div className="guard-core">
@@ -183,9 +191,9 @@ export function PresentationPage() {
             </div>
             <span className="connector" aria-hidden="true" />
             <div>
-              EVIDENCE FOR YOUR SHIP DECISION
+              REVIEWED ACCEPTANCE CONTRACT
               <small>
-                Explicit intent · reviewed suggestions · open questions
+                Explicit: account deleted · Suggestions: sessions, profile, external data · Ambiguity: user-created content
               </small>
             </div>
           </div>
@@ -195,7 +203,7 @@ export function PresentationPage() {
             never silently turns a suggestion into a requirement.
           </p>
         </Scene>
-        <Scene id="authority" number="05" label="HUMAN AUTHORITY">
+        <Scene id="authority" number="06" label="HUMAN AUTHORITY">
           <h2 className="statement">
             The model can suggest.
             <br />
@@ -230,7 +238,12 @@ export function PresentationPage() {
             —not UNVERIFIED.
           </p>
         </Scene>
-        <Scene id="launch" number="06" label="FROM EXPLANATION TO EXPERIENCE">
+        <Scene id="implementation" number="07" label="CODING AGAINST THE CONTRACT">
+          <h2 className="statement">The coding agent implements.<br /><em>AgentGuard independently verifies.</em></h2>
+          <Flow items={[["REVIEWED ACCEPTANCE CONTRACT", "Human intent and accepted suggestions define the target."], ["CODING AGENT", "Implements against that contract. Agent-agnostic; no vendor integration is invoked here."], ["AGENTGUARD", "Bounded observations, deterministic verification and evidence."]]} />
+          <p className="section-note">The before-coding flow is product direction. The demo reviews an already-authored implementation and plays controlled evidence.</p>
+        </Scene>
+        <Scene id="launch" number="08" label="FROM EXPLANATION TO EXPERIENCE">
           <div className="launch-stage">
             <span className="eyebrow">
               A SIMPLE REQUEST. A BIGGER ACCEPTANCE QUESTION.
@@ -253,11 +266,9 @@ export function PresentationPage() {
             </small>
           </div>
         </Scene>
-        <Scene id="trust" number="07" label="THE TRUST ARCHITECTURE">
+        <Scene id="trust" number="09" label="THE TRUST ARCHITECTURE">
           <h2 className="statement">
-            The model doesn’t grade
-            <br />
-            <em>its own homework.</em>
+            The coding agent can act on the evidence.<br /><em>It still doesn’t grade itself.</em>
           </h2>
           <div className="trust-surface product-surface">
             <Flow
@@ -267,6 +278,7 @@ export function PresentationPage() {
                   "HUMAN → AUTHORIZES INTENT",
                   "Decides what matters. Execution policy stays separate.",
                 ],
+                ["CODING AGENT → IMPLEMENTS", "Works against the reviewed contract; does not assign verdicts."],
                 [
                   "EXECUTION → OBSERVES",
                   "Performs supported, bounded observations.",
@@ -277,6 +289,7 @@ export function PresentationPage() {
                 ],
               ]}
             />
+            <p className="section-note">Correction brief → coding-agent handoff → independent re-verification. Automatic handoff remains product direction.</p>
             <div className="trust-outcomes">
               <span className="badge pass">✓ PASS</span>
               <span className="badge fail">× FAIL</span>
@@ -287,7 +300,7 @@ export function PresentationPage() {
             The LLM never awards itself <em>PASS or FAIL.</em>
           </p>
         </Scene>
-        <Scene id="generalization" number="08" label="GENERALIZATION">
+        <Scene id="generalization" number="10" label="GENERALIZATION">
           <h2 className="statement">
             One verification architecture.
             <br />
@@ -321,7 +334,7 @@ export function PresentationPage() {
             This is not an account-deletion checker.
           </p>
         </Scene>
-        <Scene id="boundary" number="09" label="NO FALSE CERTAINTY">
+        <Scene id="boundary" number="11" label="NO FALSE CERTAINTY">
           <div className="outcome-list">
             <article>
               <span className="badge pass">✓ PASS</span>
@@ -352,7 +365,7 @@ export function PresentationPage() {
             or not established.
           </p>
         </Scene>
-        <Scene id="report" number="10" label="THE FINAL ARTIFACT">
+        <Scene id="report" number="12" label="THE FINAL ARTIFACT">
           <h2 className="statement">
             Not just a verdict.
             <br />
@@ -385,7 +398,14 @@ export function PresentationPage() {
             that report.
           </p>
         </Scene>
-        <Scene id="vision" number="11" label="THE PRODUCT VISION">
+        <Scene id="correction" number="13" label="EVIDENCE INTO CORRECTIVE CONTEXT">
+          <h2 className="statement">Two contradictions.<br /><em>A precise next action.</em></h2>
+          <div className="report-object product-surface"><p className="eyebrow">CONTROLLED ACCOUNT-DELETION EXAMPLE · ALL SUGGESTIONS ACCEPTED</p><h3>2 evidence-backed corrections</h3><p>Existing session still authorizes GET /me → HTTP 200.</p><p>Deleted profile remains retrievable → HTTP 200 with profile data.</p><p className="section-note">External personal data: UNVERIFIED. Not sent for correction.</p></div>
+          <Flow items={[["CORRECTION BRIEF", "Accepted behaviour + expected + observed + evidence. No invented repair."], ["CODING AGENT", "May make a targeted change while preserving passing behaviours and the accepted contract."], ["AGENTGUARD", "Re-verify the same acceptance contract independently."]]} />
+          <p className="section-note">Handoff is demonstrated. No agent is invoked and no successful second run is claimed.</p>
+          <PageLink to="/demo" className="text-link">Prepare the controlled handoff →</PageLink>
+        </Scene>
+        <Scene id="vision" number="14" label="THE PRODUCT VISION">
           <h2 className="statement">
             Automate the mechanics.
             <br />
@@ -410,7 +430,7 @@ export function PresentationPage() {
             playback.
           </p>
         </Scene>
-        <Scene id="closing" number="12" label="THE QUESTION THAT MATTERS">
+        <Scene id="closing" number="15" label="THE QUESTION THAT MATTERS">
           <h2 className="closing-title">
             AI can build the code.
             <br />
