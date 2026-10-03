@@ -46,7 +46,7 @@ export function PresentationPage() {
     <>
       <header className="site-header">
         <a className="wordmark" href="#main">
-          <BrandMark /> AGENTGUARD
+          <BrandMark entrance /> AGENTGUARD
         </a>
         <nav aria-label="Presentation navigation">
           <a href="#problem">The gap</a>

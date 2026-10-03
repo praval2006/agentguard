@@ -40,6 +40,18 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
       ox: number;
       oy: number;
     }[] = [];
+    let dust: {
+      x: number;
+      y: number;
+      radius: number;
+      vx: number;
+      vy: number;
+      ox: number;
+      oy: number;
+      color: string;
+    }[] = [];
+    let traces: Path2D[] = [];
+    let lineGradient: CanvasGradient;
     const colors = ["143,133,194", "114,148,201", "177,165,218", "196,207,224"];
     const fine = () => pointer.matches && width > 800 && !motion.matches;
     function resize() {
@@ -70,7 +82,59 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
           oy: 0,
         };
       });
+      const secondaryCount = Math.min(
+        pointer.matches && width > 800 ? (demo ? 220 : 550) : demo ? 35 : 80,
+        Math.max(18, Math.round((width * height) / (demo ? 6500 : 2700))),
+      );
+      dust = Array.from({ length: secondaryCount }, (_, i) => ({
+        x: random() * width,
+        y: random() * height,
+        radius: 0.44 + random() * 0.34,
+        vx: 0.8 + (i % 3) * 0.55,
+        vy: -0.25 - (i % 3) * 0.3,
+        ox: 0,
+        oy: 0,
+        color: `rgba(${colors[i % colors.length]},${(0.14 + random() * 0.1) * (demo ? 0.78 : 1)})`,
+      }));
+      // Stable trace geometry/gradient created only on resize, not per particle/frame.
+      traces = [];
+      for (let i = 0; i < 3; i++) {
+        const path = new Path2D();
+        path.moveTo(-80, height * 0.13 + i * 18);
+        path.bezierCurveTo(
+          width * 0.12,
+          height * 0.28 + i * 18,
+          width * 0.27,
+          height * 0.02 + i * 18,
+          width * 0.48,
+          -30 + i * 12,
+        );
+        path.moveTo(width * 0.6, height + 40 + i * 16);
+        path.bezierCurveTo(
+          width * 0.72,
+          height * 0.75 + i * 16,
+          width * 0.87,
+          height * 0.88 + i * 16,
+          width + 60,
+          height * 0.58 + i * 16,
+        );
+        traces.push(path);
+      }
+      const parallel = new Path2D();
+      for (let i = 0; i < 5; i++) {
+        parallel.moveTo(-20, height * 0.66 + i * 13);
+        parallel.lineTo(width * 0.17 - i * 9, height * 0.58 + i * 13);
+      }
+      traces.push(parallel);
+      lineGradient = context.createLinearGradient(0, 0, width, height);
+      lineGradient.addColorStop(0, "rgba(117,142,211,0)");
+      lineGradient.addColorStop(0.12, "rgba(117,142,211,.12)");
+      lineGradient.addColorStop(0.42, "rgba(117,142,211,0)");
+      lineGradient.addColorStop(0.68, "rgba(155,133,204,0)");
+      lineGradient.addColorStop(0.88, "rgba(155,133,204,.12)");
+      lineGradient.addColorStop(1, "rgba(155,133,204,0)");
       node!.dataset.particles = String(count);
+      node!.dataset.secondaryParticles = String(secondaryCount);
       x = targetX = width / 2;
       y = targetY = height / 2;
       draw(0);
@@ -160,7 +224,52 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
         Math.PI * 1.24,
       );
       context.stroke();
-      for (const [i, p] of points.entries()) {
+      context.save();
+      context.translate(0, -depth * 0.12);
+      context.strokeStyle = lineGradient;
+      context.globalAlpha = atmosphere * (demo ? 0.4 : 0.8);
+      for (let i = 0; i < traces.length; i++) context.stroke(traces[i]);
+      if (fine() && light > 0.001) {
+        const reveal = context.createRadialGradient(x, y, 0, x, y, 300);
+        reveal.addColorStop(0, "rgba(155,165,228,.12)");
+        reveal.addColorStop(1, "rgba(155,165,228,0)");
+        context.strokeStyle = reveal;
+        context.globalAlpha = light * (demo ? 0.35 : 0.65);
+        for (let i = 0; i < traces.length; i++) context.stroke(traces[i]);
+      }
+      context.restore();
+      const interactive = fine() && active;
+      // Deep field flows coherently, with only a small cursor displacement.
+      for (let i = 0; i < dust.length; i++) {
+        const p = dust[i];
+        if (moving) {
+          p.x = (p.x + p.vx * dt + width) % width;
+          p.y = (p.y + p.vy * dt + height) % height;
+        }
+        const py =
+          (p.y - ((moving ? scroll * 0.003 : 0) % height) + height) % height;
+        const dx = p.x - x,
+          dy = py - y;
+        const distance = interactive ? Math.hypot(dx, dy) : 270;
+        const t = Math.max(0, 1 - distance / 270);
+        const influence = t * t * (3 - 2 * t);
+        p.ox += ((dx / Math.max(1, distance)) * influence * 4 - p.ox) * 0.06;
+        p.oy += ((dy / Math.max(1, distance)) * influence * 4 - p.oy) * 0.06;
+        context.globalAlpha = Math.min(
+          1,
+          p.x / 35,
+          (width - p.x) / 35,
+          py / 35,
+          (height - py) / 35,
+        );
+        context.fillStyle = p.color;
+        context.beginPath();
+        context.arc(p.x + p.ox, py + p.oy, p.radius, 0, Math.PI * 2);
+        context.fill();
+      }
+      context.globalAlpha = 1;
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
         if (moving)
           p.y =
             (p.y - dt * (0.22 + p.depth * 1.2) + height + 12) % (height + 12);
@@ -170,8 +279,8 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
           height;
         const dx = px - x,
           dy = py - y,
-          distance = Math.hypot(dx, dy);
-        const t = fine() && active ? Math.max(0, 1 - distance / 270) : 0;
+          distance = interactive ? Math.hypot(dx, dy) : 270;
+        const t = interactive ? Math.max(0, 1 - distance / 270) : 0;
         const proximity = t * t * (3 - 2 * t);
         const force = proximity * (3 + p.depth * 44);
         p.ox += ((dx / Math.max(distance, 1)) * force - p.ox) * 0.09;
@@ -188,7 +297,7 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
           y,
           Math.max(380, width * 0.36),
           "91,77,151",
-          light * (demo ? 0.06 : 0.095),
+          light * (demo ? 0.07 : 0.105),
         );
     }
     function animate(time: number) {
@@ -211,6 +320,9 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
         active = false;
         light = 0;
         scroll = 0;
+        dust.forEach((p) => {
+          p.ox = p.oy = 0;
+        });
         points.forEach((p) => {
           p.ox = p.oy = 0;
         });

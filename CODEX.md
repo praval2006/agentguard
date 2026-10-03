@@ -2638,3 +2638,62 @@ prefixes checked and all previous bytes preserved exactly. No dependencies added
 No commit or push. This remains local illustrative fixture playback, not live
 repository analysis; hosted routing and hardware performance are not established
 by these local headless checks.
+
+
+## 60. 2026-10-03 — Final atmosphere and precision-edge polish
+
+Preserved product copy/order, review/evidence/report components and fixtures,
+canonical 4 selected / 1 PASS / 2 FAIL / 1 UNVERIFIED (overall FAIL), and routing.
+Added an opt-in initial presentation navbar BrandMark entrance. Existing SVG path
+geometry is unchanged: boundary draws over 650ms, check starts at 300ms, evidence
+stroke at 650ms; a small light pass settles by 1200ms. Runs once per loaded app,
+not on scroll or route remount. No hero delay or loading screen. Reduced motion
+shows completed paths immediately, without drawing or glow animation.
+
+Primary particles remain 212 presentation / 86 demo at 1440x810 (caps 260/110).
+Added an independent deep field: 432/179 additional points at that viewport,
+caps 550/220; narrow/coarse secondary caps 80/35, alongside primary caps 55/24.
+Secondary points have precomputed varied radii/colors/velocity, coherent slow
+lateral/diagonal flow, edge fading, lower scroll parallax and at most 4px soft
+cursor displacement. Primary 270px smoothstep depth-weighted physics remains.
+Cursor illumination alpha increases by exactly .01, without changing its radius.
+
+Added cached Path2D flowing edge contours and a small diagonal line cluster with
+fading gradient ends, retained localized grids/arc, haze/grain and section emphasis.
+A bounded radial stroke overlay subtly reveals nearby traces without line physics.
+Lines shift less than particles with scrolling. Important opaque surfaces gain
+fine internal top/side highlights and soft boundary shadows; hover, keyboard
+focus-within and selected controls have restrained emphasis. No backdrop blur,
+neon fill changes, card movement or per-card pointer tracking. Code/evidence remain
+opaque; semantic PASS/FAIL/UNVERIFIED styling stays intact. Demo lines/light are
+weaker than presentation; touch has static edges and no cursor effects.
+
+Single canvas, O(n) loops, no particle pairs/DOM nodes/per-frame React state,
+30fps drawing, DPR cap 1.5, hidden-tab pause and cleanup retained. Stable secondary
+colors/velocities and trace geometry are built on resize. Reduced motion freezes
+both particle fields, parallax and cursor light, retaining static texture/edges.
+Decorative layers remain aria-hidden and pointer-transparent. No dependencies,
+WebGL, raster assets or paid API calls added.
+
+Validation:
+- npm test --prefix frontend: 30/30 passed (all 29 existing plus mark remount test).
+  Extended ambient tests verify secondary presentation/demo/coarse density.
+- npm run typecheck --prefix frontend: passed.
+- npm run build --prefix frontend: passed.
+- git diff --check: passed.
+- Headless Chrome covered initial/settled hero, pointer movement, scrolling,
+  presentation sections and desktop/mobile demo review, contract, evidence and report.
+  Logo has zero running animations after settling and no entrance on route return;
+  reduced-motion paths have animation none and opacity 1. Both canvas layers remain
+  pixel-identical after reduced-motion pointer/scroll/wait. No browser errors or
+  horizontal page/code overflow; demo controls and clarification behavior work.
+  Screenshots reviewed at 1440x810 and 390x844: richer field and faded edge lines,
+  dominant typography, readable evidence and unchanged distinct verdicts.
+  A temporary browser selector included an aria-hidden arrow; corrected the test
+  selector to the actual accessible name before completing checks.
+
+Updated frontend README. Vercel fallback, demo/fixture/evidence bytes, backend and
+frozen evaluations match HEAD; no evaluation reruns. BrandMark paths verified
+unchanged. All prior log bytes and historical prefixes preserved. No commit or push.
+Local headless inspection is not a hardware performance benchmark or hosted routing
+verification; those remain deployment/device checks.

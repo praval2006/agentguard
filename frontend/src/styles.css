@@ -2044,3 +2044,122 @@ code {
     Helvetica,
     sans-serif;
 }
+
+/* One initial presentation entrance; the approved mark geometry stays unchanged. */
+@media (prefers-reduced-motion: no-preference) {
+  .brand-mark[data-entrance="true"] {
+    animation: mark-light 1200ms ease-out both;
+  }
+  .brand-mark[data-entrance="true"] path {
+    stroke-dasharray: 1;
+    animation: mark-draw 650ms ease-out both;
+  }
+  .brand-mark[data-entrance="true"] path:nth-child(2) {
+    animation-duration: 450ms;
+    animation-delay: 300ms;
+  }
+  .brand-mark[data-entrance="true"] path:nth-child(3) {
+    animation-duration: 250ms;
+    animation-delay: 650ms;
+  }
+}
+@keyframes mark-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+@keyframes mark-light {
+  0%,
+  55%,
+  100% {
+    filter: none;
+  }
+  78% {
+    filter: drop-shadow(0 0 3px #9aaaff70);
+  }
+}
+/* Precision edges: surfaces remain opaque, and verdict fills retain their meaning. */
+.product-surface,
+.suggestion-review,
+.explicit-review,
+.implementation-view {
+  box-shadow:
+    inset 0 1px 0 #b1bdec14,
+    inset 1px 0 0 #a99ae908,
+    0 8px 32px #101c3b18;
+}
+.contract-surface,
+.final-report {
+  border-color: #48516b;
+}
+.implementation-view {
+  border-color: #3d4763;
+}
+.choice-button,
+.button,
+.nav-demo {
+  box-shadow:
+    inset 0 1px 0 #e3eaff24,
+    0 2px 15px #647ab210;
+}
+.choice-button[aria-pressed="true"],
+.choice-actions .quiet-button[aria-pressed="true"] {
+  box-shadow:
+    inset 0 1px 0 #c8bafc30,
+    0 0 14px #9787d018;
+}
+.suggestion-review:focus-within,
+.product-surface:focus-within,
+.implementation-view:focus-within {
+  box-shadow:
+    inset 0 1px 0 #c2cafa25,
+    0 0 22px #8793c920;
+}
+@media (hover: hover) and (pointer: fine) {
+  .suggestion-review:hover,
+  .implementation-view:hover {
+    box-shadow:
+      inset 0 1px 0 #c2cafa25,
+      inset 1px 0 0 #aaace614,
+      0 0 24px #8793c91c;
+  }
+  .button:hover:not(:disabled),
+  .choice-button:hover,
+  .nav-demo:hover {
+    box-shadow:
+      inset 0 1px 0 #f0efff40,
+      0 0 18px #9b9de826;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .suggestion-review,
+  .implementation-view,
+  .product-surface,
+  .choice-button,
+  .nav-demo {
+    transition:
+      box-shadow 180ms ease,
+      border-color 180ms ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark,
+  .brand-mark path {
+    animation: none !important;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    filter: none;
+  }
+  .suggestion-review,
+  .implementation-view,
+  .product-surface,
+  .choice-button,
+  .nav-demo {
+    transition: none;
+  }
+}

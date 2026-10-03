@@ -26,7 +26,17 @@ function setup(reduced: boolean) {
     vi.fn(() => 7),
   );
   vi.stubGlobal("cancelAnimationFrame", vi.fn());
+  vi.stubGlobal(
+    "Path2D",
+    class {
+      moveTo() {}
+      lineTo() {}
+      bezierCurveTo() {}
+    },
+  );
   const context = {
+    translate: vi.fn(),
+    createLinearGradient: () => ({ addColorStop: vi.fn() }),
     save: vi.fn(),
     restore: vi.fn(),
     scale: vi.fn(),
@@ -66,8 +76,16 @@ it("bounds density, calms demo and cancels animation/listeners on unmount", () =
   const { container, rerender, unmount } = render(<AmbientBackground />);
   const count = Number(container.querySelector("canvas")!.dataset.particles);
   expect(count).toBe(212);
+  expect(container.querySelector("canvas")).toHaveAttribute(
+    "data-secondary-particles",
+    "432",
+  );
   rerender(<AmbientBackground demo />);
   expect(Number(container.querySelector("canvas")!.dataset.particles)).toBe(86);
+  expect(container.querySelector("canvas")).toHaveAttribute(
+    "data-secondary-particles",
+    "179",
+  );
   expect(requestAnimationFrame).toHaveBeenCalled();
   unmount();
   expect(cancelAnimationFrame).toHaveBeenCalledWith(7);
@@ -79,6 +97,10 @@ it("reduces density for coarse pointers and responds to motion preference change
   pointer.matches = false;
   const { container } = render(<AmbientBackground />);
   expect(Number(container.querySelector("canvas")!.dataset.particles)).toBe(55);
+  expect(container.querySelector("canvas")).toHaveAttribute(
+    "data-secondary-particles",
+    "80",
+  );
   vi.mocked(requestAnimationFrame).mockClear();
   media.matches = true;
   listeners.get("change")!();
@@ -97,4 +119,17 @@ it("renders a scalable decorative brand mark without another accessible name", (
   );
   expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   expect(container.querySelector("svg")).toHaveAttribute("focusable", "false");
+});
+it("opts into a single mark entrance without replaying on remount", () => {
+  const first = render(<BrandMark entrance />);
+  expect(first.container.querySelector("svg")).toHaveAttribute(
+    "data-entrance",
+    "true",
+  );
+  first.unmount();
+  const next = render(<BrandMark entrance />);
+  expect(next.container.querySelector("svg")).not.toHaveAttribute(
+    "data-entrance",
+  );
+  expect(next.container.querySelectorAll("path")).toHaveLength(3);
 });

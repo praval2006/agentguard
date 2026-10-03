@@ -129,3 +129,18 @@ The denser field uses repeatable pseudo-random positions, mostly tiny faint far-
 points, a smaller middle tier and only 5% near-field points. Cursor displacement and
 brightening are depth-weighted; each frame is O(n), with no particle-pair checks.
 Opaque observed evidence surfaces keep the field behind readable code and results.
+
+The final atmosphere adds a separate deep field behind the unchanged primary points:
+432 secondary presentation / 179 demo points at 1440×810, capped at 550/220 and
+80/35 on narrow/coarse screens. Cached characteristics drive slow coherent diagonal
+flow, faint variation and at most 4px cursor displacement. Faded curved traces and
+an edge line cluster use cached Path2D geometry; cursor lighting gently reveals them.
+Existing localized grids and section emphasis remain. Cursor light alpha increased
+by 0.01; primary physics remains unchanged. Selective opaque surfaces receive fine
+internal edge highlights and restrained hover/focus/selected shadows, without blur.
+
+The initial presentation navbar mark draws its existing boundary, check and evidence
+stroke, then settles after a 1.2-second light pass. It runs once per loaded app,
+not on scroll or route remount. Reduced motion immediately shows the completed mark
+and both static particle fields. No product data, evidence, copy or review behavior
+is changed by these effects.
