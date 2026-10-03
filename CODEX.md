@@ -2697,3 +2697,56 @@ frozen evaluations match HEAD; no evaluation reruns. BrandMark paths verified
 unchanged. All prior log bytes and historical prefixes preserved. No commit or push.
 Local headless inspection is not a hardware performance benchmark or hosted routing
 verification; those remain deployment/device checks.
+
+
+## 61. 2026-10-03 — Submission-ready repository documentation
+
+Audited current package metadata/dependencies/environment template, CLI entry points,
+planner/grounder/schema, reviewed workflow/acceptance contract, execution policies,
+HTTP sequences, registered checks, verifier/report, provider configuration, tests,
+sample subscription fixture/context/task, frontend package/docs/controlled data,
+scripts and frozen evaluation summaries. Implementation takes precedence over older
+documentation: the root README describes the current report implementation and
+explicitly distinguishes frontend Needs clarification from backend ACCEPTED /
+DISMISSED / PENDING decisions and pending-exclusion resume behavior.
+
+Rewrote README around AgentGuard, “Build with AI. Verify with evidence.” and the
+one-line definition “An independent acceptance-verification layer for AI-generated
+code.” Included the exact production presentation/demo links, incomplete-prompt
+problem framing, Requested/Expected/Observed model, human authority and deterministic
+trust boundary. Controlled account-deletion example retains 4 selected / 1 PASS /
+2 FAIL / 1 UNVERIFIED, separate ambiguity, fixed-fixture disclosure and external
+observation limit. Distinguished this frontend from real local Python execution.
+
+Documented actual modules in one architecture diagram/table; bounded HTTP/JSON
+assertions, independent composites, 2–4-step sequences, fixed test command,
+caller-authorized registered checks and derived inputs. Described the real
+agentguard.acceptance-report.v1 projection, evidence exclusions, optional unbound
+task text, structural joins and lack of authenticated/per-requirement provenance.
+Included source-checkout installation, Python 3.10+, actual OpenAI SDK/default model
+and environment variables, no dotenv loading, local model-free subscription demo,
+review/decision/resume/report commands, target startup and exit codes. Frontend npm
+commands, regression commands, repository tree, FlightRecorder history links,
+limitations and explicitly future work are included without new capability claims.
+
+Frozen Set 3 numbers are supported by its execution summary/grounding metrics:
+4/23 (17.39%) executability, 4 PASS / 0 FAIL / 19 UNVERIFIED, seven established HTTP
+observations and six passing children. README calls these historical engineering
+results, not accuracy/correctness or a remeasurement of later capabilities. No
+frozen evaluation was modified or rerun.
+
+Validation: 42 Markdown links/anchors resolve locally or match supplied production
+URLs; 11 fenced blocks checked for balance, shell syntax, JSON and simple Mermaid
+structure. CLI --help and all three subcommand help outputs checked without provider
+creation. Commands were cross-checked against implementation/package scripts; no
+installation, live reasoning or regression/evaluation execution was needed for this
+documentation-only change. No tracked screenshots exist, so no image links were
+invented. README secret-pattern/personal-path check passed; only placeholder API
+configuration is present, and the only tracked .env-named file is .env.example.
+No private environment file was read or changed. git diff --check passed.
+
+Every other tracked file matches HEAD: implementation, frontend behavior, backend,
+tests and frozen artifacts are untouched. All historical log prefixes and prior
+bytes preserved exactly. No paid API calls, commit or push. GitHub-rendered Markdown/
+Mermaid, production-link availability and a fresh-machine setup remain useful final
+manual submission checks; this pass did not deploy or claim those checks were run.
