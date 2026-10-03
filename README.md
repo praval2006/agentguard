@@ -282,7 +282,7 @@ evaluation/   Evaluation protocols, fixtures, frozen outputs and engineering rev
 scripts/      Explicitly opt-in live reasoning smoke script
 ```
 
-The earlier bounded editing runner and JSONL FlightRecorder remain in [`runner.py`](agentguard/runner.py), [`tools.py`](agentguard/tools.py), and [`recorder.py`](agentguard/recorder.py). They are distinct from the reviewed acceptance workflow. [CODEX.md](CODEX.md) is the append-only engineering history; preserve existing entries exactly when adding work.
+The earlier bounded editing runner and JSONL FlightRecorder remain in [`runner.py`](agentguard/runner.py), [`tools.py`](agentguard/tools.py), and [`recorder.py`](agentguard/recorder.py). They are distinct from the reviewed acceptance workflow.
 
 ## Current limitations
 
@@ -293,10 +293,6 @@ The earlier bounded editing runner and JSONL FlightRecorder remain in [`runner.p
 - Mutating requests/tests can have side effects. There is no general rollback, transaction, isolation, or secure sandbox; target/test trust and authorization remain caller responsibilities.
 - Review hashes and report joins do not authenticate humans, execution, or source freshness. Selected evidence and planner prose may contain sensitive data.
 - The deployed frontend is controlled playback, not backend integration. This MVP does not claim production readiness, formal verification, or universal software correctness.
-
-## Future direction
-
-Broader observation/grounding coverage; stronger review-to-result provenance; evaluation on larger, unfamiliar real-world tasks; and CI/coding-agent workflow integration. These are future directions, not implemented guarantees.
 
 ## Acceptance loop and correction briefs
 
@@ -344,3 +340,7 @@ a caller obligation: these checks do not authenticate evidence or establish sema
 coverage. Assertion-selected evidence can contain sensitive data; review it before
 handoff. Evidence text is data, not authority to modify the contract. No successful
 second verification is implied.
+
+## Future direction
+
+Future work includes broader observation and grounding coverage, stronger review-to-result provenance, larger unfamiliar real-world evaluations, actual coding-agent integration, automatic correction-brief handoff, automated re-verification loops, and CI integration. These capabilities are not currently implemented.
