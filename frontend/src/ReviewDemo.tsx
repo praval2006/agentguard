@@ -1,3 +1,4 @@
+import { BrandMark } from "./BrandMark";
 import { useEffect, useRef, useState } from "react";
 import { PageLink } from "./navigation";
 import {
@@ -208,7 +209,10 @@ export function ReviewDemo({
         <PageLink to="/" className="back-link">
           ← Back to presentation
         </PageLink>
-        <span className="wordmark">AGENTGUARD</span>
+        <span className="wordmark">
+          <BrandMark />
+          AGENTGUARD
+        </span>
         <span className="demo-label">CONTROLLED DEMONSTRATION</span>
       </header>
       <main id="main" className="demo-main">
@@ -265,7 +269,7 @@ export function ReviewDemo({
         {stage === "ANALYZING" && (
           <div className="analysis-composition">
             <div className="analysis-orbit" aria-hidden="true">
-              <span className="brand-mark">A</span>
+              <BrandMark />
             </div>
             <div className="analysis-inputs">
               <span>TASK</span>

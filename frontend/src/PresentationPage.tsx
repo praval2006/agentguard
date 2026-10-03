@@ -1,3 +1,4 @@
+import { BrandMark } from "./BrandMark";
 import type { ReactNode } from "react";
 import { Reveal } from "./Reveal";
 import { PageLink } from "./navigation";
@@ -45,10 +46,7 @@ export function PresentationPage() {
     <>
       <header className="site-header">
         <a className="wordmark" href="#main">
-          <span className="brand-mark" aria-hidden="true">
-            A
-          </span>{" "}
-          AGENTGUARD
+          <BrandMark /> AGENTGUARD
         </a>
         <nav aria-label="Presentation navigation">
           <a href="#problem">The gap</a>
@@ -179,9 +177,7 @@ export function PresentationPage() {
             </div>
             <span className="connector" aria-hidden="true" />
             <div className="guard-core">
-              <span className="brand-mark" aria-hidden="true">
-                A
-              </span>
+              <BrandMark />
               <strong>AGENTGUARD</strong>
               <p>“What did we agree to accept?”</p>
             </div>

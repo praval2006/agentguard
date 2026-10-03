@@ -101,11 +101,16 @@ not run by frontend tests. No paid API calls occur.
 `AmbientBackground.tsx` renders one decorative, pointer-transparent canvas behind
 both views. Muted navy/violet illumination and tiny drifting points respond gently
 to scroll depth. Desktop fine pointers add slight particle repulsion and a broad,
-faint light; touch and narrow screens omit pointer effects. Density is capped at
-18 points on the presentation and 8 in the demo, reduced to 6/4 on coarse or narrow
+faint light with a 270px smoothstep influence radius; touch and narrow screens omit pointer effects. Density is capped at
+40 points on the presentation and 20 in the demo (33/16 at 1440×810), reduced to 10/6 on coarse or narrow
 screens. Reduced motion draws a static composition. Canvas drawing is capped at
 30 fps and device pixel ratio at 1.5; hidden tabs pause and unmount removes listeners
 and animation frames. No animation dependency or per-frame React state is used.
+Static procedural SVG grain, elongated edge haze and two very faint localized grid
+fragments add texture. A sparse edge arc and gently interpolated section emphasis
+keep technical depth out of the central reading area. Demo texture is weaker.
+`BrandMark.tsx` supplies the original scalable open-shield/evidence-check SVG; its
+internals are decorative while surrounding wordmarks retain accessible text.
 
 With Vercel Root Directory set to `frontend`, `vercel.json` supplies the
 [recommended Vite SPA fallback](https://vercel.com/docs/frameworks/frontend/vite)

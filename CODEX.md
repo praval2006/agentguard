@@ -2525,3 +2525,51 @@ Validation:
 Backend and frozen evaluation bytes match HEAD; no paid API calls or evaluation
 reruns occurred. Historical log prefixes checked; every previous byte preserved.
 Temporary browser tooling/screenshots remain outside the repository. No commit or push.
+
+
+## 58. 2026-10-03 — Technical atmosphere and AgentGuard mark refinement
+
+Refined the existing frontend environment without changing the approved narrative,
+layouts, demo workflow, fixtures, verification logic or report. Added original
+BrandMark.tsx: a crisp open-shield boundary, independent check and short evidence
+stroke in lavender/cool blue. Reused at presentation and demo brand locations;
+SVG internals are decorative and nonfocusable, with surrounding brand text intact.
+
+Presentation density is now 33 points at 1440x810 (hard cap 40), demo 16 (cap 20).
+Coarse/narrow devices cap at 10/6 and adapt down with viewport area. Only a small
+minority have the brightest/deepest treatment. Cursor influence expanded from
+145px to 270px, with continuous smoothstep falloff, depth-weighted displacement
+bounded below 43px, faster soft settling and slight brightening. Broad cursor
+illumination is slightly stronger, still weaker in the demo. No trails, explosions
+or connection network added.
+
+Added static low-opacity procedural SVG grain, elongated violet/blue edge haze,
+two faint localized grid fragments and one sparse edge arc. No raster texture,
+image download or animation dependency. Central typography remains dominant.
+Existing scroll depth is retained; atmosphere/trace depth moves at lower rates.
+An IntersectionObserver gently changes emphasis by presentation section, calming
+problem/verdict/report areas and enriching trust/closing. Demo uses weaker texture,
+traces and illumination. Touch has no pointer simulation. Reduced motion keeps
+static texture and stops cursor physics, parallax and animation. One canvas,
+30fps draw cap, DPR cap 1.5, hidden-tab pause, no per-frame React state, and cleanup
+of frames/listeners/section observer remain in place.
+
+Validation:
+- npm test --prefix frontend: 25/25 passed. Existing behavioral tests preserved;
+  ambient density assertions updated and coarse-pointer/motion-change plus decorative
+  logo tests added.
+- npm run typecheck --prefix frontend: passed.
+- npm run build --prefix frontend: passed.
+- git diff --check: passed.
+- Headless Chrome at 1440x810 and 390x844 covered hero, problem, gap, trust,
+  verification boundary, closing, reverse scroll, demo review/results/report.
+  Screenshots reviewed: restrained texture, tiny points, crisp small mark and
+  dominant content. No browser errors or mobile horizontal overflow; controls work.
+  Direct local /demo refresh works. Browser confirms 33/16 density, pointer-events
+  none and identical reduced-motion canvas pixels after pointer/scroll/wait.
+
+The Vercel SPA fallback is byte-for-byte unchanged. Backend and frozen evaluations
+match HEAD; no paid API calls or evaluation reruns. All prior work-log bytes and
+historical prefixes preserved exactly. Updated frontend README with current settings.
+No commit or push. Hosted routing still requires deployment verification; headless
+inspection is not a hardware/mobile performance benchmark.

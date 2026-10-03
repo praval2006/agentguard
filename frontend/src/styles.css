@@ -111,16 +111,11 @@ code {
   gap: 10px;
 }
 .brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   width: 30px;
-  height: 32px;
-  border: 1px solid #9e8be0;
-  border-radius: 8px 8px 12px 12px;
-  font-size: 18px;
-  font-weight: 700;
-  color: #dcd3ff;
+  height: 34px;
+  flex-shrink: 0;
+  vertical-align: middle;
 }
 .site-header {
   height: 86px;
@@ -1838,4 +1833,17 @@ code {
 }
 .demo-page {
   background: transparent;
+}
+
+/* Static fine grain: a tiny procedural SVG, no raster download or animated noise. */
+.ambient-environment::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='257' height='263'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.87' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' d='M0 0h257v263H0z'/%3E%3C/svg%3E");
+}
+.ambient-demo::after {
+  opacity: 0.015;
 }
