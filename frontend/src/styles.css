@@ -1132,7 +1132,7 @@ code {
 }
 .evidence-row {
   display: grid;
-  grid-template-columns: 25px 1fr 100px;
+  grid-template-columns: 25px minmax(0, 1fr) 128px;
   gap: 20px;
   border-top: 1px solid #293449;
   padding: 25px 10px;
@@ -1846,4 +1846,201 @@ code {
 }
 .ambient-demo::after {
   opacity: 0.015;
+}
+
+/* Review decisions are not verdicts. Evidence stays above the ambient field. */
+.choice-actions {
+  flex-wrap: wrap;
+}
+.choice-actions .quiet-button[aria-pressed="true"] {
+  outline: 1px solid #ada0d1;
+  outline-offset: 3px;
+}
+.clarification-note {
+  color: #d6c6a0;
+  font-size: 0.9rem;
+}
+.suggestion-review.clarification {
+  border-color: #76664b;
+}
+.result-counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  margin: 24px 0;
+  font: 12px var(--mono);
+}
+.evidence-detail {
+  grid-column: 2 / -1;
+  min-width: 0;
+  margin-top: 24px;
+  padding-top: 26px;
+  border-top: 1px solid #394155;
+}
+.detail-heading h4 {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 12px 0 6px;
+  font-weight: 500;
+}
+.detail-heading small {
+  color: #b5bcd0;
+}
+.code-evidence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+.implementation-view {
+  margin: 0;
+  min-width: 0;
+  background: #0b101e;
+  border: 1px solid #30384d;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.implementation-view figcaption {
+  padding: 15px;
+  font: 10px var(--mono);
+  letter-spacing: 0.07em;
+  color: #b6afd9;
+  border-bottom: 1px solid #293148;
+}
+.implementation-view pre {
+  font: 11px/1.9 var(--mono);
+  overflow-x: auto;
+  margin: 18px 0;
+}
+.code-line {
+  display: block;
+  padding: 0 12px;
+  white-space: pre;
+}
+.code-focus {
+  background: #a58ade12;
+  box-shadow: inset 2px 0 #a59acc;
+}
+.line-number {
+  display: inline-block;
+  width: 22px;
+  color: #6e7792;
+  user-select: none;
+}
+.syntax-keyword {
+  color: #b6a4ed;
+}
+.syntax-call {
+  color: #a6c4e4;
+}
+.syntax-plain {
+  color: #ced5e6;
+}
+.implementation-view p {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  padding: 0 16px;
+  color: #bbc4da;
+}
+.implementation-view > small {
+  display: block;
+  padding: 0 16px 18px;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: #9ca8bf;
+}
+.evidence-chain {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.evidence-chain li {
+  position: relative;
+  padding: 0 0 20px 20px;
+  margin-left: 4px;
+  border-left: 1px solid #3b4359;
+}
+.evidence-chain li::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a89bcf;
+}
+.evidence-chain li:last-child {
+  padding-bottom: 0;
+  border-color: transparent;
+}
+.evidence-chain span {
+  font: 10px var(--mono);
+  color: #aab7d0;
+  letter-spacing: 0.07em;
+}
+.evidence-chain p {
+  margin: 7px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.evidence-only {
+  margin-top: 24px;
+}
+.evidence-reason {
+  margin-top: 24px;
+  border-left: 2px solid #828eaa;
+  padding-left: 16px;
+}
+.evidence-detail.verdict-fail .evidence-reason {
+  border-color: #ca899f;
+}
+.evidence-detail.verdict-unverified .evidence-reason {
+  border-color: #baa46f;
+}
+.evidence-reason p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 8px 0;
+}
+.evidence-boundary {
+  font-family: Georgia, serif;
+  font-size: 1.2rem;
+  color: #e0d3ac;
+}
+.evidence-boundary small {
+  display: block;
+  margin-top: 10px;
+  font:
+    0.85rem/1.6 Arial,
+    Helvetica,
+    sans-serif;
+  color: #b9c0d0;
+}
+@media (max-width: 800px) {
+  .code-evidence-grid {
+    grid-template-columns: 1fr;
+  }
+  .evidence-detail {
+    grid-column: 1 / -1;
+  }
+  .choice-actions {
+    gap: 14px;
+    justify-content: flex-start;
+  }
+  .implementation-view pre {
+    font-size: 10px;
+  }
+}
+
+.evidence-detail .detail-heading small {
+  font: 0.75rem/1.6 var(--mono);
+}
+.evidence-detail .implementation-view > small {
+  font:
+    0.72rem/1.6 Arial,
+    Helvetica,
+    sans-serif;
 }

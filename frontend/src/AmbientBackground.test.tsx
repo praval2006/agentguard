@@ -65,9 +65,9 @@ it("bounds density, calms demo and cancels animation/listeners on unmount", () =
   const { media } = setup(false);
   const { container, rerender, unmount } = render(<AmbientBackground />);
   const count = Number(container.querySelector("canvas")!.dataset.particles);
-  expect(count).toBe(33);
+  expect(count).toBe(212);
   rerender(<AmbientBackground demo />);
-  expect(Number(container.querySelector("canvas")!.dataset.particles)).toBe(16);
+  expect(Number(container.querySelector("canvas")!.dataset.particles)).toBe(86);
   expect(requestAnimationFrame).toHaveBeenCalled();
   unmount();
   expect(cancelAnimationFrame).toHaveBeenCalledWith(7);
@@ -78,7 +78,7 @@ it("reduces density for coarse pointers and responds to motion preference change
   const { media, pointer, listeners } = setup(false);
   pointer.matches = false;
   const { container } = render(<AmbientBackground />);
-  expect(Number(container.querySelector("canvas")!.dataset.particles)).toBe(10);
+  expect(Number(container.querySelector("canvas")!.dataset.particles)).toBe(55);
   vi.mocked(requestAnimationFrame).mockClear();
   media.matches = true;
   listeners.get("change")!();

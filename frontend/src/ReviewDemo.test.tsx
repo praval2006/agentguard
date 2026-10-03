@@ -1,7 +1,13 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ReviewDemo } from "./ReviewDemo";
-import { accountReports, selectedFixture } from "./accountDemoData";
+import {
+  accountReports,
+  selectedFixture,
+  suggestions,
+  type Decision,
+  type SuggestionId,
+} from "./accountDemoData";
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
@@ -21,11 +27,9 @@ function click(name: RegExp | string) {
 function review() {
   click(/Analyze acceptance/);
 }
-function decide(id: "session" | "profile", accept = true) {
+function decide(id: SuggestionId, accept = true) {
   const card = screen.getByLabelText(
-    id === "session"
-      ? "Existing sessions invalidated"
-      : "Profile inaccessible after deletion",
+    suggestions.find((s) => s.id === id)!.title,
   );
   fireEvent.click(
     within(card).getByRole("button", {
@@ -34,6 +38,10 @@ function decide(id: "session" | "profile", accept = true) {
   );
 }
 function contract() {
+  const external = screen.queryByLabelText(
+    "External personal data disassociated",
+  );
+  if (external?.textContent?.includes("PENDING")) decide("external", false);
   click(/Review acceptance contract/);
 }
 function run() {
@@ -52,7 +60,7 @@ describe("account deletion reviewed demo", () => {
         "button",
       ),
     ).toBeNull();
-    expect(screen.getAllByText("PENDING")).toHaveLength(2);
+    expect(screen.getAllByText("○ PENDING")).toHaveLength(3);
     expect(
       screen.getByRole("button", { name: /Review acceptance contract/ }),
     ).toBeDisabled();
@@ -66,7 +74,7 @@ describe("account deletion reviewed demo", () => {
       screen.getByRole("button", { name: /Review acceptance contract/ }),
     ).toBeDisabled();
     decide("profile");
-    expect(screen.getAllByText("ACCEPTED BY YOU")).toHaveLength(2);
+    expect(screen.getAllByText("✓ ADDED · ACCEPTED BY YOU")).toHaveLength(2);
     contract();
     const c = screen.getByLabelText("Acceptance contract");
     expect(c).toHaveTextContent("3 SELECTED");
@@ -170,7 +178,7 @@ describe("account deletion reviewed demo", () => {
     ).toBeEnabled();
     review();
     act(() => vi.advanceTimersByTime(1600));
-    expect(screen.getAllByText("PENDING")).toHaveLength(2);
+    expect(screen.getAllByText("○ PENDING")).toHaveLength(3);
     expect(screen.queryByLabelText("Selected verification results")).toBeNull();
   });
   it("shows evidence before verdict and replay removes completed payoff", () => {
@@ -213,24 +221,161 @@ describe("account deletion reviewed demo", () => {
   });
   it("selects explicit fixtures for every decision combination without inferring verdicts", () => {
     expect(
-      selectedFixture({ session: "PENDING", profile: "ACCEPTED" }),
+      selectedFixture({
+        session: "PENDING",
+        profile: "ACCEPTED",
+        external: "DISMISSED",
+      }),
     ).toBeNull();
-    expect(selectedFixture({ session: "ACCEPTED", profile: "ACCEPTED" })).toBe(
-      accountReports.AA,
-    );
-    expect(selectedFixture({ session: "ACCEPTED", profile: "DISMISSED" })).toBe(
-      accountReports.AD,
-    );
-    expect(selectedFixture({ session: "DISMISSED", profile: "ACCEPTED" })).toBe(
-      accountReports.DA,
-    );
     expect(
-      selectedFixture({ session: "DISMISSED", profile: "DISMISSED" }),
-    ).toBe(accountReports.DD);
-    expect(accountReports.AA.results.map((r) => r.verdict)).toEqual([
+      selectedFixture({
+        session: "ACCEPTED",
+        profile: "ACCEPTED",
+        external: "DISMISSED",
+      }),
+    ).toBe(accountReports.AAD);
+    expect(
+      selectedFixture({
+        session: "ACCEPTED",
+        profile: "DISMISSED",
+        external: "DISMISSED",
+      }),
+    ).toBe(accountReports.ADD);
+    expect(
+      selectedFixture({
+        session: "DISMISSED",
+        profile: "ACCEPTED",
+        external: "DISMISSED",
+      }),
+    ).toBe(accountReports.DAD);
+    expect(
+      selectedFixture({
+        session: "DISMISSED",
+        profile: "DISMISSED",
+        external: "DISMISSED",
+      }),
+    ).toBe(accountReports.DDD);
+    expect(accountReports.AAD.results.map((r) => r.verdict)).toEqual([
       "PASS",
       "FAIL",
       "FAIL",
     ]);
   });
 });
+
+it("all three added use the canonical fixed 4/1/2/1 report and explanatory evidence", () => {
+  mount();
+  review();
+  for (const s of suggestions) decide(s.id);
+  contract();
+  expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
+    "4 SELECTED",
+  );
+  run();
+  const results = screen.getByLabelText("Selected verification results");
+  const external = within(results).getByLabelText(
+    "External personal data disassociated",
+  );
+  expect(external).toHaveTextContent("? UNVERIFIED");
+  expect(external).not.toHaveTextContent("× FAIL");
+  expect(external).toHaveTextContent(accountReports.AAA.results[3].reason);
+  expect(screen.getAllByText("CONTROLLED IMPLEMENTATION EXCERPT")).toHaveLength(
+    2,
+  );
+  expect(screen.getByText("Existing session → GET /me")).toBeVisible();
+  expect(screen.getByText("GET /profile/<deleted-user>")).toBeVisible();
+  expect(screen.getByText("GET account → available")).toBeVisible();
+  expect(screen.getByText("GET account → 404 / unavailable")).toBeVisible();
+  click(/Assemble verification report/);
+  expect(screen.getByLabelText("Verification summary")).toHaveTextContent(
+    "OVERALL× FAIL4SELECTED1PASS2FAIL1UNVERIFIED",
+  );
+  expect(screen.getByLabelText("Unresolved ambiguity")).not.toHaveTextContent(
+    /PASS|FAIL|UNVERIFIED/,
+  );
+});
+it("clarification resolves review for this run but gives no contract entry or verdict", () => {
+  mount();
+  review();
+  for (const s of suggestions) {
+    const card = screen.getByLabelText(s.title);
+    fireEvent.click(
+      within(card).getByRole("button", { name: "Needs clarification" }),
+    );
+    expect(card).toHaveTextContent("? NEEDS CLARIFICATION");
+    expect(card).not.toHaveTextContent(/PASS|FAIL|UNVERIFIED/);
+    expect(
+      within(card).getByRole("button", { name: "Needs clarification" }),
+    ).toHaveAttribute("aria-pressed", "true");
+  }
+  contract();
+  expect(screen.getByLabelText("Acceptance contract")).toHaveTextContent(
+    "1 SELECTED",
+  );
+  expect(screen.getByLabelText("Review history")).toHaveTextContent(
+    "NEEDS CLARIFICATION · not included · no verdict",
+  );
+  run();
+  for (const s of suggestions)
+    expect(
+      within(
+        screen.getByLabelText("Selected verification results"),
+      ).queryByLabelText(s.title),
+    ).toBeNull();
+  expect(screen.queryByText("CONTROLLED IMPLEMENTATION EXCERPT")).toBeNull();
+});
+it("changing accepted external data to clarification clears its stale UNVERIFIED", () => {
+  mount();
+  review();
+  decide("session", false);
+  decide("profile", false);
+  decide("external");
+  contract();
+  run();
+  expect(screen.getByLabelText("Controlled result summary")).toHaveTextContent(
+    "? UNVERIFIED",
+  );
+  click("Change decision");
+  expect(screen.queryByLabelText("Selected verification results")).toBeNull();
+  fireEvent.click(
+    within(
+      screen.getByLabelText("External personal data disassociated"),
+    ).getByRole("button", { name: "Needs clarification" }),
+  );
+  contract();
+  run();
+  expect(screen.getByLabelText("Controlled result summary")).toHaveTextContent(
+    "✓ PASS",
+  );
+  expect(
+    within(
+      screen.getByLabelText("Selected verification results"),
+    ).queryByLabelText("External personal data disassociated"),
+  ).toBeNull();
+});
+it("all 27 resolved review combinations select an authored fixture by inclusion only", () => {
+  const states: Decision[] = ["ACCEPTED", "DISMISSED", "CLARIFICATION"];
+  for (const session of states)
+    for (const profile of states)
+      for (const external of states) {
+        const decisions = { session, profile, external };
+        const key = statesForKey(decisions);
+        expect(selectedFixture(decisions)).toBe(accountReports[key]);
+        for (const s of suggestions)
+          expect(
+            selectedFixture(decisions)!.results.some((r) => r.id === s.id),
+          ).toBe(decisions[s.id] === "ACCEPTED");
+      }
+  expect(
+    selectedFixture({
+      session: "ACCEPTED",
+      profile: "ACCEPTED",
+      external: "PENDING",
+    }),
+  ).toBeNull();
+});
+function statesForKey(
+  d: Record<SuggestionId, Decision>,
+): keyof typeof accountReports {
+  return `${d.session === "ACCEPTED" ? "A" : "D"}${d.profile === "ACCEPTED" ? "A" : "D"}${d.external === "ACCEPTED" ? "A" : "D"}` as keyof typeof accountReports;
+}

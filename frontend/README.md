@@ -52,20 +52,27 @@ presentation fixture. It is not a frozen evaluation, real repository analysis or
 backend report. No browser HTTP request, planner, grounder or verifier is invoked.
 The analyzing display contains only input categories, not fabricated reasoning.
 
-The explicit deletion requirement is always included. Both session/profile
-suggestions begin PENDING. Each must be accepted or dismissed before the contract
-can proceed. Accepted suggestions retain inferred origin. Dismissed suggestions
-remain in review history and have no result. User-created content is an ambiguity,
+The explicit deletion requirement is always included. All three session/profile/external-data
+suggestions begin PENDING. Each must be added, dismissed or marked Needs clarification before the contract
+can proceed. Accepted suggestions retain inferred origin. Dismissed and clarification suggestions
+remain in review history, outside the contract with no verdict. Clarification is
+a product decision, never UNVERIFIED. User-created content is an ambiguity,
 not a suggestion to approve or a verification verdict.
 
-All four completed decision combinations select explicitly authored fixtures:
+Eight explicitly authored fixtures cover all selected subsets; 27 resolved review
+combinations map to them. Counts and overall verdicts are stored, never calculated
+from evidence. The full-scope fixture is 4 selected / 1 PASS / 2 FAIL / 1 UNVERIFIED,
+overall FAIL. With only explicit deletion selected, the fixture is PASS. Explicit
+plus external cleanup alone is UNVERIFIED. The original two-added/external-excluded
+case remains 3 selected / 1 PASS / 2 FAIL / 0 UNVERIFIED.
 
-| Session   | Profile   | Selected | PASS | FAIL | UNVERIFIED | Overall |
-| --------- | --------- | -------: | ---: | ---: | ---------: | ------- |
-| Accepted  | Accepted  |        3 |    1 |    2 |          0 | FAIL    |
-| Accepted  | Dismissed |        2 |    1 |    1 |          0 | FAIL    |
-| Dismissed | Accepted  |        2 |    1 |    1 |          0 | FAIL    |
-| Dismissed | Dismissed |        1 |    1 |    0 |          0 | PASS    |
+`EvidenceDetail.tsx` presents fixed before/action/after PASS evidence, session and
+profile FAIL evidence, and the external-service observation boundary. A three-line
+illustrative deletion excerpt is explicitly labelled as controlled demo code, not
+repository extraction or runtime execution. HTTP 200 for the old session and the
+returned profile explain the contradictions. External cleanup is accepted but has
+no authorized supported observation, so its fixture is UNVERIFIED. Neither absent
+code nor model uncertainty is used to calculate any result.
 
 React selects a fixture; it does not compare responses or aggregate verdicts.
 Normal playback reveals observed evidence before each fixture verdict. Reduced
@@ -102,7 +109,7 @@ not run by frontend tests. No paid API calls occur.
 both views. Muted navy/violet illumination and tiny drifting points respond gently
 to scroll depth. Desktop fine pointers add slight particle repulsion and a broad,
 faint light with a 270px smoothstep influence radius; touch and narrow screens omit pointer effects. Density is capped at
-40 points on the presentation and 20 in the demo (33/16 at 1440×810), reduced to 10/6 on coarse or narrow
+260 points on the presentation and 110 in the demo (212/86 at 1440×810), reduced to 55/24 on coarse or narrow
 screens. Reduced motion draws a static composition. Canvas drawing is capped at
 30 fps and device pixel ratio at 1.5; hidden tabs pause and unmount removes listeners
 and animation frames. No animation dependency or per-frame React state is used.
@@ -117,3 +124,8 @@ With Vercel Root Directory set to `frontend`, `vercel.json` supplies the
 so direct `/demo` navigation and refresh resolve to `index.html`. Redeploy to apply
 this hosting configuration; verify `/demo` refresh and static assets on that deployment.
 The local browser checks do not establish the deployed Vercel configuration.
+
+The denser field uses repeatable pseudo-random positions, mostly tiny faint far-field
+points, a smaller middle tier and only 5% near-field points. Cursor displacement and
+brightening are depth-weighted; each frame is O(n), with no particle-pair checks.
+Opaque observed evidence surfaces keep the field behind readable code and results.

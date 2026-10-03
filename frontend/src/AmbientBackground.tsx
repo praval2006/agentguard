@@ -50,17 +50,26 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
       node!.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       const count = Math.min(
-        pointer.matches && width > 800 ? (demo ? 20 : 40) : demo ? 6 : 10,
-        Math.max(6, Math.round((width * height) / (demo ? 72000 : 35000))),
+        pointer.matches && width > 800 ? (demo ? 110 : 260) : demo ? 24 : 55,
+        Math.max(12, Math.round((width * height) / (demo ? 13500 : 5500))),
       );
-      points = Array.from({ length: count }, (_, i) => ({
-        x: ((i * 0.618033 + 0.13) % 1) * width,
-        y: ((i * 0.414214 + 0.21) % 1) * height,
-        depth: i % 7 === 0 ? 0.85 : 0.25 + (i % 3) * 0.16,
-        radius: i % 7 === 0 ? 1.05 : 0.55 + (i % 3) * 0.18,
-        ox: 0,
-        oy: 0,
-      }));
+      // Repeatable pseudo-random positions avoid a visible lattice; O(n), no pairs.
+      let seed = 91827;
+      const random = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return seed / 4294967296;
+      };
+      points = Array.from({ length: count }, (_, i) => {
+        const depth = i % 20 === 0 ? 0.85 : i % 4 === 0 ? 0.4 : 0.12;
+        return {
+          x: random() * width,
+          y: random() * height,
+          depth,
+          radius: 0.35 + depth * 0.8,
+          ox: 0,
+          oy: 0,
+        };
+      });
       node!.dataset.particles = String(count);
       x = targetX = width / 2;
       y = targetY = height / 2;
@@ -153,7 +162,8 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
       context.stroke();
       for (const [i, p] of points.entries()) {
         if (moving)
-          p.y = (p.y - dt * (1 + p.depth) + height + 12) % (height + 12);
+          p.y =
+            (p.y - dt * (0.22 + p.depth * 1.2) + height + 12) % (height + 12);
         const px = p.x + (moving ? Math.sin(elapsed / 22 + i) * 12 : 0);
         const py =
           (p.y - ((moving ? scroll * 0.014 * p.depth : 0) % height) + height) %
@@ -163,11 +173,11 @@ export function AmbientBackground({ demo = false }: { demo?: boolean }) {
           distance = Math.hypot(dx, dy);
         const t = fine() && active ? Math.max(0, 1 - distance / 270) : 0;
         const proximity = t * t * (3 - 2 * t);
-        const force = proximity * (24 + p.depth * 22);
+        const force = proximity * (3 + p.depth * 44);
         p.ox += ((dx / Math.max(distance, 1)) * force - p.ox) * 0.09;
         p.oy += ((dy / Math.max(distance, 1)) * force - p.oy) * 0.09;
         const edge = Math.min(1, py / 55, (height - py) / 55);
-        context.fillStyle = `rgba(${colors[i % colors.length]},${(0.16 + p.depth * 0.16 + proximity * 0.14) * edge})`;
+        context.fillStyle = `rgba(${colors[i % colors.length]},${(0.1 + p.depth * 0.24 + proximity * p.depth * 0.12) * edge * (demo ? 0.8 : 1)})`;
         context.beginPath();
         context.arc(px + p.ox, py + p.oy, p.radius, 0, Math.PI * 2);
         context.fill();

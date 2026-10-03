@@ -2573,3 +2573,68 @@ match HEAD; no paid API calls or evaluation reruns. All prior work-log bytes and
 historical prefixes preserved exactly. Updated frontend README with current settings.
 No commit or push. Hosted routing still requires deployment verification; headless
 inspection is not a hardware/mobile performance benchmark.
+
+
+## 59. 2026-10-03 — Reviewed demo evidence and complete verdict vocabulary
+
+Expanded the controlled account-deletion review to Add to verification, Dismiss
+and Needs clarification with semantic pressed buttons and symbol/text states.
+All three inferred suggestions start pending. Every suggestion requires an explicit
+human decision; clarification resolves review for this run but stays outside the
+contract, like dismissal, with no verdict. Accepted source remains inferred.
+User-created-content ambiguity stays separate and receives no verdict. Changing
+review decisions clears old playback/results before another run.
+
+Added the external-personal-data suggestion and its fixed UNVERIFIED outcome:
+external-service state has no authorized supported observation in this run.
+This is neither failure nor unresolved human intent. Eight authored result fixtures
+cover selected subsets, mapping all 27 resolved review combinations by inclusion.
+The full-scope fixture is 4 selected / 1 PASS / 2 FAIL / 1 UNVERIFIED, overall FAIL.
+Explicit-only remains PASS; explicit plus external-only is overall UNVERIFIED.
+Counts, observations, explanations and verdicts come from fixed presentation data;
+React does not interpret code/evidence or aggregate verdicts.
+
+Added EvidenceDetail.tsx with fixture-authored accepted behavior, evidence chains,
+expected/observed HTTP outcomes and concise reasons. Account PASS shows available
+before, successful deletion and unavailable after. Session FAIL shows the old
+session still authorizing GET /me with 200 instead of unauthorized; profile FAIL
+shows returned profile data after deletion. External UNVERIFIED explains the missing
+supported observation and explicitly refuses to guess success or failure.
+Two-column failure panels pair evidence with a minimal three-line illustrative
+implementation, labelled controlled/not extracted or executed. Restrained syntax
+and line emphasis support the explanation; absence in an excerpt is not presented
+as independent runtime proof. Mobile stacks panels; observed evidence surfaces are
+opaque for readability. Report retains human decisions and separate ambiguity.
+
+Increased stardust to 212 presentation / 86 demo points at 1440x810, capped at
+260/110. Narrow/coarse caps are 55/24, adapting to area. Repeatable pseudo-random
+positions replace the prior distribution; most points are tiny faint far-field,
+a smaller middle tier and about 5% near-field. Reduced average radius/opacity and
+very slow drift avoid bright starfield/snowfall treatment. The 270px smoothstep
+cursor response is depth-weighted, with subdued far-field response and stronger
+near-field movement. O(n) simulation, no pairwise links, single canvas, 30fps drawing,
+DPR cap, hidden-tab pause and cleanup remain. Touch omits cursor effects; reduced
+motion renders static dense texture. Existing atmosphere/grain and BrandMark remain.
+
+Validation:
+- npm test --prefix frontend: 29/29 passed (25 prior, 4 added review/evidence tests).
+  Existing review tests adapted for the third pending suggestion and state labels;
+  coverage includes canonical counts, clarification exclusion, stale-result clearing,
+  all 27 selections returning exact fixture references, evidence/code and ambiguity.
+- npm run typecheck --prefix frontend: passed.
+- npm run build --prefix frontend: passed.
+- git diff --check: passed.
+- Headless Chrome covered 1440x810 presentation, cursor movement, review, contract,
+  playback, results and report; 390x844 presentation/review/evidence/report.
+  No browser errors or horizontal page/code overflow. Local /demo refresh works;
+  density is 212/86, pointer-events none and reduced-motion canvas pixels stay fixed.
+  Clarification-only review yields explicit-only PASS with no suggestion verdicts.
+  Reviewed failure and UNVERIFIED panels; corrected inherited badge-color styling
+  and widened the desktop verdict column for the UNVERIFIED label.
+
+Frontend README updated. Vercel fallback and BrandMark bytes unchanged. Backend and
+frozen evaluations match HEAD; no paid calls or evaluation reruns. Historical log
+prefixes checked and all previous bytes preserved exactly. No dependencies added.
+No commit or push. This remains local illustrative fixture playback, not live
+repository analysis; hosted routing and hardware performance are not established
+by these local headless checks.

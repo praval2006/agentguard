@@ -1,3 +1,4 @@
+import { EvidenceDetail } from "./EvidenceDetail";
 import { BrandMark } from "./BrandMark";
 import { useEffect, useRef, useState } from "react";
 import { PageLink } from "./navigation";
@@ -29,10 +30,16 @@ const stages: Stage[] = [
   "RESULTS",
   "REPORT",
 ];
+const reviewLabels: Record<Decision, string> = {
+  PENDING: "○ PENDING",
+  ACCEPTED: "✓ ADDED · ACCEPTED BY YOU",
+  DISMISSED: "× DISMISSED",
+  CLARIFICATION: "? NEEDS CLARIFICATION",
+};
 function Badge({ value }: { value: Verdict }) {
   return (
     <span className={`badge ${value.toLowerCase()}`}>
-      {value === "PASS" ? "✓" : value === "FAIL" ? "×" : "—"} {value}
+      {value === "PASS" ? "✓" : value === "FAIL" ? "×" : "?"} {value}
     </span>
   );
 }
@@ -102,6 +109,7 @@ function Evidence({
                 </span>
               )}
             </div>
+            {graded && <EvidenceDetail result={result} />}
           </article>
         );
       })}
@@ -117,6 +125,7 @@ export function ReviewDemo({
   const [decisions, setDecisions] = useState<Record<SuggestionId, Decision>>({
     session: "PENDING",
     profile: "PENDING",
+    external: "PENDING",
   });
   const [tick, setTick] = useState(0);
   const [reduced, setReduced] = useState(
@@ -174,7 +183,11 @@ export function ReviewDemo({
     setStage("REVIEW");
   }
   function reset() {
-    setDecisions({ session: "PENDING", profile: "PENDING" });
+    setDecisions({
+      session: "PENDING",
+      profile: "PENDING",
+      external: "PENDING",
+    });
     setTick(0);
     setStage("INTRO");
   }
@@ -191,7 +204,7 @@ export function ReviewDemo({
     stage === "REVIEW"
       ? report
         ? "Decisions recorded. Your contract is ready."
-        : "Review incomplete. Add or dismiss both suggestions to continue."
+        : "Review incomplete. Add, dismiss, or mark each suggestion as needing clarification to continue."
       : stage === "VERIFYING"
         ? tick === 0
           ? "Playing controlled deletion observation."
@@ -307,13 +320,15 @@ export function ReviewDemo({
                 >
                   <div className="review-meta">
                     AGENTGUARD SUGGESTION{" "}
-                    <span>
-                      {decisions[item.id] === "ACCEPTED"
-                        ? "ACCEPTED BY YOU"
-                        : decisions[item.id]}
-                    </span>
+                    <span>{reviewLabels[decisions[item.id]]}</span>
                   </div>
                   <h2>{item.behavior}</h2>
+                  {decisions[item.id] === "CLARIFICATION" && (
+                    <p className="clarification-note">
+                      Product intent needs clarification. Excluded from this
+                      run; no verdict.
+                    </p>
+                  )}
                   <p className="rationale">Context · {item.rationale}</p>
                   <div className="review-bottom">
                     <small>
@@ -331,6 +346,18 @@ export function ReviewDemo({
                         }
                       >
                         Dismiss
+                      </button>
+                      <button
+                        className="quiet-button"
+                        aria-pressed={decisions[item.id] === "CLARIFICATION"}
+                        onClick={() =>
+                          setDecisions((d) => ({
+                            ...d,
+                            [item.id]: "CLARIFICATION",
+                          }))
+                        }
+                      >
+                        Needs clarification
                       </button>
                       <button
                         className="choice-button"
@@ -390,12 +417,13 @@ export function ReviewDemo({
             <div className="review-history" aria-label="Review history">
               {suggestions.map((s) => (
                 <p key={s.id}>
-                  {s.title}: <strong>{decisions[s.id]}</strong>
-                  {decisions[s.id] === "DISMISSED" &&
+                  {s.title}: <strong>{reviewLabels[decisions[s.id]]}</strong>
+                  {decisions[s.id] !== "ACCEPTED" &&
                     " · not included · no verdict"}
                 </p>
               ))}
             </div>
+            <Ambiguity />
             <div className="demo-actions">
               <button className="quiet-button" onClick={change}>
                 Change decision
@@ -408,11 +436,27 @@ export function ReviewDemo({
         )}
         {(stage === "VERIFYING" || stage === "RESULTS") && report && (
           <>
+            {complete && (
+              <div
+                className="result-counts"
+                aria-label="Controlled result summary"
+              >
+                <Badge value={report.overall} />
+                <span>{report.selected} selected</span>
+                <span>{report.pass} PASS</span>
+                <span>{report.fail} FAIL</span>
+                <span>{report.unverified} UNVERIFIED</span>
+              </div>
+            )}
             <Evidence report={report} tick={tick} complete={complete} />
+            {complete && <Ambiguity />}
             {stage === "RESULTS" && (
               <>
                 <div className="demo-payoff" data-testid="story-payoff">
-                  <p>The coding agent completed the prompt.</p>
+                  <p>
+                    The coding agent didn’t necessarily fail. It built what you
+                    asked for. The acceptance criteria were incomplete.
+                  </p>
                   <h2>
                     AgentGuard helped
                     <br />
@@ -472,9 +516,9 @@ export function ReviewDemo({
                 <h3>Human decisions</h3>
                 {suggestions.map((s) => (
                   <p key={s.id}>
-                    {s.title} <strong>{decisions[s.id]}</strong>
-                    {decisions[s.id] === "DISMISSED"
-                      ? " · not verified"
+                    {s.title} <strong>{reviewLabels[decisions[s.id]]}</strong>
+                    {decisions[s.id] !== "ACCEPTED"
+                      ? " · not included · no verdict"
                       : " · origin remains inferred"}
                   </p>
                 ))}
